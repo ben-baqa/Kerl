@@ -66,6 +66,8 @@ public class SelectCharacter : MonoBehaviour
         {
             countdown_timer = max_timer;
         }
+        UpdateText();
+        // update
     }
 
     void UpdateText()
@@ -91,10 +93,12 @@ public class SelectCharacter : MonoBehaviour
     {
         if (player_state[player] == PlayerState.NOT_JOINED)
         {
+            // sound here
             player_state[player] = PlayerState.JOINED;
         }
         else if (player_state[player] == PlayerState.JOINED)
         {
+            // sound here
             player_state[player] = PlayerState.READY;
         }
     }
