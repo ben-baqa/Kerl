@@ -14,7 +14,7 @@ public class CameraPositions : MonoBehaviour
     private Vector3 pos = Vector3.zero;
     private bool followRock;
 
-    private void Start()
+    private void Awake()
     {
         if (!instance)
         {

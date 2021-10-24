@@ -1435,7 +1435,7 @@ MonoBehaviour:
   aiming: {fileID: 1168249397}
   result: {fileID: 846575875}
   push: {fileID: 1901440389}
-  followLerp: 0.01
+  followLerp: 0.03
   xOffset: 5.5
 --- !u!4 &76585105047704711
 Transform:
