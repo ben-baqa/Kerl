@@ -14,6 +14,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Red
     second: {fileID: 2100000, guid: 21be27e273dbcd143a1661647dcd01d1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: rim
+    second: {fileID: 2100000, guid: 212125f61ab984e41a8acbb458b5d7f8, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

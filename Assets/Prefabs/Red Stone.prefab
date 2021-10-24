@@ -60,7 +60,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ff51dfaa0e01ae244a21278ca0d9bd88, type: 2}
+  - {fileID: 2100000, guid: ed5f8df8fb3fd984f80e0364f28bd179, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -231,6 +231,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 893ff819e4da0a54ebcc144fec4ca119, type: 3}
   - {fileID: 8300000, guid: 144ea49ea952d7e4a9125761fafcd55a, type: 3}
   skip: {fileID: 0}
+  frictionMultiplier: 1
+  blue: 0
 --- !u!114 &945196578299428082
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -400,7 +402,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ff51dfaa0e01ae244a21278ca0d9bd88, type: 2}
+  - {fileID: 2100000, guid: ed5f8df8fb3fd984f80e0364f28bd179, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -464,7 +466,7 @@ Light:
   serializedVersion: 10
   m_Type: 2
   m_Shape: 0
-  m_Color: {r: 1, g: 0.99471766, b: 0.6194968, a: 1}
+  m_Color: {r: 0.9433962, g: 0.2729322, b: 0.33080244, a: 1}
   m_Intensity: 0.1
   m_Range: 2
   m_SpotAngle: 30
@@ -575,7 +577,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ff51dfaa0e01ae244a21278ca0d9bd88, type: 2}
+  - {fileID: 2100000, guid: ed5f8df8fb3fd984f80e0364f28bd179, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -694,7 +696,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ff51dfaa0e01ae244a21278ca0d9bd88, type: 2}
+  - {fileID: 2100000, guid: ed5f8df8fb3fd984f80e0364f28bd179, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -758,7 +760,7 @@ Light:
   serializedVersion: 10
   m_Type: 2
   m_Shape: 0
-  m_Color: {r: 1, g: 0.99471766, b: 0.6194968, a: 1}
+  m_Color: {r: 0.9433962, g: 0.2729322, b: 0.33080244, a: 1}
   m_Intensity: 0.1
   m_Range: 2
   m_SpotAngle: 30
@@ -851,7 +853,7 @@ Light:
   serializedVersion: 10
   m_Type: 2
   m_Shape: 0
-  m_Color: {r: 1, g: 0.99471766, b: 0.6194968, a: 1}
+  m_Color: {r: 0.9433962, g: 0.2729322, b: 0.33080244, a: 1}
   m_Intensity: 0.1
   m_Range: 2
   m_SpotAngle: 30
@@ -944,7 +946,7 @@ Light:
   serializedVersion: 10
   m_Type: 2
   m_Shape: 0
-  m_Color: {r: 1, g: 0.99471766, b: 0.6194968, a: 1}
+  m_Color: {r: 0.9433962, g: 0.2729322, b: 0.33080244, a: 1}
   m_Intensity: 0.1
   m_Range: 2
   m_SpotAngle: 30
@@ -1037,7 +1039,7 @@ Light:
   serializedVersion: 10
   m_Type: 2
   m_Shape: 0
-  m_Color: {r: 1, g: 0.99471766, b: 0.6194968, a: 1}
+  m_Color: {r: 0.9433962, g: 0.2729322, b: 0.33080244, a: 1}
   m_Intensity: 0.1
   m_Range: 2
   m_SpotAngle: 30
@@ -1130,7 +1132,7 @@ Light:
   serializedVersion: 10
   m_Type: 2
   m_Shape: 0
-  m_Color: {r: 1, g: 0.99471766, b: 0.6194968, a: 1}
+  m_Color: {r: 0.9433962, g: 0.2729322, b: 0.33080244, a: 1}
   m_Intensity: 0.1
   m_Range: 2
   m_SpotAngle: 30
@@ -6045,7 +6047,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ff51dfaa0e01ae244a21278ca0d9bd88, type: 2}
+  - {fileID: 2100000, guid: ed5f8df8fb3fd984f80e0364f28bd179, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -6127,7 +6129,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ff51dfaa0e01ae244a21278ca0d9bd88, type: 2}
+  - {fileID: 2100000, guid: ed5f8df8fb3fd984f80e0364f28bd179, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -6209,7 +6211,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ff51dfaa0e01ae244a21278ca0d9bd88, type: 2}
+  - {fileID: 2100000, guid: ed5f8df8fb3fd984f80e0364f28bd179, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -6273,7 +6275,7 @@ Light:
   serializedVersion: 10
   m_Type: 2
   m_Shape: 0
-  m_Color: {r: 1, g: 0.99471766, b: 0.6194968, a: 1}
+  m_Color: {r: 0.9433962, g: 0.2729322, b: 0.33080244, a: 1}
   m_Intensity: 0.1
   m_Range: 2
   m_SpotAngle: 30

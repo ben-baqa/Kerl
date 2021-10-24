@@ -2094,7 +2094,7 @@ MonoBehaviour:
   aiming: {fileID: 1168249397}
   result: {fileID: 846575875}
   push: {fileID: 1901440389}
-  followLerp: 0.1
+  followLerp: 0.07
   xOffset: 5.5
   zOffset: 2
 --- !u!82 &2097564660
@@ -3601,6 +3601,7 @@ MeshRenderer:
   m_Materials:
   - {fileID: 2100000, guid: 21be27e273dbcd143a1661647dcd01d1, type: 2}
   - {fileID: 2100000, guid: 2f818906c8019af458521ce7017bcfc3, type: 2}
+  - {fileID: 2100000, guid: 212125f61ab984e41a8acbb458b5d7f8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4092,7 +4093,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6099858603685377581}
-  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0.37, z: 0}
   m_LocalScale: {x: 670.56305, y: 670.563, z: 670.563}
   m_Children: []

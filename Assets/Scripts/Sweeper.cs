@@ -47,7 +47,9 @@ public class Sweeper : MonoBehaviour
     void FixedUpdate()
     {
         frictionMultipler += decay / 50;
-        barDisplay.gameObject.SetActive(followState == Follow.rock);
+        bool sliding = followState == Follow.rock;
+        barDisplay.gameObject.SetActive(sliding);
+        anim.SetBool("sliding", sliding);
 
         switch (followState)
         {
