@@ -24,6 +24,7 @@ public class CurveLine : MonoBehaviour
 
     public void Generate(float angle)
     {
+        line.enabled = true;
         angle *= Mathf.Deg2Rad;
         float d = distance / 2;
 
@@ -67,6 +68,11 @@ public class CurveLine : MonoBehaviour
         //Debug.DrawLine(centre, end, Color.black, Time.deltaTime);
         //c = centre;
         //r = radius;
+    }
+
+    public void Hide()
+    {
+        line.enabled = false;
     }
 
     //private void OnDrawGizmos()
