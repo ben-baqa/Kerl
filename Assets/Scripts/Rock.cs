@@ -22,6 +22,11 @@ public class Rock : MonoBehaviour
     [HideInInspector]
     public Skipper skip;
 
+    [HideInInspector]
+    public float frictionMultiplier = 1;
+
+    public bool blue;
+
     private Rigidbody rb;
     private AudioSource sfx;
     private ParticleSystem particles;
@@ -41,7 +46,7 @@ public class Rock : MonoBehaviour
     {
         rb.AddForce(rb.angularVelocity.y * Vector3.right * spinPush);
 
-        rb.velocity *= (1 - friction);
+        rb.velocity *= (1 - (friction * frictionMultiplier));
         rb.angularVelocity *= (1 - radialFriction);
 
         if(rb.velocity.magnitude < slowDownThreshold)
@@ -81,6 +86,7 @@ public class Rock : MonoBehaviour
     {
         if (thrown)
             return;
+
         thrown = true;
         this.spin = spin;
 
@@ -92,6 +98,11 @@ public class Rock : MonoBehaviour
 
         float r = Mathf.Abs(Mathf.Pow(ratio, 3));
         rb.AddTorque(Vector3.up * spin * spinForce * r, ForceMode.Impulse);
+    }
+
+    public void Score(bool scoring)
+    {
+        transform.GetChild(1).gameObject.SetActive(scoring);
     }
 
     private void OnCollisionEnter(Collision collision)

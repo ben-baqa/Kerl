@@ -65,7 +65,7 @@ public class Skipper : MonoBehaviour
         throwCount++;
         anim.SetTrigger("push");
         CameraPositions.OnPush(rock.transform);
-        sweeper.OnThrow(rock.transform);
+        sweeper.OnThrow(rock);
     }
 
     private float Angle()

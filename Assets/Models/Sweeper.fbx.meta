@@ -45,6 +45,9 @@ ModelImporter:
   - first:
       74: 7154023144947432812
     second: Broom|StoneAction
+  - first:
+      74: 1821642847177498169
+    second: Brush
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -123,11 +126,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Sweep
-      takeName: Sweep
+      name: Brush
+      takeName: Brush
       internalID: 0
       firstFrame: 0
-      lastFrame: 57
+      lastFrame: 39
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -221,7 +224,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0

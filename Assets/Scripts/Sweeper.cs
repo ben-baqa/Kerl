@@ -6,16 +6,24 @@ public class Sweeper : MonoBehaviour
 {
     public Vector3 offsetFromRock, resultPosition;
 
-    public float followLerp, lerpLerp, normalLerp, rotLerp,
+    [Header("Sweeping Physics")]
+    public float frictionMultipler = 1;
+    public float decay = .01f, sweepValue = .1f;
+
+    [Header("body movment")]
+    public float followLerp;
+    public float lerpLerp, normalLerp, rotLerp,
         broomSoundDelay, brushRot, startRot, resultRot;
+
 
     public AudioSource broomSfx;
 
     private Animator anim;
     private AudioSource sfx;
-    private SkinnedMeshRenderer[] rend;
+    private SkinnedMeshRenderer rend;
     private TurnManager input;
-    private Transform rock;
+    private CurlingBar barDisplay;
+    private Rock rock;
 
     private Vector3 startPosition;
 
@@ -23,12 +31,14 @@ public class Sweeper : MonoBehaviour
     private Follow followState = Follow.start;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         anim = GetComponent<Animator>();
         sfx = GetComponent<AudioSource>();
-        rend = GetComponentsInChildren<SkinnedMeshRenderer>();
+        rend = GetComponentInChildren<SkinnedMeshRenderer>();
         input = FindObjectOfType<TurnManager>();
+
+        barDisplay = FindObjectOfType<CurlingBar>();
 
         startPosition = transform.position;
     }
@@ -36,14 +46,18 @@ public class Sweeper : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        frictionMultipler += decay / 50;
+        barDisplay.gameObject.SetActive(followState == Follow.rock);
+
         switch (followState)
         {
             case Follow.rock:
                 transform.position = Vector3.Lerp(transform.position,
-                    rock.position + offsetFromRock, followLerp);
+                    rock.transform.position + offsetFromRock, followLerp);
                 followLerp = Mathf.Lerp(followLerp, 1, lerpLerp);
                 transform.eulerAngles = Vector3.Lerp(transform.eulerAngles,
                     Vector3.up * brushRot, followLerp);
+                PredictLand();
                 break;
             case Follow.result:
                 transform.position = Vector3.Lerp(transform.position,
@@ -58,6 +72,7 @@ public class Sweeper : MonoBehaviour
         {
             sfx.Play();
             anim.SetTrigger("sweep");
+            frictionMultipler -= sweepValue;
             StartCoroutine(Brush());
         }
     }
@@ -68,11 +83,12 @@ public class Sweeper : MonoBehaviour
         broomSfx.Play();
     }
 
-    public void OnThrow(Transform t)
+    public void OnThrow(Rock r)
     {
-        rock = t;
+        rock = r;
         followState = Follow.rock;
         followLerp = 0;
+        frictionMultipler = 1;
     }
 
     public void OnResult()
@@ -86,9 +102,48 @@ public class Sweeper : MonoBehaviour
         followState = Follow.start;
         transform.position = startPosition;
         transform.eulerAngles = Vector3.up * startRot;
-        Material[] ar = rend[0].materials;
+
+        Material[] ar = rend.materials;
         ar[1] = mat;
-        rend[0].materials = ar;
-        rend[1].material = mat;
+        ar[3] = mat;
+        rend.materials = ar;
+    }
+
+    // predict landing zone, 1 = 82, .75 = 75, 0 = 54
+    public void PredictLand()
+    {
+        Rigidbody rb = rock.GetComponent<Rigidbody>();
+
+        rock.frictionMultiplier = frictionMultipler;
+
+        Vector3 pos = rb.position;
+        Vector3 vel = rb.velocity;
+        float radVel = rb.angularVelocity.y,
+            friction = rock.friction * frictionMultipler;
+
+        int safetyCount = 0;
+
+        while(vel.magnitude > rock.stopThreshold)
+        {
+            pos += vel / 50;
+            vel += Vector3.right * radVel * rock.spinForce / 50;
+
+            vel *= (1 - friction);
+            radVel -= radVel * rb.angularDrag;
+
+            if(vel.magnitude < rock.slowDownThreshold)
+            {
+                vel = Vector3.Lerp(vel, Vector3.zero, rock.slowDownLerp);
+            }
+
+            if (safetyCount++ > 1000)
+            {
+                print("Yipes! " + safetyCount + " was not enough!");
+                break;
+            }
+        }
+
+        float v = Mathf.Clamp01((pos.z - 54) / 28);
+        barDisplay.progress = v;
     }
 }
