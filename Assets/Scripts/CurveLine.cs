@@ -11,6 +11,9 @@ public class CurveLine : MonoBehaviour
 
     private Vector3 start, end;
 
+    //private Vector3 c;
+    //private float r;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -22,30 +25,52 @@ public class CurveLine : MonoBehaviour
     public void Generate(float angle)
     {
         angle *= Mathf.Deg2Rad;
-        float d = distance * 2;
+        float d = distance / 2;
+
         Vector3 centre = start +
-            Vector3.right * d * Mathf.Cos(angle) +
-            Vector3.forward * d * Mathf.Sin(angle);
-        print(centre);
+            Vector3.right * d / Mathf.Tan(angle) +
+            Vector3.forward * d;
+
         float radius = (centre - start).magnitude;
 
         Vector3[] positions = new Vector3[segments + 1];
         positions[0] = start;
         positions[segments] = end;
 
+        bool flip = false;
+        if (angle < 0)
+        {
+            flip = true;
+            angle *= -1;
+        }
+
         float diff = angle * 2 / segments;
         float a = angle - diff;
         int index = 1;
         while(a > -angle)
         {
-            positions[index] = centre -
+            positions[index] = centre + (flip? 1: -1) *
                 radius * Vector3.right * Mathf.Cos(a) -
                 radius * Vector3.forward * Mathf.Sin(a);
 
             a -= diff;
             index++;
         }
+        //string s = "";
+        //foreach (Vector3 v in positions)
+        //    s += v + ",  ";
+        //print(s);
 
         line.SetPositions(positions);
+
+        //Debug.DrawLine(centre, start, Color.black, Time.deltaTime);
+        //Debug.DrawLine(centre, end, Color.black, Time.deltaTime);
+        //c = centre;
+        //r = radius;
     }
+
+    //private void OnDrawGizmos()
+    //{
+    //    Gizmos.DrawWireSphere(c, r);
+    //}
 }
