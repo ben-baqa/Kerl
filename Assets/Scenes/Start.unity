@@ -548,7 +548,7 @@ MonoBehaviour:
   - {fileID: 1476780089}
   - {fileID: 777827300}
   - {fileID: 204488100}
-  inputProxy: {fileID: 0}
+  max_timer: 10
 --- !u!1 &737434817
 GameObject:
   m_ObjectHideFlags: 0
@@ -916,6 +916,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a649f28541bdf414d9896a3cbc2814aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  p1: 0
+  p2: 0
+  p3: 0
+  p4: 0
   keyboardDebug: 1
 --- !u!4 &1417552395
 Transform:
