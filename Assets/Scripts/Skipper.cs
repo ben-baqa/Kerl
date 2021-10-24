@@ -18,10 +18,11 @@ public class Skipper : MonoBehaviour
     private TurnManager input;
     private AudioSource sfx;
     private Sweeper sweeper;
+    private RockPile rockPile;
 
     private float n, angle;
     private bool blueTurn = true;
-    private int throwCount = 0;
+    private int throwCount = 1;
 
     // Start is called before the first frame update
     void Start()
@@ -31,6 +32,7 @@ public class Skipper : MonoBehaviour
         rend = GetComponentInChildren<SkinnedMeshRenderer>();
         input = FindObjectOfType<TurnManager>();
         sweeper = FindObjectOfType<Sweeper>();
+        rockPile = FindObjectOfType<RockPile>();
         sfx = GetComponent<AudioSource>();
         StartTurn(false);
     }
@@ -103,6 +105,8 @@ public class Skipper : MonoBehaviour
             sweeper.OnTurnStart(redMat);
         }
         blueTurn = !blueTurn;
+
+        rockPile.OnTurnStart();
 
         if (b)
             input.OnTurn();

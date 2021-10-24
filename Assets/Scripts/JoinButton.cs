@@ -1,0 +1,44 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class JoinButton : MonoBehaviour
+{
+    public Sprite joined, ready;
+
+    public float effectSize = 2, bumpSize = 1.2f, sizeLerp = .1f;
+
+    private Image rend;
+    private float size = 1;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        rend = GetComponent<Image>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        rend.transform.localScale = Vector3.one * size;
+
+        size = Mathf.Lerp(size, .99f, sizeLerp);
+        if(size < 1)
+        {
+            size = bumpSize;
+        }
+    }
+
+    public void Join()
+    {
+        rend.sprite = joined;
+        size = effectSize;
+    }
+
+    public void Ready()
+    {
+        rend.sprite = ready;
+        size = effectSize;
+    }
+}
