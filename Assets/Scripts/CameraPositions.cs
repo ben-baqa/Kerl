@@ -8,7 +8,7 @@ public class CameraPositions : MonoBehaviour
 
     public Transform cam, aiming, result, push;
 
-    public float followLerp = .05f, xOffset = 5.5f;
+    public float followLerp = .05f, xOffset = 5.5f, zOffset;
 
     private Transform rock;
     private Vector3 pos = Vector3.zero;
@@ -30,7 +30,7 @@ public class CameraPositions : MonoBehaviour
     {
         if (followRock)
         {
-            pos.z = Mathf.Lerp(pos.z, rock.position.z, followLerp);
+            pos.z = Mathf.Lerp(pos.z, rock.position.z + zOffset, followLerp);
             pos.x = rock.position.x + push.position.x;
             cam.position = pos;
         }
