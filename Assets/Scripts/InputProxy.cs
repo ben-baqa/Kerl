@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class InputProxy : MonoBehaviour
 {
-    public static bool p1, p2, p3, p4;
+    public bool p1, p2, p3, p4;
     public bool keyboardDebug;
 
     private void Start()

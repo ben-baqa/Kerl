@@ -11,7 +11,7 @@ public class Rock : MonoBehaviour
     [Header("Movement")]
     public float friction;
     public float radialFriction, stopThreshold, slowDownThreshold,
-        slowDownLerp, bounce = 1.5f;
+        slowDownLerp, bounce = 1.5f, particleMultiplier;
 
     [Space(10)]
     public float resultViewThreshold = 75;
@@ -24,8 +24,9 @@ public class Rock : MonoBehaviour
 
     private Rigidbody rb;
     private AudioSource sfx;
+    private ParticleSystem particles;
 
-    private float spin = 0;
+    private float spin = 0, particleCount;
     private bool thrown, turnEnded, resultsViewed;
 
     // Start is called before the first frame update
@@ -33,6 +34,7 @@ public class Rock : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         sfx = GetComponent<AudioSource>();
+        particles = GetComponentInChildren<ParticleSystem>();
     }
 
     private void FixedUpdate()
@@ -64,6 +66,14 @@ public class Rock : MonoBehaviour
         {
             resultsViewed = true;
             CameraPositions.OnResult();
+            FindObjectOfType<Sweeper>().OnResult();
+        }
+
+        particleCount += (rb.velocity.magnitude * particleMultiplier);
+        if (particleCount > 1)
+        {
+            particles.Emit((int)particleCount);
+            particleCount %= 1;
         }
     }
 
@@ -82,12 +92,6 @@ public class Rock : MonoBehaviour
 
         float r = Mathf.Abs(Mathf.Pow(ratio, 3));
         rb.AddTorque(Vector3.up * spin * spinForce * r, ForceMode.Impulse);
-    }
-
-    public float Sigmoid(float value)
-    {
-        float k = Mathf.Exp(value);
-        return k / (1.0f + k);
     }
 
     private void OnCollisionEnter(Collision collision)

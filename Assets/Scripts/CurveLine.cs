@@ -5,11 +5,15 @@ using UnityEngine;
 public class CurveLine : MonoBehaviour
 {
     public int segments = 10;
-    public float distance = 35;
+    public float distance = 35, bigSize, shrinkLerp;
+
+    public Gradient regularGradient, selectedGradient;
 
     private LineRenderer line;
 
     private Vector3 start, end;
+
+    private bool hide = false;
 
     //private Vector3 c;
     //private float r;
@@ -22,9 +26,14 @@ public class CurveLine : MonoBehaviour
         end = Vector3.forward * distance;
     }
 
+    private void FixedUpdate()
+    {
+        if (hide)
+            line.widthMultiplier = Mathf.Lerp(line.widthMultiplier, 0, shrinkLerp);
+    }
+
     public void Generate(float angle)
     {
-        line.enabled = true;
         angle *= Mathf.Deg2Rad;
         float d = distance / 2;
 
@@ -63,6 +72,9 @@ public class CurveLine : MonoBehaviour
         //print(s);
 
         line.SetPositions(positions);
+        line.colorGradient = regularGradient;
+        line.widthMultiplier = 1;
+        hide = false;
 
         //Debug.DrawLine(centre, start, Color.black, Time.deltaTime);
         //Debug.DrawLine(centre, end, Color.black, Time.deltaTime);
@@ -70,9 +82,11 @@ public class CurveLine : MonoBehaviour
         //r = radius;
     }
 
-    public void Hide()
+    public void OnPush()
     {
-        line.enabled = false;
+        line.widthMultiplier = bigSize;
+        line.colorGradient = selectedGradient;
+        hide = true;
     }
 
     //private void OnDrawGizmos()
