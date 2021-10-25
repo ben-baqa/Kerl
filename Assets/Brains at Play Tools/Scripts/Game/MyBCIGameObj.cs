@@ -41,9 +41,9 @@ public class MyBCIGameObj : MonoBehaviour, IBCIInteractable
                 + " and focus data: " + BCIDataListener.CurrentData.focus);
         }
 
-        if (BCIDataListener.CurrentData.blink > 0.1f)
-        {
-            proxy.OnInput(true);
-        }
+        //if (BCIDataListener.CurrentData.blink > 0.1f)
+        //{
+        //    proxy.OnInput(true);
+        //}
     }
 }

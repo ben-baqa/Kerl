@@ -30,4 +30,9 @@ public class InputProxy : MonoBehaviour
         bcip3 = false;
         bcip4 = false;
     }
+
+    public void SetP1(bool b) { bcip1 = b; }
+    public void SetP2(bool b) { bcip2 = b; }
+    public void SetP3(bool b) { bcip3 = b; }
+    public void SetP4(bool b) { bcip4 = b; }
 }

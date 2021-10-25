@@ -2,6 +2,10 @@ public class BCIDataListener : Singleton<BCIDataListener>
 {
     public static EEGData CurrentData;
 
+    public float blinkThreshold = .1f;
+
+    private InputProxy proxy;
+
 
     // Start is called before the first frame update
     void Start()
@@ -17,6 +21,7 @@ public class BCIDataListener : Singleton<BCIDataListener>
             o1 = 0.0f
         };
 
+        proxy = GetComponent<InputProxy>();
     }
 
     // These are called by the web Applet
@@ -55,6 +60,24 @@ public class BCIDataListener : Singleton<BCIDataListener>
     public void UpdateBlink(float blink)
     {
         CurrentData.blink = blink;
+    }
+
+    public void Player1Update(float blink)
+    {
+        proxy.SetP1(blink > blinkThreshold);
+    }
+
+    public void Player2Update(float blink)
+    {
+        proxy.SetP2(blink > blinkThreshold);
+    }
+    public void Player3Update(float blink)
+    {
+        proxy.SetP3(blink > blinkThreshold);
+    }
+    public void Player4Update(float blink)
+    {
+        proxy.SetP4(blink > blinkThreshold);
     }
 
     public void UpdateO1(float o1)
