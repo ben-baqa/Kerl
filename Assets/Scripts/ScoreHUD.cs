@@ -14,6 +14,8 @@ public class ScoreHUD : MonoBehaviour
 
     public float sizeDelta = .2f, sizeFreq = 5;
 
+    public AudioSource blueWinNoise, redWinNoise, appluase, mainMusic;
+
     private Text player, bScore, rScore;
 
     private float size = 1;
@@ -116,9 +118,24 @@ public class ScoreHUD : MonoBehaviour
         bScoreOutline.text = bScore.text = "" + Mathf.Abs(score);
 
         if (score > 0)
+        {
             endText.text = "Purple\nTeam\nWins!";
-        else
+            blueWinNoise.Play();
+            appluase.Play();
+        }
+        else if(score < 0)
+        {
             endText.text = "Yellow\nTeam\nWins!";
+            redWinNoise.Play();
+            if (SelectCharacter.player_count > 2)
+                appluase.Play();
+        }
+        else
+        {
+            endText.text = "A\nTie!";
+            bScoreOutline.color = new Color(0, 1, 1);
+        }
+        mainMusic.Stop();
         endCanvas.enabled = true;
         ended = true;
     }

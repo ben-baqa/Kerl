@@ -12,6 +12,7 @@ public class TurnManager : MonoBehaviour
 
     private InputProxy proxy;
     private ScoreHUD score;
+    private AIScript ai;
 
     private bool blueTurn = true, skipper = true;
 
@@ -20,6 +21,7 @@ public class TurnManager : MonoBehaviour
     {
         proxy = GetComponent<InputProxy>();
         score = FindObjectOfType<ScoreHUD>();
+        ai = GetComponent<AIScript>();
         //playerCount = Mathf.Clamp(playerCount, 1, 4);
         playerCount = Mathf.Clamp(SelectCharacter.player_count, 1, 4);
     }
@@ -62,6 +64,7 @@ public class TurnManager : MonoBehaviour
                 turn = skipper ? Turn.p3 : Turn.p4;
         }
         score.UpdateTurn(turn);
+        ai.StartTimer();
     }
 
     public void OnThrow()
@@ -91,7 +94,7 @@ public class TurnManager : MonoBehaviour
             case Turn.p4:
                 return proxy.p4;
             case Turn.com:
-                return true;
+                return ai.brushing;
         }
         return false;
     }

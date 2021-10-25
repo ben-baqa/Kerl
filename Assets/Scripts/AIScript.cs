@@ -6,39 +6,44 @@ public class AIScript : MonoBehaviour
 {
     public bool brushing;
 
-    private bool started;
+    private bool throwing;
     private float timer;
     private Skipper skipper;
     private CurlingBar bar;
 
     private void Start()
     {
-        started = false;
+        throwing = false;
         brushing = false;
+        skipper = FindObjectOfType<Skipper>();
+        bar = FindObjectOfType<CurlingBar>(true);
     }
 
-    void StartTimer() {
-        skipper = FindObjectOfType<Skipper>();
+    public void StartTimer() {
         timer = Random.Range(0.0f, skipper.period);
-        bar = FindObjectOfType<CurlingBar>();
-        started = true;
+        throwing = true;
     }
 
     void Update()
     {
         brushing = false;
-        if (started)
+        if (throwing)
         {
             if (timer <= 0)
             {
-                if (bar.progress < 0.75f)
-                {
-                    brushing = true;
-                }
+                brushing = true;
+                throwing = false;
             }
             else
             {
                 timer -= Time.deltaTime;
+            }
+        }
+        else
+        {
+            if (bar.progress < 0.75f)
+            {
+                brushing = true;
             }
         }
     }
