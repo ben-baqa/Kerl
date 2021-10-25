@@ -4,48 +4,30 @@ using UnityEngine;
 
 public class InputProxy : MonoBehaviour
 {
-    public bool p1, p2, p3, p4;
-    public bool enableNumpadInput;
+    public bool p1 { get { return bcip1 || nump1; } }
+    public bool p2 { get { return bcip2 || nump2; } }
+    public bool p3 { get { return bcip3 || nump3; } }
+    public bool p4 { get { return bcip4 || nump4; } }
 
-    private bool inputReceived = false;
+    public bool enableNumpadInput = true;
 
-    private void Start()
-    {
-//#if !UNITY_EDITOR
-//        keyboardDebug = false;
-//#endif
+    private bool bcip1, bcip2, bcip3, bcip4,
+        nump1, nump2, nump3, nump4;
 
-    }
 
     private void Update()
     {
-        if (enableNumpadInput)
-        {
-            if (inputReceived)
-            {
-                p1 |= Input.GetKey(KeyCode.Keypad1);
-                p2 |= Input.GetKey(KeyCode.Keypad2);
-                p3 |= Input.GetKey(KeyCode.Keypad3);
-                p4 |= Input.GetKey(KeyCode.Keypad4);
-            }
-            else
-            {
-                p1 = Input.GetKey(KeyCode.Keypad1);
-                p2 = Input.GetKey(KeyCode.Keypad2);
-                p3 = Input.GetKey(KeyCode.Keypad3);
-                p4 = Input.GetKey(KeyCode.Keypad4);
-            }
-        }
+        nump1 = Input.GetKey(KeyCode.Keypad1);
+        nump2 = Input.GetKey(KeyCode.Keypad2);
+        nump3 = Input.GetKey(KeyCode.Keypad3);
+        nump4 = Input.GetKey(KeyCode.Keypad4);
     }
 
     public void OnInput(bool P1)
     {
-        inputReceived = true;
-        //if (keyboardDebug)
-        //    return;
-        p1 = P1;
-        p2 = false;
-        p3 = false;
-        p4 = false;
+        bcip1 = P1;
+        bcip2 = false;
+        bcip3 = false;
+        bcip4 = false;
     }
 }
