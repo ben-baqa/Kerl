@@ -19,6 +19,7 @@ public class SelectCharacter : MonoBehaviour
     public float max_timer;
 
     private InputProxy inputProxy;
+    private AudioSource sfx;
     private PlayerState[] player_state;
 
     public static int player_count;
@@ -32,6 +33,7 @@ public class SelectCharacter : MonoBehaviour
         player_state = new PlayerState[] { PlayerState.NOT_JOINED, PlayerState.NOT_JOINED, PlayerState.NOT_JOINED, PlayerState.NOT_JOINED };
         last_input_state = new bool[] { true, true, true, true };
         inputProxy = FindObjectOfType<InputProxy>();
+        sfx = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -77,10 +79,12 @@ public class SelectCharacter : MonoBehaviour
                 // next scene
                 SceneManager.LoadScene("Game");
             }
+            else if (countdown_timer <= 1 && !sfx.isPlaying)
+                sfx.Play();
             else
             {
                 countdown_timer -= Time.deltaTime;
-                timer.text = "" + (int)countdown_timer;
+                timer.text = "" + ((int)countdown_timer + 1);
             }
         }
         else if (countdown_timer != max_timer)

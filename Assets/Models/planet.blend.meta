@@ -1,87 +1,14 @@
 fileFormatVersion: 2
-guid: 98acf1163e377ce4c8690a9aed07b739
+guid: f06728c95ac16744abdf03244259d69c
 ModelImporter:
   serializedVersion: 20200
-  internalIDToNameTable:
-  - first:
-      74: 1602679686839023770
-    second: Satellite|Celebrate
-  - first:
-      74: 926220081493098113
-    second: Satellite|Cube.001Action
-  - first:
-      74: 6050290498178926730
-    second: Satellite|Cube.002Action
-  - first:
-      74: 3694526920719740495
-    second: Satellite|EndPush
-  - first:
-      74: 8335560738624760962
-    second: Satellite|Idle.001
-  - first:
-      74: -4150660518351542020
-    second: Satellite|Loss
-  - first:
-      74: 8729092640809327680
-    second: Satellite|Push
-  - first:
-      74: 2981722850636425844
-    second: Satellite|StoneAction
-  - first:
-      74: -7410403374504387707
-    second: Satellite|Satellite|Satellite|Celebrate|Satellite|Celebrate
-  - first:
-      74: 4574831737385368257
-    second: Satellite|Satellite|Satellite|Cube.001Action|Satellite|Cube.001Action
-  - first:
-      74: 829820339725809986
-    second: Satellite|Satellite|Satellite|Cube.002Action|Satellite|Cube.002Action
-  - first:
-      74: 8552135235937884430
-    second: Satellite|Satellite|Satellite|EndPush|Satellite|EndPush
-  - first:
-      74: -6940758745539478926
-    second: Satellite|Satellite|Satellite|Idle.001|Satellite|Idle.001
-  - first:
-      74: -3133425139404151517
-    second: Satellite|Satellite|Satellite|Loss|Satellite|Loss
-  - first:
-      74: -2953729367769688943
-    second: Satellite|Satellite|Satellite|Push|Satellite|Push
-  - first:
-      74: 4941232434058992221
-    second: Satellite|Satellite|Satellite|StoneAction|Satellite|StoneAction
+  internalIDToNameTable: []
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Base
-    second: {fileID: 2100000, guid: f8f4b9940dd47ec4db018f6af6cdc805, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Black
-    second: {fileID: 2100000, guid: 591debc0020c16e4290c5682ac6cda75, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Buttons
-    second: {fileID: 2100000, guid: 24436188bd39f3649b9c86979a415522, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Material
-    second: {fileID: 2100000, guid: 2edcebb1920b366419030ebd6f017ce7, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: rail
-    second: {fileID: 2100000, guid: 188db476e9b628e47bae5c20cca6219d, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: solarPanel
-    second: {fileID: 2100000, guid: 0dcfb9760cb28134ebed2702bbcddc1d, type: 2}
+      name: Material.001
+    second: {fileID: 2100000, guid: 5cd1e25b840e48f4e919a7eb0d112fcb, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

@@ -10,12 +10,14 @@ public class JoinButton : MonoBehaviour
     public float effectSize = 2, bumpSize = 1.2f, sizeLerp = .1f;
 
     private Image rend;
+    private AudioSource[] sfx;
     private float size = 1;
 
     // Start is called before the first frame update
     void Start()
     {
         rend = GetComponent<Image>();
+        sfx = GetComponentsInChildren<AudioSource>();
     }
 
     // Update is called once per frame
@@ -34,11 +36,13 @@ public class JoinButton : MonoBehaviour
     {
         rend.sprite = joined;
         size = effectSize;
+        sfx[0].Play();
     }
 
     public void Ready()
     {
         rend.sprite = ready;
         size = effectSize;
+        sfx[1].Play();
     }
 }

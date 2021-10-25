@@ -19,7 +19,7 @@ public class TurnManager : MonoBehaviour
     {
         proxy = GetComponent<InputProxy>();
         //playerCount = Mathf.Clamp(playerCount, 1, 4);
-        playerCount = SelectCharacter.player_count;
+        playerCount = Mathf.Clamp(SelectCharacter.player_count, 1, 4);
     }
 
     // Update is called once per frame
