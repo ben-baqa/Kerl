@@ -17,7 +17,7 @@ public class ScoreHUD : MonoBehaviour
     private Text player, bScore, rScore;
 
     private float size = 1;
-    private int score;
+    private bool ended = false;
 
     // Start is called before the first frame update
     void Start()
@@ -86,6 +86,8 @@ public class ScoreHUD : MonoBehaviour
 
     public void UpdateScore(int score)
     {
+        if (ended)
+            return;
         if(score > 0)
         {
             bScoreOutline.text = bScore.text = "" + score;
@@ -96,19 +98,28 @@ public class ScoreHUD : MonoBehaviour
             bScoreOutline.text = bScore.text = "0";
             rScoreOutline.text = rScore.text = "" + -score;
         }
-        this.score = score;
     }
 
     public void EndGame()
     {
+        StartCoroutine(ShowEndCard());
+    }
+
+    private IEnumerator ShowEndCard()
+    {
+        yield return new WaitForSeconds(3);
+        float score = FindObjectOfType<Scorekeeper>().score;
+
         bScoreOutline.gameObject.SetActive(true);
         bScoreOutline.rectTransform.localPosition = endScorePos;
         bScore.color = score > 0 ? blue : red;
         bScoreOutline.text = bScore.text = "" + Mathf.Abs(score);
+
         if (score > 0)
             endText.text = "Purple\nTeam\nWins!";
         else
             endText.text = "Yellow\nTeam\nWins!";
         endCanvas.enabled = true;
+        ended = true;
     }
 }

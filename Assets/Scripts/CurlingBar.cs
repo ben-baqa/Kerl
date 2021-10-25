@@ -13,16 +13,25 @@ public class CurlingBar : MonoBehaviour
 
     private Slider slider;
     private Image image;
+    private AudioSource twinkleNoise;
 
     void Start()
     {
         slider = gameObject.GetComponent<Slider>();
         image = fill.GetComponent<Image>();
+        twinkleNoise = GetComponent<AudioSource>();
+    }
+
+    private void OnEnable()
+    {
+        if (twinkleNoise)
+            twinkleNoise.Play();
     }
 
     void Update()
     {
         slider.value = progress;
         image.color = gradient.Evaluate(progress);
+        twinkleNoise.volume = 1 - Mathf.Pow(4 * progress - 3, 2);
     }
 }

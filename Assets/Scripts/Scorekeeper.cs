@@ -8,6 +8,7 @@ public class Scorekeeper : MonoBehaviour
 {
     //current score of game, blue is pos, red is neg
     public int score;
+    public float minDistance = 6.75f;
 
     private ScoreHUD display;
 
@@ -33,13 +34,20 @@ public class Scorekeeper : MonoBehaviour
         rocks = rocks.OrderBy(x => (x.transform.position -
             transform.position).magnitude).ToArray();
 
+        score = 0;
         bool blue = rocks[0].blue;
-        score = 1;
-        for(int i = 1; i < rocks.Length; i++)
+        if (Vector3.Distance(rocks[0].transform.position,
+                transform.position) < minDistance)
         {
-            if (rocks[i].blue != blue)
-                break;
-            score++;
+            blue = rocks[0].blue;
+            score = 1;
+            for (int i = 1; i < rocks.Length; i++)
+            {
+                if (rocks[i].blue != blue || Vector3.Distance(
+                    rocks[i].transform.position, transform.position) > minDistance)
+                    break;
+                score++;
+            }
         }
 
         for (int i = 0; i < rocks.Length; i++)

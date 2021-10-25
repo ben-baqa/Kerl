@@ -11,6 +11,10 @@ public class Skipper : MonoBehaviour
     public GameObject blueRock, redRock;
     public Material redMat, blueMat;
 
+    public AudioSource throwSfx, turnStartSound;
+    public AudioClip blueTurnSound, redTurnSound;
+    public AudioClip[] throwSounds;
+
     private Animator anim;
     private CurveLine line;
     private SkinnedMeshRenderer rend;
@@ -20,6 +24,7 @@ public class Skipper : MonoBehaviour
     private Sweeper sweeper;
     private RockPile rockPile;
     private ScoreHUD score;
+    private LoadSceneOnInput endLoader;
 
     private float n, angle;
     private bool blueTurn = true;
@@ -36,6 +41,8 @@ public class Skipper : MonoBehaviour
         rockPile = FindObjectOfType<RockPile>();
         score = FindObjectOfType<ScoreHUD>();
         sfx = GetComponent<AudioSource>();
+        endLoader = GetComponent<LoadSceneOnInput>();
+        endLoader.enabled = false;
         StartTurn(false);
     }
 
@@ -58,6 +65,8 @@ public class Skipper : MonoBehaviour
             line.OnPush();
             input.OnThrow();
             sfx.Play();
+            throwSfx.clip = throwSounds[Random.Range(0, throwSounds.Length)];
+            throwSfx.Play();
             StartCoroutine(Throw());
         }
     }
@@ -90,6 +99,7 @@ public class Skipper : MonoBehaviour
         if (throwCount > rocks * 2)
         {
             score.EndGame();
+            endLoader.enabled = true;
             return;
         }
         // end of game
@@ -102,6 +112,7 @@ public class Skipper : MonoBehaviour
             rock.skip = this;
             rend.material = blueMat;
             sweeper.OnTurnStart(blueMat);
+            turnStartSound.clip = blueTurnSound;
         }
         else
         {
@@ -109,10 +120,12 @@ public class Skipper : MonoBehaviour
             rock.skip = this;
             rend.material = redMat;
             sweeper.OnTurnStart(redMat);
+            turnStartSound.clip = redTurnSound;
         }
         blueTurn = !blueTurn;
 
         rockPile.OnTurnStart();
+        turnStartSound.Play();
 
         if (b)
             input.OnTurn();

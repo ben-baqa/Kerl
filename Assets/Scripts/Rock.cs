@@ -18,6 +18,7 @@ public class Rock : MonoBehaviour
 
     [Header("Sounds")]
     public AudioClip[] sounds;
+    public AudioSource slip;
 
     [HideInInspector]
     public Skipper skip;
@@ -28,7 +29,7 @@ public class Rock : MonoBehaviour
     public bool blue;
 
     private Rigidbody rb;
-    private AudioSource sfx;
+    private AudioSource sfx, grindNoise;
     private ParticleSystem particles;
 
     private float spin = 0, particleCount;
@@ -40,6 +41,7 @@ public class Rock : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         sfx = GetComponent<AudioSource>();
         particles = GetComponentInChildren<ParticleSystem>();
+        grindNoise = particles.GetComponent<AudioSource>();
     }
 
     private void FixedUpdate()
@@ -48,6 +50,7 @@ public class Rock : MonoBehaviour
 
         rb.velocity *= (1 - (friction * frictionMultiplier));
         rb.angularVelocity *= (1 - radialFriction);
+        grindNoise.volume = Mathf.Clamp01(Mathf.Abs(rb.velocity.z) * 3);
 
         if(rb.velocity.magnitude < slowDownThreshold)
         {
@@ -62,10 +65,11 @@ public class Rock : MonoBehaviour
                 skip.StartTurn();
             }
         }
-        if(rb.position.y < -4 && ! turnEnded)
+        if(rb.position.y < -2 && ! turnEnded)
         {
             turnEnded = true;
             skip.StartTurn();
+            slip.Play();
         }
         if (rb.position.y < -1000)
             Destroy(gameObject);
@@ -112,6 +116,7 @@ public class Rock : MonoBehaviour
     {
         if (sfx && !sfx.isPlaying)
         {
+            sfx.volume = Mathf.Clamp01(rb.velocity.magnitude * 2);
             sfx.clip = sounds[Random.Range(0, sounds.Length)];
             sfx.Play();
         }

@@ -9,9 +9,9 @@ public class InputProxy : MonoBehaviour
 
     private void Start()
     {
-#if !UNITY_EDITOR
-        keyboardDebug = false;
-#endif
+//#if !UNITY_EDITOR
+//        keyboardDebug = false;
+//#endif
 
     }
 
@@ -19,10 +19,10 @@ public class InputProxy : MonoBehaviour
     {
         if (keyboardDebug)
         {
-            p1 = Input.GetKey(KeyCode.Keypad1);
-            p2 = Input.GetKey(KeyCode.Keypad2);
-            p3 = Input.GetKey(KeyCode.Keypad3);
-            p4 = Input.GetKey(KeyCode.Keypad4);
+            p1 |= Input.GetKey(KeyCode.Keypad1);
+            p2 |= Input.GetKey(KeyCode.Keypad2);
+            p3 |= Input.GetKey(KeyCode.Keypad3);
+            p4 |= Input.GetKey(KeyCode.Keypad4);
         }
     }
 
@@ -31,5 +31,8 @@ public class InputProxy : MonoBehaviour
         if (keyboardDebug)
             return;
         p1 = P1;
+        p2 = false;
+        p3 = false;
+        p4 = false;
     }
 }

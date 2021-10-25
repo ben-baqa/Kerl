@@ -17,6 +17,7 @@ public class Sweeper : MonoBehaviour
 
 
     public AudioSource broomSfx;
+    public AudioClip[] sweepSounds;
 
     private Animator anim;
     private AudioSource sfx;
@@ -82,6 +83,7 @@ public class Sweeper : MonoBehaviour
     private IEnumerator Brush()
     {
         yield return new WaitForSeconds(broomSoundDelay);
+        broomSfx.clip = sweepSounds[Random.Range(0, sweepSounds.Length)];
         broomSfx.Play();
     }
 
