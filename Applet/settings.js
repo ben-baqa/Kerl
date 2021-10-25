@@ -12,6 +12,13 @@ export const settings = {
     categories: ["WIP"],
     instructions:"",
 
+    intro: {
+      title: false,
+      mode: 'multi',
+      login: false
+    },
+
+
     // App Logic
     graph:
     {
@@ -19,7 +26,19 @@ export const settings = {
         {name:'eeg', class: brainsatplay.plugins.biosignals.EEG},
         {name:'neurofeedback', class: brainsatplay.plugins.algorithms.Neurofeedback, params: {metric: 'Focus'}},
         {name:'command', class: brainsatplay.plugins.controls.Event},
-        {name:'Brainstorm', class: brainsatplay.plugins.networking.Brainstorm},
+        {name:'Brainstorm', class: brainsatplay.plugins.networking.Brainstorm, params: {
+
+          onUserConnected: (u) => {
+            let parser = settings.graph.nodes.find(n => n.name === 'Router')
+            parser.instance._userAdded(u)
+          },
+      
+          onUserDisconnected: (u) => {
+            let parser = settings.graph.nodes.find(n => n.name === 'Router')
+            parser.instance._userRemoved(u)
+          },
+
+        }},
         {name:'Router', class: Router},
         {
           name:'unity', 
@@ -70,21 +89,6 @@ export const settings = {
 
       edges: [
 
-        // BRAIN
-        {
-          source: 'eeg:atlas',
-          target: 'neurofeedback',
-        },
-        {
-          source: 'neurofeedback',
-          target: 'unity:UpdateFocus',
-        },
-
-          {
-            source: 'command',
-            target: 'unity:UpdateBlink',
-          },
-          
           {
             source: 'command',
             target: 'Brainstorm',
