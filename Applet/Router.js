@@ -20,14 +20,21 @@ class Router{
                 output: {type: null},
                 onUpdate: (user) => {
                     let i = this.props.userMap.get(user.id)
+                    console.log(i, user)
                     if (i) this.update(i, user)
                 },
+            }
+        }
+
+        for (let i = 0; i < this.props.userLimit; i++){
+            this.ports[i] = {
+                input: {type: undefined},
+                output: {type: undefined},
             }
         }
     }
 
     init = () =>  {
-        for (let i = 0; i < this.props.userLimit; i++) this.addPort(i,{})
     }
 
     deinit = () => {}
