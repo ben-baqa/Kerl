@@ -9,21 +9,26 @@ public class Scorekeeper : MonoBehaviour
     //current score of game, blue is pos, red is neg
     public int score;
 
+    private ScoreHUD display;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        display = FindObjectOfType<ScoreHUD>();
     }
 
     // Update is called once per frame
     void Update()
     {
         UpdateScore();
+        display.UpdateScore(score);
     }
 
     public void UpdateScore()
     {
         Rock[] rocks = FindObjectsOfType<Rock>();
+        if (rocks.Length < 1)
+            return;
 
         rocks = rocks.OrderBy(x => (x.transform.position -
             transform.position).magnitude).ToArray();

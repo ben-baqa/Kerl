@@ -19,6 +19,7 @@ public class Skipper : MonoBehaviour
     private AudioSource sfx;
     private Sweeper sweeper;
     private RockPile rockPile;
+    private ScoreHUD score;
 
     private float n, angle;
     private bool blueTurn = true;
@@ -33,6 +34,7 @@ public class Skipper : MonoBehaviour
         input = FindObjectOfType<TurnManager>();
         sweeper = FindObjectOfType<Sweeper>();
         rockPile = FindObjectOfType<RockPile>();
+        score = FindObjectOfType<ScoreHUD>();
         sfx = GetComponent<AudioSource>();
         StartTurn(false);
     }
@@ -68,6 +70,7 @@ public class Skipper : MonoBehaviour
         anim.SetTrigger("push");
         CameraPositions.OnPush(rock.transform);
         sweeper.OnThrow(rock);
+        score.OnThrow();
     }
 
     private float Angle()
@@ -85,7 +88,10 @@ public class Skipper : MonoBehaviour
     public void StartTurn(bool b = true)
     {
         if (throwCount > rocks * 2)
+        {
+            score.EndGame();
             return;
+        }
         // end of game
 
         CameraPositions.OnTurnStart();

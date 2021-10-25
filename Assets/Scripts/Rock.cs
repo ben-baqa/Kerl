@@ -67,11 +67,14 @@ public class Rock : MonoBehaviour
             turnEnded = true;
             skip.StartTurn();
         }
+        if (rb.position.y < -1000)
+            Destroy(gameObject);
         if(!turnEnded && !resultsViewed && rb.position.z > resultViewThreshold)
         {
             resultsViewed = true;
             CameraPositions.OnResult();
             FindObjectOfType<Sweeper>().OnResult();
+            FindObjectOfType<ScoreHUD>().OnResult();
         }
 
         particleCount += (rb.velocity.magnitude * particleMultiplier);

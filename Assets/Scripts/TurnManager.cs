@@ -7,10 +7,11 @@ public class TurnManager : MonoBehaviour
     public int playerCount;
     public bool on;
 
-    private enum Turn { p1, p2, p3, p4, com}
+    public enum Turn { p1, p2, p3, p4, com}
     private Turn turn = Turn.p1;
 
     private InputProxy proxy;
+    private ScoreHUD score;
 
     private bool blueTurn = true, skipper = true;
 
@@ -18,6 +19,7 @@ public class TurnManager : MonoBehaviour
     void Start()
     {
         proxy = GetComponent<InputProxy>();
+        score = FindObjectOfType<ScoreHUD>();
         //playerCount = Mathf.Clamp(playerCount, 1, 4);
         playerCount = Mathf.Clamp(SelectCharacter.player_count, 1, 4);
     }
@@ -59,6 +61,7 @@ public class TurnManager : MonoBehaviour
             else
                 turn = skipper ? Turn.p3 : Turn.p4;
         }
+        score.UpdateTurn(turn);
     }
 
     public void OnThrow()
@@ -72,6 +75,7 @@ public class TurnManager : MonoBehaviour
         {
             turn = skipper ? Turn.p4 : Turn.p3;
         }
+        score.UpdateTurn(turn);
     }
 
     public bool GetInput()

@@ -79,12 +79,12 @@ public class SelectCharacter : MonoBehaviour
                 // next scene
                 SceneManager.LoadScene("Game");
             }
-            else if (countdown_timer <= 1 && !sfx.isPlaying)
+            else if (countdown_timer <= 3.9f && !sfx.isPlaying)
                 sfx.Play();
             else
             {
                 countdown_timer -= Time.deltaTime;
-                timer.text = "" + ((int)countdown_timer + 1);
+                timer.text = "" + (int)countdown_timer;
             }
         }
         else if (countdown_timer != max_timer)
