@@ -14,7 +14,7 @@ public class ScoreHUD : MonoBehaviour
 
     public float sizeDelta = .2f, sizeFreq = 5;
 
-    public AudioSource blueWinNoise, redWinNoise, appluase, mainMusic;
+    public AudioSource blueWinNoise, redWinNoise, tieNoise, appluase, mainMusic;
 
     private Text player, bScore, rScore;
 
@@ -133,6 +133,7 @@ public class ScoreHUD : MonoBehaviour
         else
         {
             endText.text = "A\nTie!";
+            tieNoise.Play();
             bScoreOutline.color = new Color(0, 1, 1);
         }
         mainMusic.Stop();
