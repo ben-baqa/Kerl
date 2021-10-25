@@ -5,7 +5,9 @@ using UnityEngine;
 public class InputProxy : MonoBehaviour
 {
     public bool p1, p2, p3, p4;
-    public bool keyboardDebug;
+    public bool enableNumpadInput;
+
+    private bool inputReceived = false;
 
     private void Start()
     {
@@ -17,19 +19,30 @@ public class InputProxy : MonoBehaviour
 
     private void Update()
     {
-        if (keyboardDebug)
+        if (enableNumpadInput)
         {
-            p1 |= Input.GetKey(KeyCode.Keypad1);
-            p2 |= Input.GetKey(KeyCode.Keypad2);
-            p3 |= Input.GetKey(KeyCode.Keypad3);
-            p4 |= Input.GetKey(KeyCode.Keypad4);
+            if (inputReceived)
+            {
+                p1 |= Input.GetKey(KeyCode.Keypad1);
+                p2 |= Input.GetKey(KeyCode.Keypad2);
+                p3 |= Input.GetKey(KeyCode.Keypad3);
+                p4 |= Input.GetKey(KeyCode.Keypad4);
+            }
+            else
+            {
+                p1 = Input.GetKey(KeyCode.Keypad1);
+                p2 = Input.GetKey(KeyCode.Keypad2);
+                p3 = Input.GetKey(KeyCode.Keypad3);
+                p4 = Input.GetKey(KeyCode.Keypad4);
+            }
         }
     }
 
     public void OnInput(bool P1)
     {
-        if (keyboardDebug)
-            return;
+        inputReceived = true;
+        //if (keyboardDebug)
+        //    return;
         p1 = P1;
         p2 = false;
         p3 = false;

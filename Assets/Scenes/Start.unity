@@ -1729,7 +1729,7 @@ MonoBehaviour:
   p2: 0
   p3: 0
   p4: 0
-  keyboardDebug: 1
+  enableNumpadInput: 1
 --- !u!4 &1417552395
 Transform:
   m_ObjectHideFlags: 0

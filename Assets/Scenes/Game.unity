@@ -474,7 +474,7 @@ MonoBehaviour:
   p2: 0
   p3: 0
   p4: 0
-  keyboardDebug: 1
+  enableNumpadInput: 1
 --- !u!4 &89246002
 Transform:
   m_ObjectHideFlags: 0
@@ -1448,11 +1448,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1014410948306748558, guid: 4d8a1e2e701f9d247aaabfeefa9b39d6, type: 3}
       propertyPath: m_Color.b
-      value: 0
+      value: 0.15371132
       objectReference: {fileID: 0}
     - target: {fileID: 1014410948306748558, guid: 4d8a1e2e701f9d247aaabfeefa9b39d6, type: 3}
       propertyPath: m_Color.g
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1014410948306748558, guid: 4d8a1e2e701f9d247aaabfeefa9b39d6, type: 3}
       propertyPath: m_Color.r

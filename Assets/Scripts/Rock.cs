@@ -18,7 +18,7 @@ public class Rock : MonoBehaviour
 
     [Header("Sounds")]
     public AudioClip[] sounds;
-    public AudioSource slip;
+    public AudioSource slip, onScore, onLoseScore;
 
     [HideInInspector]
     public Skipper skip;
@@ -33,7 +33,7 @@ public class Rock : MonoBehaviour
     private ParticleSystem particles;
 
     private float spin = 0, particleCount;
-    private bool thrown, turnEnded, resultsViewed;
+    private bool thrown, turnEnded, resultsViewed, score;
 
     // Start is called before the first frame update
     void Start()
@@ -110,6 +110,14 @@ public class Rock : MonoBehaviour
     public void Score(bool scoring)
     {
         transform.GetChild(1).gameObject.SetActive(scoring);
+        if(scoring && !score)
+        {
+            onScore.Play();
+        }else if(score && !scoring)
+        {
+            onLoseScore.Play();
+        }
+        score = scoring;
     }
 
     private void OnCollisionEnter(Collision collision)
