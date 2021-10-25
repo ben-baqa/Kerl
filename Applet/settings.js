@@ -37,19 +37,28 @@ export const settings = {
               [
                 {
                     object: 'GameApplication',
-                    function: 'UpdateCoherence',
-                    type: 'number'
-                },
-                {
-                    object: 'GameApplication',
-                    function: 'UpdateFocus',
-                    type: 'number'
-                },
-                {
-                    object: 'GameApplication',
-                    function: 'UpdateBlink',
+                    function: 'PlayerOneUpdate',
                     type: 'boolean'
-                }
+                },
+
+                {
+                  object: 'GameApplication',
+                  function: 'PlayerTwoUpdate',
+                  type: 'boolean'
+                },
+
+              {
+                object: 'GameApplication',
+                function: 'PlayerThreeUpdate',
+                type: 'boolean'
+              },
+
+              {
+              object: 'GameApplication',
+              function: 'PlayerFourUpdate',
+              type: 'boolean'
+              },
+
             ]
           }
         },
@@ -89,19 +98,19 @@ export const settings = {
           // Routes
           {
             source: 'Router:0',
-            target: 'Unity:PlayerOneUpdate',
+            target: 'unity:PlayerOneUpdate',
           },
           {
             source: 'Router:1',
-            target: 'Unity:PlayerTwoUpdate',
+            target: 'unity:PlayerTwoUpdate',
           },
           {
             source: 'Router:2',
-            target: 'Unity:PlayerThreeUpdate',
+            target: 'unity:PlayerThreeUpdate',
           },
           {
             source: 'Router:3',
-            target: 'Unity:PlayerFourUpdate',
+            target: 'unity:PlayerFourUpdate',
           },
 
           // Interface
