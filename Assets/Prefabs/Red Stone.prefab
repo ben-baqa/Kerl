@@ -96,7 +96,6 @@ GameObject:
   - component: {fileID: 945196578299428087}
   - component: {fileID: 945196578299428084}
   - component: {fileID: 945196578299428085}
-  - component: {fileID: 945196578299428082}
   - component: {fileID: -9162151581055024776}
   m_Layer: 0
   m_Name: Red Stone
@@ -239,19 +238,6 @@ MonoBehaviour:
   skip: {fileID: 0}
   frictionMultiplier: 1
   blue: 0
---- !u!114 &945196578299428082
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 945196578299428083}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a2ef632ec776c842a23c454a1097bbc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  debugPrint: 0
 --- !u!82 &-9162151581055024776
 AudioSource:
   m_ObjectHideFlags: 0

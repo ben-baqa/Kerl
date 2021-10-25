@@ -45,4 +45,9 @@ public class PauseMenu : MonoBehaviour
         skipper.weightedCurve = !skipper.weightedCurve;
         check.SetActive(skipper.weightedCurve);
     }
+
+    public void Quit()
+    {
+        Application.Quit();
+    }
 }

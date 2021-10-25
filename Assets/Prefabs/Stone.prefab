@@ -1527,7 +1527,6 @@ GameObject:
   - component: {fileID: 7064466197407295220}
   - component: {fileID: 7064466197407295223}
   - component: {fileID: 7064466197407295222}
-  - component: {fileID: 7064466197407295217}
   - component: {fileID: -5325276363379078249}
   m_Layer: 0
   m_Name: Stone
@@ -1670,19 +1669,6 @@ MonoBehaviour:
   skip: {fileID: 0}
   frictionMultiplier: 0
   blue: 1
---- !u!114 &7064466197407295217
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7064466197407295216}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a2ef632ec776c842a23c454a1097bbc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  debugPrint: 0
 --- !u!82 &-5325276363379078249
 AudioSource:
   m_ObjectHideFlags: 0
