@@ -147,6 +147,10 @@ public class Sweeper : MonoBehaviour
             }
         }
 
+        string s = "Long: " + pos.z + ", Calc: ";
+        pos.z = (rb.velocity.z * (1 - friction) / -50) / Mathf.Log(1 - friction);
+        print(s + pos.z);
+
         float v = Mathf.Clamp01((pos.z - 54) / 28);
         barDisplay.progress = v;
     }
