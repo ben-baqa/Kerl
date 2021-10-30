@@ -33,7 +33,7 @@ public class Rock : MonoBehaviour
     private ParticleSystem particles;
 
     private float spin = 0, particleCount;
-    private bool thrown, turnEnded, resultsViewed, score;
+    private bool thrown, turnEnded, resultsViewed, score, slipped;
 
     // Start is called before the first frame update
     void Start()
@@ -50,7 +50,8 @@ public class Rock : MonoBehaviour
 
         rb.velocity *= (1 - (friction * frictionMultiplier));
         rb.angularVelocity *= (1 - radialFriction);
-        grindNoise.volume = Mathf.Clamp01(Mathf.Abs(rb.velocity.z) * 3);
+        if (rb.position.y > -1)
+            grindNoise.volume = Mathf.Clamp01(Mathf.Abs(rb.velocity.z) * 3);
 
         if(rb.velocity.magnitude < slowDownThreshold)
         {
@@ -65,11 +66,16 @@ public class Rock : MonoBehaviour
                 skip.StartTurn();
             }
         }
-        if(rb.position.y < -2 && ! turnEnded)
+        if(rb.position.y < -1 && !slipped)
         {
-            turnEnded = true;
-            skip.StartTurn();
+            if (!turnEnded)
+            {
+                skip.StartTurn();
+                turnEnded = true;
+            }
+            slipped = true;
             slip.Play();
+            grindNoise.volume = 0;
         }
         if (rb.position.y < -1000)
             Destroy(gameObject);

@@ -7,14 +7,7 @@ using UnityEngine;
 public class MyBCIGameObj : MonoBehaviour, IBCIInteractable
 {
     public bool debugPrint;
-    
-    private InputProxy proxy;
 
-
-    void Start()
-    {
-        proxy = GetComponent<InputProxy>();
-    }
 
     void Update()
     {
@@ -40,10 +33,5 @@ public class MyBCIGameObj : MonoBehaviour, IBCIInteractable
                 + " and blink data: " + BCIDataListener.CurrentData.blink
                 + " and focus data: " + BCIDataListener.CurrentData.focus);
         }
-
-        //if (BCIDataListener.CurrentData.blink > 0.1f)
-        //{
-        //    proxy.OnInput(true);
-        //}
     }
 }

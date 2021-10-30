@@ -17,10 +17,10 @@ public class InputProxy : MonoBehaviour
 
     private void Update()
     {
-        nump1 = Input.GetKey(KeyCode.Keypad1);
-        nump2 = Input.GetKey(KeyCode.Keypad2);
-        nump3 = Input.GetKey(KeyCode.Keypad3);
-        nump4 = Input.GetKey(KeyCode.Keypad4);
+        nump1 = Input.GetKey(KeyCode.Keypad1) || Input.GetKey(KeyCode.A);
+        nump2 = Input.GetKey(KeyCode.Keypad2) || Input.GetKey(KeyCode.F);
+        nump3 = Input.GetKey(KeyCode.Keypad3) || Input.GetKey(KeyCode.J);
+        nump4 = Input.GetKey(KeyCode.Keypad4) || Input.GetKey(KeyCode.Semicolon);
     }
 
     public void OnInput(bool P1)
