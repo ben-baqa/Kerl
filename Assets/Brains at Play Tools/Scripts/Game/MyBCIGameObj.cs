@@ -9,16 +9,16 @@ public class MyBCIGameObj : MonoBehaviour, IBCIInteractable
     public bool debugPrint;
 
 
-    void Update()
-    {
-        ReactToBCI();
-    }
+    //void Update()
+    //{
+    //    ReactToBCI();
+    //}
 
-    // send
-    private void OnMouseDown()
-    {
-        SendEventToWeb();
-    }
+    //// send
+    //private void OnMouseDown()
+    //{
+    //    SendEventToWeb();
+    //}
 
     public void SendEventToWeb()
     {
