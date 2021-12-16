@@ -7,4 +7,8 @@ public class DataSender : Singleton<DataSender>
         JSplugin.SendFloatToServer(4.56f);
         JSplugin.SendStringToServer("this came from unity");
     }
+
+    public void SendToJS(int n) { JSplugin.SendNumToServer(n); }
+
+    public void SendToJS(string s) { JSplugin.SendStringToServer(s); }
 }

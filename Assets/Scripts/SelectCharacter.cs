@@ -102,12 +102,14 @@ public class SelectCharacter : MonoBehaviour
             player_state[player] = PlayerState.JOINED;
             last_input_state[player] = false;
             player_buttons[player].Join();
+            DataSender.Instance.SendToJS("Player joined");
         }
         else if (player_state[player] == PlayerState.JOINED)
         {
             // sound here
             player_state[player] = PlayerState.READY;
             player_buttons[player].Ready();
+            DataSender.Instance.SendToJS("Player Ready");
         }
     }
 

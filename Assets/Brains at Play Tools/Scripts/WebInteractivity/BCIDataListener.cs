@@ -1,9 +1,13 @@
+using Text = UnityEngine.UI.Text;
+
 public class BCIDataListener : Singleton<BCIDataListener>
 {
     public static EEGData CurrentData;
 
     private InputProxy proxy;
 
+
+    public Text messageText, hostText;
 
     // Start is called before the first frame update
     void Start()
@@ -20,6 +24,11 @@ public class BCIDataListener : Singleton<BCIDataListener>
         };
 
         proxy = FindObjectOfType<InputProxy>();
+
+        var debug = UnityEngine.GameObject.Find("Debug Canvas").GetComponentsInChildren<Text>();
+        messageText = debug[0];
+        hostText = debug[1];
+        SetHost(false);
     }
 
     public void Player1Update(int n)
@@ -41,5 +50,16 @@ public class BCIDataListener : Singleton<BCIDataListener>
     {
         print("Player 4 update called. Value: " + n);
         proxy.SetP4(n > 0 ? true : false);
+    }
+
+    public void ReceiveMessage(string s)
+    {
+        if (messageText) messageText.text = s;
+        print("Message received in engine:\n" + s);
+    }
+
+    public void SetHost(bool isHost)
+    {
+        hostText.text = isHost ? "is host" : "not host";
     }
 }
