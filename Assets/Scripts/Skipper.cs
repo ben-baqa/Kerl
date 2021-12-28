@@ -60,15 +60,22 @@ public class Skipper : MonoBehaviour
         
         if (input.GetInput())
         {
-            throwing = false;
-            n = 0;
-            line.OnPush();
-            input.OnThrow();
-            sfx.Play();
-            throwSfx.clip = throwSounds[Random.Range(0, throwSounds.Length)];
-            throwSfx.Play();
-            StartCoroutine(Throw());
+            Throw(angle);
+            DataSender.Instance.SendToJS($"throw {angle}");
         }
+    }
+
+    public void Throw(float angle)
+    {
+        this.angle = angle;
+        throwing = false;
+        n = 0;
+        line.OnPush();
+        input.OnThrow();
+        sfx.Play();
+        throwSfx.clip = throwSounds[Random.Range(0, throwSounds.Length)];
+        throwSfx.Play();
+        StartCoroutine(Throw());
     }
 
     private IEnumerator Throw()
@@ -99,7 +106,8 @@ public class Skipper : MonoBehaviour
         if (throwCount > rocks * 2)
         {
             score.EndGame();
-            endLoader.enabled = true;
+            if(MessageHandler.isHost)
+                endLoader.enabled = true;
             return;
         }
         // end of game

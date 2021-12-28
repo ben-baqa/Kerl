@@ -38,37 +38,40 @@ public class SelectCharacter : MonoBehaviour
 
     void Update()
     {
-        if (inputProxy.p1)
+        if (MessageHandler.isHost)
         {
-            if (last_input_state[0])
-                UpdateState(0);
-        }
-        else
-            last_input_state[0] = true;
+            if (inputProxy.p1)
+            {
+                if (last_input_state[0])
+                    UpdateState(0);
+            }
+            else
+                last_input_state[0] = true;
 
-        if (inputProxy.p2)
-        {
-            if (last_input_state[1])
-                UpdateState(1);
-        }
-        else
-            last_input_state[1] = true;
+            if (inputProxy.p2)
+            {
+                if (last_input_state[1])
+                    UpdateState(1);
+            }
+            else
+                last_input_state[1] = true;
 
-        if (inputProxy.p3)
-        {
-            if (last_input_state[2])
-                UpdateState(2);
-        }
-        else
-            last_input_state[2] = true;
+            if (inputProxy.p3)
+            {
+                if (last_input_state[2])
+                    UpdateState(2);
+            }
+            else
+                last_input_state[2] = true;
 
-        if (inputProxy.p4)
-        {
-            if (last_input_state[3])
-                UpdateState(3);
+            if (inputProxy.p4)
+            {
+                if (last_input_state[3])
+                    UpdateState(3);
+            }
+            else
+                last_input_state[3] = true;
         }
-        else
-            last_input_state[3] = true;
 
 
         UpdateNumbers();
@@ -111,6 +114,11 @@ public class SelectCharacter : MonoBehaviour
             player_buttons[player].Ready();
             DataSender.Instance.SendToJS("Player Ready");
         }
+    }
+
+    public void SetState(int player, bool ready = false)
+    {
+        player_state[player] = ready ? PlayerState.READY : PlayerState.JOINED;
     }
 
     void UpdateNumbers()

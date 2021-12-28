@@ -18,6 +18,9 @@ public class LoadSceneOnInput : MonoBehaviour
     void Update()
     {
         if (!loaded && (input.p1 || input.p2 || input.p3 || input.p4))
+        {
             SceneManager.LoadScene("Start");
+            DataSender.Instance.SendToJS("menu");
+        }
     }
 }

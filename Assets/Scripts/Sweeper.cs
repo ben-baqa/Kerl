@@ -73,11 +73,17 @@ public class Sweeper : MonoBehaviour
             anim.GetCurrentAnimatorStateInfo(0).IsName("slide") &&
             followState == Follow.rock)
         {
-            sfx.Play();
-            anim.SetTrigger("sweep");
-            frictionMultipler -= sweepValue;
-            StartCoroutine(Brush());
+            Sweep();
+            DataSender.Instance.SendToJS("sweep");
         }
+    }
+
+    public void Sweep()
+    {
+        sfx.Play();
+        anim.SetTrigger("sweep");
+        frictionMultipler -= sweepValue;
+        StartCoroutine(Brush());
     }
 
     private IEnumerator Brush()

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class TurnManager : MonoBehaviour
 {
+    public static bool isHost = false;
     public int playerCount;
     public bool on;
 
@@ -83,6 +84,8 @@ public class TurnManager : MonoBehaviour
 
     public bool GetInput()
     {
+        if (!isHost)
+            return false;
         switch (turn)
         {
             case Turn.p1:

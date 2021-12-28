@@ -20,12 +20,11 @@ public class JoinButton : MonoBehaviour
         sfx = GetComponentsInChildren<AudioSource>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void FixedUpdate()
     {
         rend.transform.localScale = Vector3.one * size;
-
         size = Mathf.Lerp(size, .99f, sizeLerp);
+
         if(size < 1)
         {
             size = bumpSize;

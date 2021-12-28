@@ -5,8 +5,9 @@ public class BCIDataListener : Singleton<BCIDataListener>
     public static EEGData CurrentData;
 
     private InputProxy proxy;
+    private MessageHandler messageHandler;
 
-
+    public float focusThreshold = 0.6f;
     public Text messageText, hostText;
 
     // Start is called before the first frame update
@@ -24,6 +25,7 @@ public class BCIDataListener : Singleton<BCIDataListener>
         };
 
         proxy = FindObjectOfType<InputProxy>();
+        messageHandler = GetComponent<MessageHandler>();
 
         var debug = UnityEngine.GameObject.Find("Debug Canvas").GetComponentsInChildren<Text>();
         messageText = debug[0];
@@ -33,33 +35,37 @@ public class BCIDataListener : Singleton<BCIDataListener>
 
     public void Player1Update(int n)
     {
-        print("Player 1 update called. Value: " + n);
-        proxy.SetP1(n > 0 ? true : false);
+        //print("Player 1 update called. Value: " + n);
+        proxy.SetP1(n > focusThreshold);
     }
     public void Player2Update(int n)
     {
-        print("Player 2 update called. Value: " + n);
-        proxy.SetP2(n > 0 ? true : false);
+        //print("Player 2 update called. Value: " + n);
+        proxy.SetP2(n > focusThreshold);
     }
     public void Player3Update(int n)
     {
-        print("Player 3 update called. Value: " + n);
-        proxy.SetP3(n > 0 ? true : false);
+        //print("Player 3 update called. Value: " + n);
+        proxy.SetP3(n > focusThreshold);
     }
     public void Player4Update(int n)
     {
-        print("Player 4 update called. Value: " + n);
-        proxy.SetP4(n > 0 ? true : false);
+        //print("Player 4 update called. Value: " + n);
+        proxy.SetP4(n > focusThreshold);
     }
 
     public void ReceiveMessage(string s)
     {
         if (messageText) messageText.text = s;
         print("Message received in engine:\n" + s);
+
+        messageHandler.HandleMessage(s);
     }
 
     public void SetHost(bool isHost)
     {
         hostText.text = isHost ? "is host" : "not host";
+        MessageHandler.isHost = isHost;
+        TurnManager.isHost = isHost;
     }
 }
