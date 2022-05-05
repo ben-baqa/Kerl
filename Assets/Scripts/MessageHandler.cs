@@ -88,7 +88,12 @@ public class MessageHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (debug && Input.GetKeyDown(KeyCode.H))
-            GetComponent<BCIDataListener>().SetHost(true);
+        if (debug)
+        {
+            if (Input.GetKeyDown(KeyCode.H))
+                GetComponent<BCIDataListener>().SetHost(true);
+            if (Input.GetKeyDown(KeyCode.T))
+                DataSender.Instance.SendToJS("TEST");
+        }
     }
 }

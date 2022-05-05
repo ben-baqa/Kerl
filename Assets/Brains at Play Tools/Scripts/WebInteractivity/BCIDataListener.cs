@@ -54,6 +54,23 @@ public class BCIDataListener : Singleton<BCIDataListener>
         proxy.SetP4(n > focusThreshold);
     }
 
+    public void Player1Message(string s)
+    {
+        ReceiveMessage(s);
+    }
+    public void Player2Message(string s)
+    {
+        ReceiveMessage(s);
+    }
+    public void Player3Message(string s)
+    {
+        ReceiveMessage(s);
+    }
+    public void Player4Message(string s)
+    {
+        ReceiveMessage(s);
+    }
+
     public void ReceiveMessage(string s)
     {
         if (messageText) messageText.text = s;
