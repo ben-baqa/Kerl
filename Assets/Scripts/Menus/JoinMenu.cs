@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Runs the join menu on the title screen
+/// </summary>
 public class JoinMenu : MonoBehaviour
 {
     enum PlayerState

@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Manages the multuple camera views during gameplay
+/// </summary>
 public class CameraPositions : MonoBehaviour
 {
     private static CameraPositions instance;

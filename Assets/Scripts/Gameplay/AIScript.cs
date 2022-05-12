@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Runs simple Ai behavior
+/// </summary>
 public class AIScript : MonoBehaviour
 {
     public bool brushing;

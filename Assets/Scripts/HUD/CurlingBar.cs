@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Displays the arrival predition bar during brushing
+/// </summary>
 public class CurlingBar : MonoBehaviour
 {
     [Range(0.0f, 1.0f)]

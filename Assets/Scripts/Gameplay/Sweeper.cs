@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Runs the brushing logic
+/// </summary>
 public class Sweeper : MonoBehaviour
 {
     public Vector3 offsetFromRock, resultPosition;

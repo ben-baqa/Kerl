@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Runs an instance of a join button on the title menu
+/// </summary>
 public class JoinButton : MonoBehaviour
 {
     public Sprite joined, ready;

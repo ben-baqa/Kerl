@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Reloads the initial menu from the results view after a game
+/// </summary>
 public class LoadSceneOnInput : MonoBehaviour
 {
     private InputProxy input;

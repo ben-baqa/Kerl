@@ -2,8 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Keeps track of which player has active input, and the flow of game state
+/// </summary>
 public class TurnManager : MonoBehaviour
 {
+    // Identifies this instance as the authoritative Network Host
     public static bool isHost = true;
     public int playerCount;
     public bool on;

@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Provides a simple interface intended to obscure a mroe complex input system
+/// </summary>
 public class InputProxy : MonoBehaviour
 {
     public bool p1 { get { return bcip1 || keyp1; } }

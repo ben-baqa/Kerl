@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Runs the rock throwing logic
+/// </summary>
 public class Skipper : MonoBehaviour
 {
     public float period = 2, maxAngle, pushDelay = .5f;

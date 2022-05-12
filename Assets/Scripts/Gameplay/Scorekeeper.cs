@@ -4,6 +4,9 @@ using UnityEngine;
 using System;
 using System.Linq;
 
+/// <summary>
+/// Keeps track of the score
+/// </summary>
 public class Scorekeeper : MonoBehaviour
 {
     //current score of game, blue is pos, red is neg

@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Generates and displays the curve prediction line when throwing
+/// </summary>
 public class CurveLine : MonoBehaviour
 {
     public int segments = 10;

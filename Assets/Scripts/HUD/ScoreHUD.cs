@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 using Turn = TurnManager.Turn;
 
+/// <summary>
+/// Displays the current score of a game and whose turn it is
+/// </summary>
 public class ScoreHUD : MonoBehaviour
 {
     public Text playerOutline, bScoreOutline, rScoreOutline, endText;

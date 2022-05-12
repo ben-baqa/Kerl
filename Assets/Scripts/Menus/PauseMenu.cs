@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Runs the pause menu logic
+/// </summary>
 public class PauseMenu : MonoBehaviour
 {
     public GameObject check;

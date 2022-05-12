@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Runs the physics and scoring of a rock
+/// </summary>
 public class Rock : MonoBehaviour
 {
     [Header("Throwing")]
