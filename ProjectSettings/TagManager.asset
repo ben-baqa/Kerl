@@ -5,6 +5,11 @@ TagManager:
   serializedVersion: 2
   tags:
   - Rock
+  - PeriodicSelector
+  - Row
+  - C1
+  - C2
+  - C3
   layers:
   - Default
   - TransparentFX
