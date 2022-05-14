@@ -11,7 +11,7 @@ public class DataSubscriber : MonoBehaviour
     DataStreamManager dataStream = DataStreamManager.Instance;
 
     float dataUpdateTimer = 0;
-    const float DATA_UPDATE_INTERVAL = 1;
+    const float DATA_UPDATE_INTERVAL = 0.1f;
 
     // Start is called before the first frame update
     void Start()
@@ -32,5 +32,6 @@ public class DataSubscriber : MonoBehaviour
         dataUpdateTimer -= DATA_UPDATE_INTERVAL;
 
         // update data
+
     }
 }

@@ -26,6 +26,20 @@ public class HeadsetHandler : MonoBehaviour
         TrainingHandler.Instance.QueryProfileOK += OnProfileQuery;
     }
 
+    private void Update()
+    {
+        var mentalCommandData = DataStreamManager.Instance.GetMentalCommands();
+        if (mentalCommandData == null)
+            return;
+        foreach (var command in mentalCommandData)
+        {
+            if (command.action != "neutral")
+                print(command);
+            displayBar.displayText = command.action;
+            displayBar.progress = command.power;
+        }
+    }
+
     private void OnDestroy()
     {
         data.onHeadsetChange -= OnHeadsetChanged;
@@ -69,7 +83,7 @@ public class HeadsetHandler : MonoBehaviour
         List<string> dataStreamList = new List<string>() { DataStreamName.SysEvents, DataStreamName.MentalCommands };
         DataStreamManager.Instance.StartDataStream(dataStreamList, headsetID);
 
-        DataStreamManager.Instance.MentalCommandReceived += OnMentalCommandRecieved;
+        //DataStreamManager.Instance.MentalCommandReceived += OnMentalCommandRecieved;
     }
 
     public void LoadProfile(string profileName)
@@ -80,16 +94,16 @@ public class HeadsetHandler : MonoBehaviour
 
     }
 
-    private void OnMentalCommandRecieved(object sender, MentalCommandEventArgs args)
-    {
-            print("------------------------------------------------");
-        print("------------------------------------------------");
-        print("--------------MentalCommandRecieved---------------");
-        print($"Act: {args.Act}, Power: {args.Pow}");
-        print("------------------------------------------------");
-        print("------------------------------------------------");
-        CommandRecievedWrapper(args.Act, (float)args.Pow);
-    }
+    //private void OnMentalCommandRecieved(object sender, MentalCommandEventArgs args)
+    //{
+    //        print("------------------------------------------------");
+    //    print("------------------------------------------------");
+    //    print("--------------MentalCommandRecieved---------------");
+    //    print($"Act: {args.Act}, Power: {args.Pow}");
+    //    print("------------------------------------------------");
+    //    print("------------------------------------------------");
+    //    CommandRecievedWrapper(args.Act, (float)args.Pow);
+    //}
 
     private void CommandRecievedWrapper(string s, float f)
     {
