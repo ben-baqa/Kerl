@@ -47,7 +47,8 @@ namespace EmotivUnityPlugin
         /// <summary>
         /// Mental command data sample object which include timestamp.
         /// </summary>
-        List<string>        _mentalCommandLists = null;
+        //List<string>        _mentalCommandLists = null;
+        MentalCommandBuffer _mcBuff;
         
         /// <summary>
         /// System or Training events data sample object which include timestamp.
@@ -139,10 +140,12 @@ namespace EmotivUnityPlugin
                 _facLists.Clear();
                 _facLists = null;
             }
-            if (_mentalCommandLists != null) {
-                _dsProcess.MentalCommandReceived -= OnMentalCommandReceived;
-                _mentalCommandLists.Clear();
-                _mentalCommandLists = null;
+            if (_mcBuff != null) {
+                _dsProcess.MentalCommandReceived -= _mcBuff.OnDataRecieved;
+                //_mentalCommandLists.Clear();
+                //_mentalCommandLists = null;
+                _mcBuff.Clear();
+                _mcBuff = null;
             }
             if (_sysLists != null) {
                 _dsProcess.SysEventsReceived -= OnSysEventReceived;
@@ -310,10 +313,12 @@ namespace EmotivUnityPlugin
                         }
                     }
                     else if (streamName == DataStreamName.MentalCommands) {
-                        if (_mentalCommandLists != null) {
-                            _dsProcess.MentalCommandReceived -= OnMentalCommandReceived;
-                            _mentalCommandLists.Clear();
-                            _mentalCommandLists = null;
+                        if (_mcBuff != null) {
+                            _dsProcess.MentalCommandReceived -= _mcBuff.OnDataRecieved;
+                            //_mentalCommandLists.Clear();
+                            //_mentalCommandLists = null;
+                            _mcBuff.Clear();
+                            _mcBuff = null;
                         }
                     }
                     else {
@@ -415,13 +420,14 @@ namespace EmotivUnityPlugin
                         }
                     }
                     else if (key == DataStreamName.MentalCommands) {
-                        if (_mentalCommandLists == null){
-                            _mentalCommandLists = new List<string>();
-                            _mentalCommandLists.Add("TimeStamp");
-                            foreach (var ele in e[key]) {
-                                _mentalCommandLists.Add(ele.ToString());
-                            }
-                            _dsProcess.MentalCommandReceived += OnMentalCommandReceived;
+                        if (_mcBuff == null){
+                            _mcBuff = new MentalCommandBuffer();
+                            _dsProcess.MentalCommandReceived += _mcBuff.OnDataRecieved;
+                            //_mentalCommandLists.Add("TimeStamp");
+                            //foreach (var ele in e[key]) {
+                            //    _mentalCommandLists.Add(ele.ToString());
+                            //}
+                            //_dsProcess.MentalCommandReceived += OnMentalCommandReceived;
                             UnityEngine.Debug.Log("Subscribed done: Mental command Data Stream");
                         }
                     }
@@ -472,27 +478,27 @@ namespace EmotivUnityPlugin
             // FacialExpReceived(this, facEvent);
         }
 
-        private void OnMentalCommandReceived(object sender, ArrayList data)
-        {
-            if (_mentalCommandLists == null || _mentalCommandLists.Count != data.Count) {
-                UnityEngine.Debug.LogAssertion("OnMentalCommandReceived: Mismatch between data and label");
-                return;
-            }
-            double time     = Convert.ToDouble(data[0]);
-            string act      = Convert.ToString(data[1]);
-            double pow      = Convert.ToDouble(data[2]);
-            MentalCommandEventArgs comEvent = new MentalCommandEventArgs(time, act, pow);
-            string comListsStr = "";
-            foreach (var ele in _mentalCommandLists) {
-                comListsStr += ele + " , ";
-            }
-            UnityEngine.Debug.Log("MentalCommand labels: " +comListsStr);
-            UnityEngine.Debug.Log("MentalCommand datas : " +comEvent.Time.ToString() + " , " 
-                                + comEvent.Act+ " , " + comEvent.Pow);
+        //private void OnMentalCommandReceived(object sender, ArrayList data)
+        //{
+        //    if (_mentalCommandLists == null || _mentalCommandLists.Count != data.Count) {
+        //        UnityEngine.Debug.LogAssertion("OnMentalCommandReceived: Mismatch between data and label");
+        //        return;
+        //    }
+        //    double time     = Convert.ToDouble(data[0]);
+        //    string act      = Convert.ToString(data[1]);
+        //    double pow      = Convert.ToDouble(data[2]);
+        //    MentalCommandEventArgs comEvent = new MentalCommandEventArgs(time, act, pow);
+        //    string comListsStr = "";
+        //    foreach (var ele in _mentalCommandLists) {
+        //        comListsStr += ele + " , ";
+        //    }
+        //    UnityEngine.Debug.Log("MentalCommand labels: " +comListsStr);
+        //    UnityEngine.Debug.Log("MentalCommand datas : " +comEvent.Time.ToString() + " , " 
+        //                        + comEvent.Act+ " , " + comEvent.Pow);
             
-            // TODO: emit event to other modules
-            //MentalCommandReceived(this, comEvent);
-        }
+        //    // TODO: emit event to other modules
+        //    //MentalCommandReceived(this, comEvent);
+        //}
 
         private void OnSysEventReceived(object sender, ArrayList data)
         {
@@ -763,6 +769,27 @@ namespace EmotivUnityPlugin
                 return 0;
 
             return _eegBuff.GetBufferSize();
+        }
+
+        /// <summary>
+        /// Get mental command data
+        /// </summary>
+        /// TODO: add channel specification
+        public MentalCommand[] GetMentalCommands()
+        {
+            if (_mcBuff == null)
+                return null;
+            return _mcBuff.GetData();
+        }
+
+        /// <summary>
+        /// Get the current number of samples in the buffer
+        /// </summary>
+        public int GetNumberMentalCommands()
+        {
+            if (_mcBuff == null)
+                return 0;
+            return _mcBuff.GetBufferSize();
         }
 
         //=== Motion data ===
