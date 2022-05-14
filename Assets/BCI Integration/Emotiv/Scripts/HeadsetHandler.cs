@@ -12,6 +12,8 @@ public class HeadsetHandler : MonoBehaviour
     DataProcessing data = DataProcessing.Instance;
     BCITraining training;
 
+    public DisplayBar displayBar;
+
     string headsetID;
 
     void Start()
@@ -47,7 +49,7 @@ public class HeadsetHandler : MonoBehaviour
                 continue;
             }
 
-            print($"Headset Detected!   ID: ${item.Value.HeadsetID}");
+            //print($"Headset Detected!   ID: ${item.Value.HeadsetID}");
             headsetID = item.Value.HeadsetID;
         }
     }
@@ -78,13 +80,21 @@ public class HeadsetHandler : MonoBehaviour
 
     }
 
-    public void OnMentalCommandRecieved(object sender, MentalCommandEventArgs args)
+    private void OnMentalCommandRecieved(object sender, MentalCommandEventArgs args)
     {
+            print("------------------------------------------------");
+        print("------------------------------------------------");
+        print("--------------MentalCommandRecieved---------------");
+        print($"Act: {args.Act}, Power: {args.Pow}");
         print("------------------------------------------------");
         print("------------------------------------------------");
-        print("--------------YEET---------------");
-        print("------------------------------------------------");
-        print("------------------------------------------------");
+        CommandRecievedWrapper(args.Act, (float)args.Pow);
+    }
+
+    private void CommandRecievedWrapper(string s, float f)
+    {
+        displayBar.displayText = s;
+        displayBar.progress = f;
     }
 
     private void OnProfileQuery(object sender, List<string> args)
