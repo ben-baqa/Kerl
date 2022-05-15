@@ -89,7 +89,6 @@ public class HeadsetHandler : MonoBehaviour
     public void LoadProfile(string profileName)
     {
         training.QueryProfile();
-        profileName = "test";
         training.LoadProfile(profileName);
 
     }
