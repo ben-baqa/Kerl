@@ -115,11 +115,11 @@ namespace EmotivUnityPlugin
             _profileLists = new List<string>(profiles);
             UnityEngine.Debug.Log("BCITraining: OnQueryProfileOK - num of profiles " + _profileLists.Count);
 
-            UnityEngine.Debug.Log("List of profiles: ");
-            foreach(var profileName in _profileLists)
-            {
-                UnityEngine.Debug.Log(profileName);
-            }
+            //UnityEngine.Debug.Log("List of profiles: ");
+            //foreach(var profileName in _profileLists)
+            //{
+            //    UnityEngine.Debug.Log(profileName);
+            //}
             
             // For Test only
             // if (_profileLists.Count > 0)
