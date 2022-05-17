@@ -15,14 +15,15 @@ public class CQNode : MonoBehaviour
     private void Start()
     {
         display = GetComponent<Image>();
-        try
-        {
-            channel = (Channel_t)System.Enum.Parse(typeof(Channel_t), $"CHAN_{channelID}");
-        }
-        catch(System.ArgumentException e)
-        {
-            print($"Invalid channelID on Contact Quality Node display: {channelID}");
-        }
+        channel = ChannelStringList.StringToChannel(channelID);
+        //try
+        //{
+        //    channel = (Channel_t)System.Enum.Parse(typeof(Channel_t), $"CHAN_{channelID}");
+        //}
+        //catch(System.ArgumentException e)
+        //{
+        //    print($"Invalid channelID on Contact Quality Node display: {channelID}");
+        //}
     }
 
     public void SetColours(Color[] ar)

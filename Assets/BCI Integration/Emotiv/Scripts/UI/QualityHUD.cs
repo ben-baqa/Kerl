@@ -44,7 +44,7 @@ public class QualityHUD : MonoBehaviour
 
     void OnCQUpdate(object sender, System.EventArgs args)
     {
-        double quality = DataProcessing.Instance.GetCQOverAll();
+        double quality = DataStreamManager.Instance.GetContactQuality(Channel_t.CHAN_CQ_OVERALL);// DataProcessing.Instance.GetCQOverAll();
         contactQualityText.text = $"{(int)quality}";
 
         contactQualityText.color = colours[Index(quality, colours.Length)];

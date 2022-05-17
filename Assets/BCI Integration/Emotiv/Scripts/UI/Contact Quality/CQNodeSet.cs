@@ -39,7 +39,7 @@ public class CQNodeSet : MonoBehaviour
 
         cqUpdateTimer -= CQ_UPDATE_INTERVAL;
 
-        DataProcessing.Instance.updateContactQuality();
+        //DataProcessing.Instance.updateContactQuality();
         foreach (CQNode node in nodes)
             node.UpdateQuality();
     }
