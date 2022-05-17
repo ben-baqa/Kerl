@@ -10,15 +10,16 @@ public class MentalCommandBuffer
     List<MentalCommand> buffer = new List<MentalCommand>();
 
  
-    public MentalCommand[] PopData()
-    {
-        var data = GetData();
-        Clear();
-        return data;
-    }
+    //public MentalCommand[] PopData()
+    //{
+    //    var data = GetData();
+    //    Clear();
+    //    return data;
+    //}
     public MentalCommand[] GetData()
     {
         MentalCommand[] data = buffer.ToArray();
+        Clear();
         return data;
     }
 
@@ -63,4 +64,10 @@ public struct MentalCommand
     {
         return $"Mental Command:   {action}, Power: {power}, timestamp: {timestamp}";
     }
+
+    public override bool Equals(object? obj) => obj is MentalCommand other && Equals(other);
+    public bool Equals(MentalCommand m) => action == m.action && power == m.power;
+    //public override int GetHashCode() => (action, power, action).GetHashCode();
+    public static bool operator ==(MentalCommand lhs, MentalCommand rhs) => lhs.Equals(rhs);
+    public static bool operator !=(MentalCommand lhs, MentalCommand rhs) => !lhs.Equals(rhs);
 }

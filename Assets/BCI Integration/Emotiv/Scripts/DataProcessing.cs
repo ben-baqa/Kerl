@@ -46,6 +46,8 @@ public class DataProcessing
         add { DataStreamManager.Instance.HeadsetConnectFail += value; }
         remove { DataStreamManager.Instance.HeadsetConnectFail -= value; }
     }
+
+    public event EventHandler onContactQualityUpdated;
     
     Headset _curHeadsetObjectConnected = null;
 
@@ -121,7 +123,8 @@ public class DataProcessing
     public void updateContactQuality() 
     {
         lock (_object) {
-            if(_curHeadsetObjectConnected == null) {
+
+            if (_curHeadsetObjectConnected == null) {
                 _lastCQOverAll = 0;
                 return;
             }
@@ -216,6 +219,8 @@ public class DataProcessing
                     break;
                 }
             }
+
+            onContactQualityUpdated(this, EventArgs.Empty);
         }
     }
 
