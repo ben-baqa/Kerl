@@ -9,8 +9,8 @@ using System.IO;
 /// </summary>
 public class ConnectToCortex : MonoBehaviour
 {
-    DataStreamManager dataStream = DataStreamManager.Instance;
-    DataProcessing dataProcessor = DataProcessing.Instance;
+    //DataStreamManager dataStream = DataStreamManager.Instance;
+    //DataProcessing dataProcessor = DataProcessing.Instance;
 
     // logs debug prints to an external file
     Logger logger = Logger.Instance;
@@ -26,12 +26,14 @@ public class ConnectToCortex : MonoBehaviour
     {
         //logger.Init();
 
-        dataStream.SetAppConfig(AppConfig.ClientId, AppConfig.ClientSecret,
-                                AppConfig.AppVersion, AppConfig.AppName,
-                                AppConfig.TmpAppDataDir, AppConfig.AppUrl,
-                                EmotivAppslicationPath());
+        //dataStream.SetAppConfig(AppConfig.ClientId, AppConfig.ClientSecret,
+        //                        AppConfig.AppVersion, AppConfig.AppName,
+        //                        AppConfig.TmpAppDataDir, AppConfig.AppUrl,
+        //                        EmotivAppslicationPath());
 
-        dataStream.StartAuthorize(AppConfig.AppLicenseId);
+        //dataStream.StartAuthorize(AppConfig.AppLicenseId);
+
+
     }
 
     private void Update()
@@ -41,7 +43,7 @@ public class ConnectToCortex : MonoBehaviour
         if(contactQualityQueryTimer > contactQualityInterval)
         {
             contactQualityQueryTimer -= contactQualityInterval;
-            dataProcessor.updateContactQuality();
+            //dataProcessor.updateContactQuality();
         }
 
         // update headset data
@@ -49,14 +51,14 @@ public class ConnectToCortex : MonoBehaviour
         if(headsetQueryTimer > headsetQueryInterval)
         {
             headsetQueryTimer -= headsetQueryInterval;
-            dataProcessor.Process();
+            //dataProcessor.Process();
         }
     }
 
     private void OnApplicationQuit()
     {
         Debug.Log("Application ending after " + Time.time + " seconds");
-        dataStream.Stop();
+        //dataStream.Stop();
     }
 
     string EmotivAppslicationPath()
