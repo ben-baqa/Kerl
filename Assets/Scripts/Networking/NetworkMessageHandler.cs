@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 /// <summary>
 /// Class used to faciliate the sending and receipt of
@@ -22,6 +23,8 @@ public class NetworkMessageHandler : MonoBehaviour
     private JoinMenu joinMenu;
     private Skipper skipper;
     private Sweeper sweeper;
+
+    public event EventHandler<NetworkInputEventArgs> InputRecieved;
 
     // Start is called before the first frame update
     void Start()
@@ -95,4 +98,17 @@ public class NetworkMessageHandler : MonoBehaviour
                 break;
         }
     }
+}
+
+public struct NetworkInputEventArgs
+{
+    public NetworkInputEventArgs(double t, string i, bool v)
+    {
+        time = t;
+        id = i;
+        value = v;
+    }
+    public double time;
+    public string id;
+    public bool value;
 }
