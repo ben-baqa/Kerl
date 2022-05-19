@@ -23,11 +23,11 @@ public class CQNodeSet : MonoBehaviour
         foreach (CQNode node in nodes)
             node.SetColours(nodeColours);
 
-        DataProcessing.Instance.onContactQualityUpdated += OnCQUpdate;
+        //DataProcessing.Instance.onContactQualityUpdated += OnCQUpdate;
     }
     private void OnDestroy()
     {
-        DataProcessing.Instance.onContactQualityUpdated -= OnCQUpdate;
+        //DataProcessing.Instance.onContactQualityUpdated -= OnCQUpdate;
     }
 
     // Update is called once per frame

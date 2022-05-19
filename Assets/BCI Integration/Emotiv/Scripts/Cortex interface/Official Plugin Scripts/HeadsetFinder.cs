@@ -40,6 +40,7 @@ namespace EmotivUnityPlugin
 
         private void OnQueryHeadsetReceived(object sender, List<Headset> headsets)
         {
+            Debug.Log("Headset query returned");
             QueryHeadsetOK(this, headsets);
         }
 

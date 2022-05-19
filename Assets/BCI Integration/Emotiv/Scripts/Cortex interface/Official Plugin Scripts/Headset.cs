@@ -7,17 +7,17 @@ namespace EmotivUnityPlugin
 {
     public class Headset
     {
-        private string headsetID;
-        private string status;
-        private string serialId;
-        private string firmwareVersion;
-        private string dongleSerial;
-        private ArrayList sensors;
-        private ArrayList motionSensors;
-        private JObject settings;
-        private ConnectionType connectedBy;
-        private HeadsetTypes headsetType;
-        private string mode;
+        public string headsetID;
+        public string status;
+        public string serialId;
+        public string firmwareVersion;
+        public string dongleSerial;
+        public ArrayList sensors;
+        public ArrayList motionSensors;
+        public JObject settings;
+        public ConnectionType connectedBy;
+        public HeadsetTypes headsetType;
+        public string mode;
 
         // Contructor
         public Headset()

@@ -20,24 +20,24 @@ public class ConnectableHeadset : MonoBehaviour
         dongleButton.onClick.AddListener(InitiateConnection);
         cableButton.onClick.AddListener(InitiateConnection);
 
-        DataProcessing.Instance.HeadsetConnected += OnConnection;
-        DataProcessing.Instance.HeadsetConnectFail += OnConnectionFailed;
+        //DataProcessing.Instance.HeadsetConnected += OnConnection;
+        //DataProcessing.Instance.HeadsetConnectFail += OnConnectionFailed;
     }
     private void OnDestroy()
     {
-        DataProcessing.Instance.HeadsetConnected -= OnConnection;
-        DataProcessing.Instance.HeadsetConnectFail -= OnConnectionFailed;
+        //DataProcessing.Instance.HeadsetConnected -= OnConnection;
+        //DataProcessing.Instance.HeadsetConnectFail -= OnConnectionFailed;
     }
 
     public void Init(Headset info)
     {
         headsetInfo = info;
-        headsetID = info.HeadsetID;
+        headsetID = info.headsetID;
         deviceName.text = headsetID;
 
-        dongleButton.gameObject.SetActive(info.HeadsetConnection == ConnectionType.CONN_TYPE_DONGLE);
-        bluetoothButton.gameObject.SetActive(info.HeadsetConnection == ConnectionType.CONN_TYPE_BTLE);
-        cableButton.gameObject.SetActive(info.HeadsetConnection == ConnectionType.CONN_TYPE_USB_CABLE);
+        dongleButton.gameObject.SetActive(info.connectedBy == ConnectionType.CONN_TYPE_DONGLE);
+        bluetoothButton.gameObject.SetActive(info.connectedBy == ConnectionType.CONN_TYPE_BTLE);
+        cableButton.gameObject.SetActive(info.connectedBy == ConnectionType.CONN_TYPE_USB_CABLE);
     }
 
     void InitiateConnection()
@@ -50,8 +50,8 @@ public class ConnectableHeadset : MonoBehaviour
 
         List<string> dataStreamList = new List<string>() {
             DataStreamName.SysEvents, DataStreamName.MentalCommands, DataStreamName.DevInfos };
-        DataStreamManager.Instance.StartDataStream(dataStreamList, headsetID);
-        DataProcessing.Instance.SetConnectedHeadset(headsetInfo);
+        DataStreamManager.Instance.StartSession(headsetID);
+        //DataProcessing.Instance.SetConnectedHeadset(headsetInfo);
     }
 
     void OnConnection(object sender, string headsetId)

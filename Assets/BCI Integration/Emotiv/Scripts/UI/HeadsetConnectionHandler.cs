@@ -6,7 +6,8 @@ using System;
 
 public class HeadsetConnectionHandler : MonoBehaviour
 {
-    DataProcessing data = DataProcessing.Instance;
+    HeadsetFinder headsetFinder = HeadsetFinder.Instance;
+    DataStreamManager data = DataStreamManager.Instance;
     BCITraining training;
 
     [SerializeField] GameObject headsetItemPrefab;
@@ -17,39 +18,45 @@ public class HeadsetConnectionHandler : MonoBehaviour
 
     void Start()
     {
-        training = new BCITraining();
-        training.Init();
-        data.onHeadsetChange += OnHeadsetChanged;
-        data.HeadsetConnected += OnConnect;
+        //training = new BCITraining();
+        //training.Init();
 
-        TrainingHandler.Instance.QueryProfileOK += OnProfileQuery;
+        //data.onHeadsetChange += OnHeadsetChanged;
+        //data.HeadsetConnected += OnConnect;
+
+        headsetFinder.QueryHeadsetOK += OnHeadsetChanged;
+
+        //TrainingHandler.Instance.QueryProfileOK += OnProfileQuery;
+    }
+    private void OnDestroy()
+    {
+        //data.onHeadsetChange -= OnHeadsetChanged;
+        //data.HeadsetConnected -= OnConnect;
+
+        headsetFinder.QueryHeadsetOK -= OnHeadsetChanged;
     }
 
     private void Update()
     {
-        var mentalCommandData = DataStreamManager.Instance.GetMentalCommands();
-        if (mentalCommandData == null)
-            return;
-        foreach (var command in mentalCommandData)
-        {
-            if (command != previousCommand)
-                print(command);
+        //var mentalCommandData = DataStreamManager.Instance.GetMentalCommands();
+        //if (mentalCommandData == null)
+        //    return;
+        //foreach (var command in mentalCommandData)
+        //{
+        //    if (command != previousCommand)
+        //        print(command);
 
-            previousCommand = command;
+        //    previousCommand = command;
 
-            //displayBar.displayText = command.action;
-            //displayBar.progress = command.power;
-        }
-    }
+        //    //displayBar.displayText = command.action;
+        //    //displayBar.progress = command.power;
+        //}
 
-    private void OnDestroy()
-    {
-        data.onHeadsetChange -= OnHeadsetChanged;
-        data.HeadsetConnected -= OnConnect;
+        //OnHeadsetChanged(this, data.detectedHeadsets);
     }
 
     // called by the event system when there is a change in the list of available headsets
-    private void OnHeadsetChanged(object sender, EventArgs args)
+    private void OnHeadsetChanged(object sender, List<Headset> headsets)
     {
         if (connected)
             return;
@@ -57,36 +64,37 @@ public class HeadsetConnectionHandler : MonoBehaviour
         foreach (Transform child in headsetList)
             Destroy(child.gameObject);
 
-        if (data.GetHeadsetList().Count == 0)
+        if (headsets.Count == 0)
         {
             print("No Headsets detected");
             return;
         }
 
         // loop through detected headsets and add them to the UI list
-        foreach (var item in data.GetHeadsetList())
+        foreach (var item in headsets)
         {
             // this should never happen, but is included in the example so it is here just in case
-            if (item.Value == null)
+            if (item == null)
             {
                 print("headset list item value was null");
                 continue;
             }
 
             ConnectableHeadset newHeadset = Instantiate(headsetItemPrefab, headsetList).GetComponent<ConnectableHeadset>();
-            newHeadset.Init(item.Value);
+            newHeadset.Init(item);
         }
     }
 
-    private void OnConnect(object sender, string args)
+    private void OnConnect(object sender, HeadsetConnectEventArgs args)
     {
-        training.QueryProfile();
+        print("Headset connected!");
+        //training.QueryProfile();
         connected = true;
     }
 
     public void LoadProfile(string profileName)
     {
-        training.LoadProfile(profileName);
+        //training.LoadProfile(profileName);
 
     }
 
@@ -97,5 +105,15 @@ public class HeadsetConnectionHandler : MonoBehaviour
         //foreach (var i in training.ProfileLists)
         //    print(i);
         //print("------------------------------------------------");
+    }
+
+    public void TriggerHeadsetQuery()
+    {
+        CortexClient.Instance.QueryHeadsets("");
+    }
+
+    public void DebugTest()
+    {
+        //CortexClient.Instance.Se();
     }
 }
