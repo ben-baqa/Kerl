@@ -215,7 +215,7 @@ namespace EmotivUnityPlugin
         private void WebSocketClient_MessageReceived(object sender, MessageReceivedEventArgs e)
         {
             string receievedMsg = e.Message;
-            //UnityEngine.Debug.Log("WebSocketClient_MessageReceived " + receievedMsg);
+            UnityEngine.Debug.Log($"Message from Websocket: {e.Message}");
 
             JObject response = JObject.Parse(e.Message);
 
@@ -314,13 +314,14 @@ namespace EmotivUnityPlugin
         /// </summary>
         private void HandleResponse(string method, JToken data)
         {
-            // UnityEngine.Debug.Log("handleResponse: " + method);
+             //UnityEngine.Debug.Log("handleResponse: " + method);
             if (method == "queryHeadsets")
             {
                 List<Headset> headsetLists = new List<Headset>();
                 foreach (JObject item in data) {
                     headsetLists.Add(new Headset(item));
                 }
+                UnityEngine.Debug.Log("Query Headset Response Recieved");
                 QueryHeadsetOK(this, headsetLists);
             }
             else if (method == "controlDevice")
@@ -582,6 +583,7 @@ namespace EmotivUnityPlugin
         /// </summary>
         private void WebSocketClient_Closed(object sender, EventArgs e)
         {
+            UnityEngine.Debug.Log("Websocket closed");
             WSConnectDone(this, false);
             // start connecting cortex service again
             if (_wscTimer != null)
@@ -705,6 +707,8 @@ namespace EmotivUnityPlugin
                 param.Add("id", headsetId);
             }
             SendTextMessage(param, "queryHeadsets", false);
+
+            //_wSC.Send("{\"id\": "+_nextRequestId+", \"jsonrpc\": \"2.0\", \"method\": \"queryHeadsets\" }");
         }
 
         // controlDevice

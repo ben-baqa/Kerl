@@ -26,7 +26,7 @@ public class ConnectionState : MonoBehaviour
             return;
         stateUpdateTimer -= STATE_UPDATE_INTERVAL;
 
-        var newState = dataStream.GetConnectToCortexState();
+        var newState = dataStream.connectionState;
         if (newState == connectionState)
             return;
         connectionState = newState;

@@ -24,7 +24,8 @@ public class NetworkMessageHandler : MonoBehaviour
     private Skipper skipper;
     private Sweeper sweeper;
 
-    public event EventHandler<NetworkInputEventArgs> InputRecieved;
+    // TODO: add subscribable network input event
+    //public event EventHandler<NetworkInputEventArgs> InputRecieved;
 
     // Start is called before the first frame update
     void Start()

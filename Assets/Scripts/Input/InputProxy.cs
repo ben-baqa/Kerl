@@ -14,6 +14,10 @@ public class InputProxy : MonoBehaviour
 
     public bool enableDebugInput;
 
+    public bool p1 => this[0];
+    public bool p2 => this[1];
+    public bool p3 => this[2];
+    public bool p4 => this[3];
 
     public bool this[int n]
     {

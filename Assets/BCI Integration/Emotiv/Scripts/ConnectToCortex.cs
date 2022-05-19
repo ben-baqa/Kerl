@@ -9,7 +9,7 @@ using System.IO;
 /// </summary>
 public class ConnectToCortex : MonoBehaviour
 {
-    //DataStreamManager dataStream = DataStreamManager.Instance;
+    DataStreamManager dataStream = DataStreamManager.Instance;
     //DataProcessing dataProcessor = DataProcessing.Instance;
 
     // logs debug prints to an external file
@@ -31,34 +31,34 @@ public class ConnectToCortex : MonoBehaviour
         //                        AppConfig.TmpAppDataDir, AppConfig.AppUrl,
         //                        EmotivAppslicationPath());
 
-        //dataStream.StartAuthorize(AppConfig.AppLicenseId);
+        dataStream.StartAuthorize();
 
 
     }
 
     private void Update()
     {
-        // update contact quality data
-        contactQualityQueryTimer += Time.deltaTime;
-        if(contactQualityQueryTimer > contactQualityInterval)
-        {
-            contactQualityQueryTimer -= contactQualityInterval;
-            //dataProcessor.updateContactQuality();
-        }
+        //// update contact quality data
+        //contactQualityQueryTimer += Time.deltaTime;
+        //if(contactQualityQueryTimer > contactQualityInterval)
+        //{
+        //    contactQualityQueryTimer -= contactQualityInterval;
+        //    //dataProcessor.updateContactQuality();
+        //}
 
-        // update headset data
-        headsetQueryTimer += Time.deltaTime;
-        if(headsetQueryTimer > headsetQueryInterval)
-        {
-            headsetQueryTimer -= headsetQueryInterval;
-            //dataProcessor.Process();
-        }
+        //// update headset data
+        //headsetQueryTimer += Time.deltaTime;
+        //if(headsetQueryTimer > headsetQueryInterval)
+        //{
+        //    headsetQueryTimer -= headsetQueryInterval;
+        //    //dataProcessor.Process();
+        //}
     }
 
     private void OnApplicationQuit()
     {
         Debug.Log("Application ending after " + Time.time + " seconds");
-        //dataStream.Stop();
+        dataStream.Stop();
     }
 
     string EmotivAppslicationPath()

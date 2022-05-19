@@ -7,15 +7,8 @@ using System;
 
 public class MentalCommandBuffer
 {
-    List<MentalCommand> buffer = new List<MentalCommand>();
+    Queue<MentalCommand> buffer = new Queue<MentalCommand>();
 
- 
-    //public MentalCommand[] PopData()
-    //{
-    //    var data = GetData();
-    //    Clear();
-    //    return data;
-    //}
     public MentalCommand[] GetData()
     {
         MentalCommand[] data = buffer.ToArray();
@@ -35,7 +28,10 @@ public class MentalCommandBuffer
 
     void AddToBuffer(MentalCommand command)
     {
-        buffer.Add(command);
+        buffer.Enqueue(command);
+
+        while (buffer.Count > Config.MENTAL_COMMAND_BUFFER_SIZE)
+            buffer.Dequeue();
     }
 
     public void OnDataRecieved(object sender, ArrayList data)
@@ -45,8 +41,13 @@ public class MentalCommandBuffer
         float pow = (float)Convert.ToDouble(data[2]);
         AddToBuffer(new MentalCommand(act, time, pow));
     }
+    public void OnDataRecieved(MentalCommandEventArgs e)
+    {
+        AddToBuffer(new MentalCommand(e.Act, e.Time, (float)e.Pow));
+    }
 }
 
+#nullable enable
 public struct MentalCommand
 {
     public string action;
@@ -67,7 +68,7 @@ public struct MentalCommand
 
     public override bool Equals(object? obj) => obj is MentalCommand other && Equals(other);
     public bool Equals(MentalCommand m) => action == m.action && power == m.power;
-    //public override int GetHashCode() => (action, power, action).GetHashCode();
+    public override int GetHashCode() => (action, power, action).GetHashCode();
     public static bool operator ==(MentalCommand lhs, MentalCommand rhs) => lhs.Equals(rhs);
     public static bool operator !=(MentalCommand lhs, MentalCommand rhs) => !lhs.Equals(rhs);
 }

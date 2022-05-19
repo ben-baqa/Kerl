@@ -30,6 +30,11 @@ namespace EmotivUnityPlugin
         public static int RETRY_CORTEXSERVICE_TIME = 5000;
         public static int WAIT_USERLOGIN_TIME = 5000;
 
+        public static int MENTAL_COMMAND_BUFFER_SIZE;
+
+        public static System.Collections.Generic.List<string> dataStreams = new System.Collections.Generic.List<string>
+            { DataStreamName.MentalCommands, DataStreamName.SysEvents, DataStreamName.DevInfos };
+
         // If you use an Epoc Flex headset, then you must put your configuration here
         // TODO: need detail here
         public static string FlexMapping = @"{

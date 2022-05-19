@@ -21,11 +21,11 @@ public class QualityHUD : MonoBehaviour
     
     void Start()
     {
-        DataProcessing.Instance.onContactQualityUpdated += OnCQUpdate;
+        //DataProcessing.Instance.onContactQualityUpdated += OnCQUpdate;
     }
     private void OnDestroy()
     {
-        DataProcessing.Instance.onContactQualityUpdated -= OnCQUpdate;
+        //DataProcessing.Instance.onContactQualityUpdated -= OnCQUpdate;
     }
 
     void Update()
@@ -42,19 +42,19 @@ public class QualityHUD : MonoBehaviour
         //batteryIndicator.sprite = batterySprites[Index(batteryLevel * 100, batterySprites.Length)];
     }
 
-    void OnCQUpdate(object sender, System.EventArgs args)
-    {
-        double quality = DataStreamManager.Instance.GetContactQuality(Channel_t.CHAN_CQ_OVERALL);// DataProcessing.Instance.GetCQOverAll();
-        contactQualityText.text = $"{(int)quality}";
+    //void OnCQUpdate(object sender, System.EventArgs args)
+    //{
+    //    double quality = DataStreamManager.Instance.GetContactQuality(Channel_t.CHAN_CQ_OVERALL);// DataProcessing.Instance.GetCQOverAll();
+    //    contactQualityText.text = $"{(int)quality}";
 
-        contactQualityText.color = colours[Index(quality, colours.Length)];
-        contactQualityBackground.sprite =
-            backgroundSprites[Index(quality,backgroundSprites.Length)];
+    //    contactQualityText.color = colours[Index(quality, colours.Length)];
+    //    contactQualityBackground.sprite =
+    //        backgroundSprites[Index(quality,backgroundSprites.Length)];
 
-        double batteryLevel = DataStreamManager.Instance.GetContactQuality(Channel_t.CHAN_BATTERY_PERCENT);
-        //print($"Battery: {batteryLevel}");
-        batteryIndicator.sprite = batterySprites[Index(batteryLevel, batterySprites.Length)];
-    }
+    //    double batteryLevel = DataStreamManager.Instance.GetContactQuality(Channel_t.CHAN_BATTERY_PERCENT);
+    //    //print($"Battery: {batteryLevel}");
+    //    batteryIndicator.sprite = batterySprites[Index(batteryLevel, batterySprites.Length)];
+    //}
 
     int Index(double percentage, int options)
     {

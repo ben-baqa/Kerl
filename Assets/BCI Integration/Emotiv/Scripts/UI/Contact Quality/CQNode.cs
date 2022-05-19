@@ -33,11 +33,11 @@ public class CQNode : MonoBehaviour
 
     public void UpdateQuality(/*ContactQualityValue[] qualitySet*/)
     {
-        int val = (int)DataStreamManager.Instance.GetContactQuality(channel);
-        //int val = (int)qualitySet[(int)channel];
-        print($"Channel: {channel}, quality: {val}");
+        //int val = (int)DataStreamManager.Instance.GetContactQuality(channel);
+        ////int val = (int)qualitySet[(int)channel];
+        //print($"Channel: {channel}, quality: {val}");
 
-        if (val < colours.Length)
-            display.color = colours[val];
+        //if (val < colours.Length)
+        //    display.color = colours[val];
     }
 }
