@@ -16,26 +16,34 @@ namespace EmotivUnityPlugin
         Dictionary<string, DataStream> sessions;
 
         public ConnectToCortexStates connectionState = ConnectToCortexStates.Service_connecting;
-        public List<Headset> detectedHeadsets;
 
         public event EventHandler<HeadsetConnectEventArgs> HeadsetConnected
         {
             add { ctxClient.HeadsetConnectNotify += value; }
             remove { ctxClient.HeadsetConnectNotify -= value; }
         }
+        public event EventHandler<List<Headset>> QueryHeadsetOK
+        {
+            add { ctxClient.QueryHeadsetOK += value; }
+            remove { ctxClient.QueryHeadsetOK -= value; }
+        }
 
         private DataStreamManager()
         {
+            Init();
+        }
+
+        void Init()
+        {
             sessions = new Dictionary<string, DataStream>();
-            detectedHeadsets = new List<Headset>();
 
             ctxClient.StreamDataReceived += OnStreamDataRecieved;
             ctxClient.CreateSessionOK += OnCreateSessionOk;
-            //ctxClient.GetLicenseInfoDone += OnGetLicenseInfoDone;
+            authorizer.GetLicenseInfoDone += OnGetLicenseInfoDone;
             //ctxClient.QueryHeadsetOK += OnQueryHeadsetOK;
-            HeadsetFinder.Instance.QueryHeadsetOK += OnQueryHeadsetOK;
+            //HeadsetFinder.Instance.QueryHeadsetOK += OnQueryHeadsetOK;
 
-            authorizer.ConnectServiceStateChanged += OnConnectionStateChanged;
+            //authorizer.ConnectServiceStateChanged += OnConnectionStateChanged;
         }
 
         private void OnStreamDataRecieved(object sender, StreamDataEventArgs e)
@@ -58,30 +66,19 @@ namespace EmotivUnityPlugin
             }
         }
 
-        private void OnConnectionStateChanged(object sender, ConnectToCortexStates state)
-        {
-            lock (locker)
-            {
-                connectionState = state;
-                if (state == ConnectToCortexStates.Authorized)
-                    HeadsetFinder.Instance.FinderInit();
-            }
-        }
-
-        private void OnQueryHeadsetOK(object sender, List<Headset> headsets)
-        {
-            lock (locker)
-            {
-                detectedHeadsets.Clear();
-                foreach (Headset h in headsets)
-                    detectedHeadsets.Add(h);
-
-                Debug.Log($"Headset Info Received in DataStreamManager: {headsets.Count}");
-            }
-        }
+        //private void OnConnectionStateChanged(object sender, ConnectToCortexStates state)
+        //{
+        //    lock (locker)
+        //    {
+        //        connectionState = state;
+        //        if (state == ConnectToCortexStates.Authorized)
+        //            HeadsetFinder.Instance.FinderInit();
+        //    }
+        //}
 
         private void OnGetLicenseInfoDone(object sender, License l)
         {
+            Debug.Log("This should be gettig called");
             HeadsetFinder.Instance.FinderInit();
         }
 
@@ -101,6 +98,7 @@ namespace EmotivUnityPlugin
         /// </summary>
         public void StartSession(string headsetID)
         {
+            Debug.Log($"Attempting to start session with headset: {headsetID}");
             ctxClient.CreateSession(authorizer.CortexToken, headsetID, "open");
         }
 

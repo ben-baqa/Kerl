@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using EmotivUnityPlugin;
 using System;
+using WebSocket4Net;
+using Newtonsoft.Json.Linq;
 
 public class HeadsetConnectionHandler : MonoBehaviour
 {
@@ -16,6 +18,12 @@ public class HeadsetConnectionHandler : MonoBehaviour
     MentalCommand previousCommand;
     bool connected = false;
 
+    List<Headset> headsets;
+    bool newInfo = false;
+
+    //WebSocket socket;
+    //int socketRequestID = 0;
+
     void Start()
     {
         //training = new BCITraining();
@@ -24,7 +32,8 @@ public class HeadsetConnectionHandler : MonoBehaviour
         //data.onHeadsetChange += OnHeadsetChanged;
         //data.HeadsetConnected += OnConnect;
 
-        headsetFinder.QueryHeadsetOK += OnHeadsetChanged;
+        data.QueryHeadsetOK += OnHeadsetChanged;
+        //headsetFinder.QueryHeadsetOK += OnHeadsetChanged;
 
         //TrainingHandler.Instance.QueryProfileOK += OnProfileQuery;
     }
@@ -33,7 +42,8 @@ public class HeadsetConnectionHandler : MonoBehaviour
         //data.onHeadsetChange -= OnHeadsetChanged;
         //data.HeadsetConnected -= OnConnect;
 
-        headsetFinder.QueryHeadsetOK -= OnHeadsetChanged;
+        data.QueryHeadsetOK += OnHeadsetChanged;
+        //headsetFinder.QueryHeadsetOK -= OnHeadsetChanged;
     }
 
     private void Update()
@@ -53,10 +63,23 @@ public class HeadsetConnectionHandler : MonoBehaviour
         //}
 
         //OnHeadsetChanged(this, data.detectedHeadsets);
+
+        if (newInfo)
+        {
+            newInfo = false;
+            ShowHeadsets();
+        }
     }
 
     // called by the event system when there is a change in the list of available headsets
-    private void OnHeadsetChanged(object sender, List<Headset> headsets)
+    private void OnHeadsetChanged(object sender, List<Headset> newHeadsets)
+    {
+        print("---------------SUCCESS---------------");
+        newInfo = true;
+        headsets = newHeadsets;
+    }
+
+    private void ShowHeadsets()
     {
         if (connected)
             return;
@@ -109,11 +132,27 @@ public class HeadsetConnectionHandler : MonoBehaviour
 
     public void TriggerHeadsetQuery()
     {
-        CortexClient.Instance.QueryHeadsets("");
+        headsetFinder.TriggerQuery();
+        //CortexClient.Instance.QueryHeadsets("");
+        //if(socket == null)
+        //{
+        //    socket = new WebSocket(Config.AppUrl);
+        //    socket.Open();
+        //    socket.MessageReceived += OnSocketMessageRecieved;
+        //}
+        //socket.Send();
     }
+
+    //private void OnSocketMessageRecieved(object sender, MessageReceivedEventArgs args)
+    //{
+    //    string message = args.Message;
+    //    print($"message from custom socket: {message}");
+    //    JObject response = JObject.Parse(message);
+    //}
 
     public void DebugTest()
     {
         //CortexClient.Instance.Se();
+        data.StartSession("EPOCX-03030281");
     }
 }
