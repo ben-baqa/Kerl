@@ -4807,9 +4807,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1501791221}
   - component: {fileID: 1501791223}
-  - component: {fileID: 1501791224}
   m_Layer: 0
-  m_Name: Connection State
+  m_Name: ConnectToCortex
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4840,18 +4839,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 56574212806b90446b12c4435fe152ae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1501791224
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1501791219}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96009a06ef096144dba3cd3b854a7242, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1507464088
@@ -5510,7 +5497,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1501791224}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: HeadsetHandler, Assembly-CSharp
         m_MethodName: LoadProfile
         m_Mode: 5
@@ -5644,7 +5631,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1501791224}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: HeadsetHandler, Assembly-CSharp
         m_MethodName: ConnectionTest
         m_Mode: 1

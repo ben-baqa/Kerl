@@ -29,6 +29,7 @@ namespace EmotivUnityPlugin
 
         public void OnStreamDataRecieved(StreamDataEventArgs e)
         {
+            Debug.Log($"Stream Data recieved: {e.StreamName}");
             ArrayList data = e.Data;
             double time = Convert.ToDouble(data[0]);
             switch (e.StreamName)

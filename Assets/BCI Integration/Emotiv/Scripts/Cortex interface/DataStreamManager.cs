@@ -24,9 +24,12 @@ namespace EmotivUnityPlugin
         }
         public event EventHandler<List<Headset>> QueryHeadsetOK
         {
-            add { ctxClient.QueryHeadsetOK += value; }
-            remove { ctxClient.QueryHeadsetOK -= value; }
+            add { HeadsetFinder.Instance.QueryHeadsetOK += value; }
+            remove { HeadsetFinder.Instance.QueryHeadsetOK -= value; }
         }
+
+        //public List<Headset> headsets;
+        //public Event UpdateHeadsetList;
 
         private DataStreamManager()
         {
@@ -111,7 +114,7 @@ namespace EmotivUnityPlugin
         public void Stop()
         {
             foreach (var k in sessions)
-                CloseSession(k.Key);
+                ctxClient.UpdateSession(authorizer.CortexToken, k.Key, "close");
             sessions.Clear();
 
             HeadsetFinder.Instance.StopQueryHeadset();
