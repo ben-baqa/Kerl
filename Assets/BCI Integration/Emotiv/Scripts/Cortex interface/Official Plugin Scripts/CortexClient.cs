@@ -234,10 +234,18 @@ namespace EmotivUnityPlugin
                 {
                     JObject error = (JObject)response["error"];
                     int code = (int)error["code"];
+                    //if(code == -32103)
+                    //{
+                    //    UnityEngine.Debug.Log("Application info could not be found, reauthorizing");
+                    //    RequestAccess();
+                    //    return;
+                    //}
+
                     string messageError = (string)error["message"];
                     UnityEngine.Debug.Log("An error received: " + messageError);
                     //Send Error message event
                     ErrorMsgReceived(this, new ErrorMsgEventArgs(code, messageError, method));
+
                     
                 } else {
                     // handle response
@@ -708,6 +716,7 @@ namespace EmotivUnityPlugin
             }
             SendTextMessage(param, "queryHeadsets", false);
 
+            UnityEngine.Debug.Log($"attempting to query headsets, socket is connected? {_wSC.State == WebSocketState.Open}");
             //_wSC.Send("{\"id\": "+_nextRequestId+", \"jsonrpc\": \"2.0\", \"method\": \"queryHeadsets\" }");
         }
 

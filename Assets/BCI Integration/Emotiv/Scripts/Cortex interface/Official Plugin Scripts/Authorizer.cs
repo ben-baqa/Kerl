@@ -384,7 +384,6 @@ namespace EmotivUnityPlugin
 
         private void OnGetUserLoginDone(object sender, UserDataInfo loginData)
         {
-            UnityEngine.Debug.Log("OnGetUserLoginDone.");
             // if emotivId is not empty -> has login user
             if (!String.IsNullOrEmpty(loginData.EmotivId))
             {

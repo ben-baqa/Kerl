@@ -13,7 +13,7 @@ namespace EmotivUnityPlugin
     public class HeadsetFinder
     {
         private CortexClient _ctxClient = CortexClient.Instance;
-        
+
 
         /// <summary>
         /// Timer for querying headsets
@@ -27,7 +27,7 @@ namespace EmotivUnityPlugin
         public HeadsetFinder()
         {
             _ctxClient = CortexClient.Instance;
-            _ctxClient.QueryHeadsetOK        += OnQueryHeadsetReceived;
+            _ctxClient.QueryHeadsetOK += OnQueryHeadsetReceived;
             _ctxClient.HeadsetDisConnectedOK += OnHeadsetDisconnectedOK;
         }
 
@@ -40,7 +40,6 @@ namespace EmotivUnityPlugin
 
         private void OnQueryHeadsetReceived(object sender, List<Headset> headsets)
         {
-            Debug.Log("Headset query returned");
             QueryHeadsetOK(this, headsets);
         }
 
@@ -52,8 +51,10 @@ namespace EmotivUnityPlugin
             SetQueryHeadsetTimer();
         }
 
-        public void StopQueryHeadset() {
-            if (_aTimer != null && _aTimer.Enabled) {
+        public void StopQueryHeadset()
+        {
+            if (_aTimer != null && _aTimer.Enabled)
+            {
                 UnityEngine.Debug.Log("Stop query headset");
                 _aTimer.Stop();
             }
@@ -64,8 +65,9 @@ namespace EmotivUnityPlugin
         /// </summary>
         private void SetQueryHeadsetTimer()
         {
-            if (_aTimer != null) {
-                 _aTimer.Enabled = true;
+            if (_aTimer != null)
+            {
+                _aTimer.Enabled = true;
                 return;
             }
 
@@ -81,6 +83,11 @@ namespace EmotivUnityPlugin
         /// Handle timeout. Retry query headsets.
         /// </summary>
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
+        {
+            TriggerQuery();
+        }
+
+        public void TriggerQuery()
         {
             _ctxClient.QueryHeadsets("");
         }

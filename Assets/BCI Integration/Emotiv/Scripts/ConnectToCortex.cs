@@ -16,15 +16,15 @@ public class ConnectToCortex : MonoBehaviour
     Logger logger = Logger.Instance;
 
     // drives timed updates to data
-    float contactQualityQueryTimer = 0;
-    float headsetQueryTimer = 0;
+    //float contactQualityQueryTimer = 0;
+    //float headsetQueryTimer = 0;
 
-    public float contactQualityInterval = 0.5f;
-    public float headsetQueryInterval = 2;
+    //public float contactQualityInterval = 0.5f;
+    //public float headsetQueryInterval = 2;
 
     private void Start()
     {
-        //logger.Init();
+        logger.Init();
 
         //dataStream.SetAppConfig(AppConfig.ClientId, AppConfig.ClientSecret,
         //                        AppConfig.AppVersion, AppConfig.AppName,
