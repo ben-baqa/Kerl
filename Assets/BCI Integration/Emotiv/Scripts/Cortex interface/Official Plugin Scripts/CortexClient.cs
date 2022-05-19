@@ -716,7 +716,6 @@ namespace EmotivUnityPlugin
             }
             SendTextMessage(param, "queryHeadsets", false);
 
-            UnityEngine.Debug.Log($"attempting to query headsets, socket is connected? {_wSC.State == WebSocketState.Open}");
             //_wSC.Send("{\"id\": "+_nextRequestId+", \"jsonrpc\": \"2.0\", \"method\": \"queryHeadsets\" }");
         }
 
