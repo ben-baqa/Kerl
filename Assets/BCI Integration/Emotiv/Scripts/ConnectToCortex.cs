@@ -10,49 +10,17 @@ using System.IO;
 public class ConnectToCortex : MonoBehaviour
 {
     DataStreamManager dataStream = DataStreamManager.Instance;
-    //DataProcessing dataProcessor = DataProcessing.Instance;
 
     // logs debug prints to an external file
     Logger logger = Logger.Instance;
 
-    // drives timed updates to data
-    //float contactQualityQueryTimer = 0;
-    //float headsetQueryTimer = 0;
-
-    //public float contactQualityInterval = 0.5f;
-    //public float headsetQueryInterval = 2;
+    public bool printDebugForDataStreams;
 
     private void Start()
     {
         logger.Init();
 
-        //dataStream.SetAppConfig(AppConfig.ClientId, AppConfig.ClientSecret,
-        //                        AppConfig.AppVersion, AppConfig.AppName,
-        //                        AppConfig.TmpAppDataDir, AppConfig.AppUrl,
-        //                        EmotivAppslicationPath());
-
-        dataStream.StartAuthorize();
-
-
-    }
-
-    private void Update()
-    {
-        //// update contact quality data
-        //contactQualityQueryTimer += Time.deltaTime;
-        //if(contactQualityQueryTimer > contactQualityInterval)
-        //{
-        //    contactQualityQueryTimer -= contactQualityInterval;
-        //    //dataProcessor.updateContactQuality();
-        //}
-
-        //// update headset data
-        //headsetQueryTimer += Time.deltaTime;
-        //if(headsetQueryTimer > headsetQueryInterval)
-        //{
-        //    headsetQueryTimer -= headsetQueryInterval;
-        //    //dataProcessor.Process();
-        //}
+        dataStream.StartAuthorize(printDebugForDataStreams);
     }
 
     private void OnApplicationQuit()

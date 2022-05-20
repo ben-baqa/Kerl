@@ -16,14 +16,6 @@ public class CQNode : MonoBehaviour
     {
         display = GetComponent<Image>();
         channel = ChannelStringList.StringToChannel(channelID);
-        //try
-        //{
-        //    channel = (Channel_t)System.Enum.Parse(typeof(Channel_t), $"CHAN_{channelID}");
-        //}
-        //catch(System.ArgumentException e)
-        //{
-        //    print($"Invalid channelID on Contact Quality Node display: {channelID}");
-        //}
     }
 
     public void SetColours(Color[] ar)
@@ -31,13 +23,15 @@ public class CQNode : MonoBehaviour
         colours = ar;
     }
 
-    public void UpdateQuality(/*ContactQualityValue[] qualitySet*/)
+    public void UpdateQuality(DevData data)
     {
-        //int val = (int)DataStreamManager.Instance.GetContactQuality(channel);
-        ////int val = (int)qualitySet[(int)channel];
-        //print($"Channel: {channel}, quality: {val}");
+        int val;
+        if (data.contactQuality.ContainsKey(channel))
+            val = (int)data.contactQuality[channel];
+        else
+            val = (int)(data.cqOverall / 20);
 
-        //if (val < colours.Length)
-        //    display.color = colours[val];
+        if (val < colours.Length)
+            display.color = colours[val];
     }
 }

@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Newtonsoft.Json.Linq;
+using System.Linq;
 
 
 namespace EmotivUnityPlugin
@@ -14,22 +16,18 @@ namespace EmotivUnityPlugin
         Authorizer authorizer = Authorizer.Instance;
 
         Dictionary<string, DataStream> sessions;
+        Dictionary<string, string> headsetToSessionID;
 
         public ConnectToCortexStates connectionState = ConnectToCortexStates.Service_connecting;
 
-        public event EventHandler<HeadsetConnectEventArgs> HeadsetConnected
-        {
-            add { ctxClient.HeadsetConnectNotify += value; }
-            remove { ctxClient.HeadsetConnectNotify -= value; }
-        }
+        public event EventHandler<string> HeadsetConnected;
         public event EventHandler<List<Headset>> QueryHeadsetOK
         {
             add { HeadsetFinder.Instance.QueryHeadsetOK += value; }
             remove { HeadsetFinder.Instance.QueryHeadsetOK -= value; }
         }
 
-        //public List<Headset> headsets;
-        //public Event UpdateHeadsetList;
+        bool debugPrint;
 
         private DataStreamManager()
         {
@@ -39,60 +37,81 @@ namespace EmotivUnityPlugin
         void Init()
         {
             sessions = new Dictionary<string, DataStream>();
+            headsetToSessionID = new Dictionary<string, string>();
 
             ctxClient.StreamDataReceived += OnStreamDataRecieved;
             ctxClient.CreateSessionOK += OnCreateSessionOk;
+            ctxClient.SubscribeDataDone += OnSubscribeDataDone;
+
             authorizer.GetLicenseInfoDone += OnGetLicenseInfoDone;
             //ctxClient.QueryHeadsetOK += OnQueryHeadsetOK;
-            //HeadsetFinder.Instance.QueryHeadsetOK += OnQueryHeadsetOK;
 
             //authorizer.ConnectServiceStateChanged += OnConnectionStateChanged;
         }
 
         private void OnStreamDataRecieved(object sender, StreamDataEventArgs e)
         {
-            lock (locker)
-            {
-                if (sessions.ContainsKey(e.Sid))
+            //Debug.Log($"DataStreamManager: Stream Data received - {e.Sid}");
+            lock (locker) if (sessions.ContainsKey(e.Sid))
                     sessions[e.Sid].OnStreamDataRecieved(e);
-            }
         }
 
         private void OnCreateSessionOk(object sender, SessionEventArgs e)
         {
-            lock (locker)
+            try
             {
                 string id = e.SessionId;
-                Debug.Log($"Session created successfuly, new session id: {id}");
-                sessions.Add(id, new DataStream(id));
                 ctxClient.Subscribe(authorizer.CortexToken, id, Config.dataStreams);
+                lock (locker)
+                {
+                    sessions[id] = new DataStream(id, debugPrint);
+                    headsetToSessionID[e.HeadsetId] = id;
+                }
+
+                HeadsetConnected(this, e.HeadsetId);
+                Debug.Log($"Session created successfuly, new session id: {id}");
+            }catch (System.Exception ex)
+            {
+                Debug.LogError(ex);
             }
         }
 
-        //private void OnConnectionStateChanged(object sender, ConnectToCortexStates state)
-        //{
-        //    lock (locker)
-        //    {
-        //        connectionState = state;
-        //        if (state == ConnectToCortexStates.Authorized)
-        //            HeadsetFinder.Instance.FinderInit();
-        //    }
-        //}
+        private void OnSubscribeDataDone(object sender, MultipleResultEventArgs e)
+        {
+            Debug.Log("DataStreamManager: SubscribeDataOK");
+            foreach (JObject i in e.FailList)
+                Debug.Log($"ERROR: Failed to subscribe to {i["streamName"]} stream");
+            
+            foreach (JObject stream in e.SuccessList)
+            {
+                if ((string)stream["streamName"] == "dev")
+                {
+                    string sid = (string)stream["sid"];
+                    lock (locker) if (sessions.ContainsKey(sid))
+                            sessions[sid].ConfigureDevHeaders((JArray)stream["cols"][2]);
+                }
+            }
+
+            //foreach (JObject i in e.SuccessList)
+            //    Debug.Log($"Subscribed to {i["streamName"]} stream");
+        }
+
 
         private void OnGetLicenseInfoDone(object sender, License l)
         {
-            Debug.Log("This should be gettig called");
             HeadsetFinder.Instance.FinderInit();
         }
 
         /// <summary>
         /// Initiates the authorizer and cortex client
         /// </summary>
-        public void StartAuthorize(string license = "")
+        public void StartAuthorize(bool debug, string license = "")
         {
             ctxClient.InitWebSocketClient();
             // Start connecting to cortex service
             authorizer.StartAction(license);
+
+            debugPrint = debug;
         }
 
         /// <summary>
@@ -109,6 +128,8 @@ namespace EmotivUnityPlugin
         {
             ctxClient.UpdateSession(authorizer.CortexToken, sessionID, "close");
             sessions.Remove(sessionID);
+            foreach (var item in headsetToSessionID.Where(kvp => kvp.Value == sessionID))
+                headsetToSessionID.Remove(item.Key);
         }
 
         public void Stop()
@@ -120,5 +141,7 @@ namespace EmotivUnityPlugin
             HeadsetFinder.Instance.StopQueryHeadset();
             ctxClient.ForceCloseWSC();
         }
+
+        public DataStream this[string s] => sessions[headsetToSessionID[s]];
     }
 }

@@ -156,7 +156,7 @@ namespace EmotivUnityPlugin
                     _emotivId = "";
                     _cortexToken = "";
                 }
-                ConnectServiceStateChanged(this, ConnectToCortexStates.Service_connecting);
+                if(ConnectServiceStateChanged != null) ConnectServiceStateChanged(this, ConnectToCortexStates.Service_connecting);
             }
         }
 

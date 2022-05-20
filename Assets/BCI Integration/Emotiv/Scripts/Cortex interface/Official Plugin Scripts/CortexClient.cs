@@ -1,4 +1,4 @@
-﻿ #region License
+﻿#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -52,12 +52,12 @@ namespace EmotivUnityPlugin
         /// </summary>
         /// <remarks>The id will be reset to 0 when reach to 100</remarks>
         private int _nextRequestId;
-        
+
         /// <summary>
         /// Timer for connecting to Emotiv Cortex Service
         /// </summary>
         private System.Timers.Timer _wscTimer = null;
-        
+
         private AutoResetEvent m_MessageReceiveEvent = new AutoResetEvent(false);
         private AutoResetEvent m_OpenedEvent = new AutoResetEvent(false);
 
@@ -108,7 +108,7 @@ namespace EmotivUnityPlugin
 
         private CortexClient()
         {
-            
+
         }
         public void InitWebSocketClient()
         {
@@ -117,7 +117,7 @@ namespace EmotivUnityPlugin
             _methodForRequestId = new Dictionary<int, string>();
 
             _wSC.Opened += new EventHandler(WebSocketClient_Opened);
-            _wSC.Error  += new EventHandler<SuperSocket.ClientEngine.ErrorEventArgs>(WebSocketClient_Error);           
+            _wSC.Error += new EventHandler<SuperSocket.ClientEngine.ErrorEventArgs>(WebSocketClient_Error);
             _wSC.Closed += WebSocketClient_Closed;
             _wSC.MessageReceived += WebSocketClient_MessageReceived;
             _wSC.DataReceived += WebSocketClient_DataReceived;
@@ -126,7 +126,8 @@ namespace EmotivUnityPlugin
         public void ForceCloseWSC()
         {
             UnityEngine.Debug.Log("Force close websocket client.");
-            if (_wscTimer != null) {
+            if (_wscTimer != null)
+            {
                 _wscTimer = null;
             }
             // stop websocket client
@@ -143,14 +144,15 @@ namespace EmotivUnityPlugin
         /// <summary>
         /// Set up timer for connecting to Emotiv Cortex service
         /// </summary>
-        private void SetWSCTimer() {
+        private void SetWSCTimer()
+        {
             if (_wscTimer != null)
                 return;
             _wscTimer = new System.Timers.Timer(Config.RETRY_CORTEXSERVICE_TIME);
             // Hook up the Elapsed event for the timer.
-            _wscTimer.Elapsed       += OnTimerEvent;
-            _wscTimer.AutoReset     = false; // do not auto reset
-            _wscTimer.Enabled       = true; 
+            _wscTimer.Elapsed += OnTimerEvent;
+            _wscTimer.AutoReset = false; // do not auto reset
+            _wscTimer.Enabled = true;
         }
 
         /// <summary>
@@ -163,11 +165,12 @@ namespace EmotivUnityPlugin
             RetryConnect();
         }
 
-        private void RetryConnect() {
-           m_OpenedEvent.Reset();
+        private void RetryConnect()
+        {
+            m_OpenedEvent.Reset();
             if (_wSC == null || (_wSC.State != WebSocketState.None && _wSC.State != WebSocketState.Closed))
                 return;
-            
+
             _wSC.Open();
         }
 
@@ -182,14 +185,15 @@ namespace EmotivUnityPlugin
         /// </summary>
         private void SendTextMessage(JObject param, string method, bool hasParam = true)
         {
-            lock(_locker)
+            lock (_locker)
             {
                 JObject request = new JObject(
                 new JProperty("jsonrpc", "2.0"),
                 new JProperty("id", _nextRequestId),
                 new JProperty("method", method));
 
-                if (hasParam) {
+                if (hasParam)
+                {
                     request.Add("params", param);
                 }
                 // UnityEngine.Debug.Log("Send " + method);
@@ -201,7 +205,8 @@ namespace EmotivUnityPlugin
                 // add to dictionary, replace if a key is existed
                 _methodForRequestId[_nextRequestId] = method;
 
-                if (_nextRequestId > 100) {
+                if (_nextRequestId > 100)
+                {
                     _nextRequestId = 1;
                 }
                 else
@@ -215,7 +220,7 @@ namespace EmotivUnityPlugin
         private void WebSocketClient_MessageReceived(object sender, MessageReceivedEventArgs e)
         {
             string receievedMsg = e.Message;
-            UnityEngine.Debug.Log($"Message from Websocket: {e.Message}");
+            //UnityEngine.Debug.Log($"Message from Websocket: {e.Message}");
 
             JObject response = JObject.Parse(e.Message);
 
@@ -228,8 +233,8 @@ namespace EmotivUnityPlugin
                     method = _methodForRequestId[id];
                     _methodForRequestId.Remove(id);
                 }
-                
-                
+
+
                 if (response["error"] != null)
                 {
                     JObject error = (JObject)response["error"];
@@ -246,16 +251,20 @@ namespace EmotivUnityPlugin
                     //Send Error message event
                     ErrorMsgReceived(this, new ErrorMsgEventArgs(code, messageError, method));
 
-                    
-                } else {
+
+                }
+                else
+                {
                     // handle response
                     JToken data = response["result"];
                     HandleResponse(method, data);
                     // check bluetooth permisison granted
-                    if (method == "queryHeadsets" && response.ContainsKey("attention")) {
-                        JObject attentionObj =  (JObject)response["attention"];
+                    if (method == "queryHeadsets" && response.ContainsKey("attention"))
+                    {
+                        JObject attentionObj = (JObject)response["attention"];
                         bool btlePermisionGranted = true;
-                        if ((int)attentionObj["code"] == WarningCode.BTLEPermissionNotGranted) {
+                        if ((int)attentionObj["code"] == WarningCode.BTLEPermissionNotGranted)
+                        {
                             btlePermisionGranted = false;
                         }
                         BTLEPermissionGrantedNotify(this, btlePermisionGranted);
@@ -269,33 +278,42 @@ namespace EmotivUnityPlugin
                 if (response["time"] != null)
                     time = (double)response["time"];
 
-                foreach (JProperty property in response.Properties()) {
-                    if (property.Name != "sid" && property.Name != "time") {
+                foreach (JProperty property in response.Properties())
+                {
+                    if (property.Name != "sid" && property.Name != "time")
+                    {
                         ArrayList data = new ArrayList();
                         data.Add(time); // insert timestamp to datastream
                         // spread to one array intead of a array included in a array
-                        foreach( var ele in property.Value){
-                            if (ele.Type == JTokenType.Array){
-                                foreach (var item in ele){
+                        foreach (var ele in property.Value)
+                        {
+                            if (ele.Type == JTokenType.Array)
+                            {
+                                foreach (var item in ele)
+                                {
                                     if (item.Type == JTokenType.Object)
                                     {
                                         // Ignore marker data 
-                                        UnityEngine.Debug.Log("marker object " + item); 
+                                        UnityEngine.Debug.Log("marker object " + item);
                                     }
                                     else
                                         data.Add(Convert.ToDouble(item));
                                 }
                             }
-                            else if (ele.Type == JTokenType.String){
+                            else if (ele.Type == JTokenType.String)
+                            {
                                 data.Add(Convert.ToString(ele));
                             }
-                            else if (ele.Type == JTokenType.Boolean){
+                            else if (ele.Type == JTokenType.Boolean)
+                            {
                                 data.Add(Convert.ToBoolean(ele));
                             }
-                            else if (ele.Type == JTokenType.Null){
+                            else if (ele.Type == JTokenType.Null)
+                            {
                                 data.Add(-1); // use -1 for null value
                             }
-                            else {
+                            else
+                            {
                                 data.Add(Convert.ToDouble(ele));
                             }
                         }
@@ -308,7 +326,8 @@ namespace EmotivUnityPlugin
             {
                 JObject warning = (JObject)response["warning"];
                 int code = -1;
-                if (warning["code"] != null) {
+                if (warning["code"] != null)
+                {
                     code = (int)warning["code"];
                 }
                 JToken messageData = warning["message"];
@@ -322,20 +341,20 @@ namespace EmotivUnityPlugin
         /// </summary>
         private void HandleResponse(string method, JToken data)
         {
-             //UnityEngine.Debug.Log("handleResponse: " + method);
+            //UnityEngine.Debug.Log("handleResponse: " + method);
             if (method == "queryHeadsets")
             {
                 List<Headset> headsetLists = new List<Headset>();
-                foreach (JObject item in data) {
+                foreach (JObject item in data)
+                {
                     headsetLists.Add(new Headset(item));
                 }
-                UnityEngine.Debug.Log("Query Headset Response Recieved");
                 QueryHeadsetOK(this, headsetLists);
             }
             else if (method == "controlDevice")
             {
                 string command = (string)data["command"];
-                if (command == "connect") 
+                if (command == "connect")
                 {
                     string message = (string)data["message"];
                 }
@@ -352,9 +371,10 @@ namespace EmotivUnityPlugin
                 {
                     foreach (JObject user in users)
                     {
-                        if (user["currentOSUId"].ToString() == user["loggedInOSUId"].ToString()) {
-                            loginData.EmotivId      = user["username"].ToString();
-                            DateTime lastLoginTime  = user.Value<DateTime>("lastLoginTime");
+                        if (user["currentOSUId"].ToString() == user["loggedInOSUId"].ToString())
+                        {
+                            loginData.EmotivId = user["username"].ToString();
+                            DateTime lastLoginTime = user.Value<DateTime>("lastLoginTime");
                             loginData.LastLoginTime = Utils.ISODateTimeToEpocTime(lastLoginTime);
                         }
                     }
@@ -390,8 +410,8 @@ namespace EmotivUnityPlugin
                 string token = (string)data["cortexToken"];
                 if (data["warning"] != null)
                 {
-                    JObject warning         = (JObject)data["warning"];
-                    string warningMessage   = warning["message"].ToString();
+                    JObject warning = (JObject)data["warning"];
+                    string warningMessage = warning["message"].ToString();
                     UnityEngine.Debug.Log("User has not accepted eula. Please accept EULA on EMOTIV Launcher to proceed.");
                     EULANotAccepted(this, warningMessage);
                 }
@@ -399,11 +419,11 @@ namespace EmotivUnityPlugin
             }
             else if (method == "createSession")
             {
-                string sessionId    = (string)data["id"];
-                string status       = (string)data["status"];
-                string appId        = (string)data["appId"];
-                JObject headset     = (JObject)data["headset"];
-                string headsetId    = headset["id"].ToString();
+                string sessionId = (string)data["id"];
+                string status = (string)data["status"];
+                string appId = (string)data["appId"];
+                JObject headset = (JObject)data["headset"];
+                string headsetId = headset["id"].ToString();
                 CreateSessionOK(this, new SessionEventArgs(sessionId, status, appId, headsetId));
             }
             else if (method == "updateSession")
@@ -411,8 +431,8 @@ namespace EmotivUnityPlugin
                 string sessionId = (string)data["id"];
                 string status = (string)data["status"];
                 string appId = (string)data["appId"];
-                JObject headset     = (JObject)data["headset"];
-                string headsetId    = headset["id"].ToString();
+                JObject headset = (JObject)data["headset"];
+                string headsetId = headset["id"].ToString();
                 UpdateSessionOK(this, new SessionEventArgs(sessionId, status, appId, headsetId));
             }
             else if (method == "createRecord")
@@ -435,7 +455,7 @@ namespace EmotivUnityPlugin
                 int count = (int)data["count"];
                 JArray records = (JArray)data["records"];
                 List<Record> recordLists = new List<Record>();
-                foreach(JObject ele in records)
+                foreach (JObject ele in records)
                 {
                     recordLists.Add(new Record(ele));
                 }
@@ -522,6 +542,7 @@ namespace EmotivUnityPlugin
             }
         }
 
+
         /// <summary>
         /// Handle warning  message. 
         /// A warning message is notified from Cortex. The warning messages do not contain request Id
@@ -529,13 +550,15 @@ namespace EmotivUnityPlugin
         private void HandleWarning(int code, JToken messageData)
         {
             UnityEngine.Debug.Log("handleWarning: " + code);
-            if (code == WarningCode.StreamStop ) {
+            if (code == WarningCode.StreamStop)
+            {
                 string sessionId = messageData["sessionId"].ToString();
-               StreamStopNotify(this, sessionId);
+                StreamStopNotify(this, sessionId);
             }
-            else if (code == WarningCode.SessionAutoClosed ) {
+            else if (code == WarningCode.SessionAutoClosed)
+            {
                 string sessionId = messageData["sessionId"].ToString();
-               SessionClosedNotify(this, sessionId);
+                SessionClosedNotify(this, sessionId);
             }
             else if (code == WarningCode.AccessRightGranted)
             {
@@ -571,7 +594,8 @@ namespace EmotivUnityPlugin
                 string message = messageData.ToString();
                 UserLogoutNotify(this, message);
             }
-            else if (code == WarningCode.HeadsetConnected) {
+            else if (code == WarningCode.HeadsetConnected)
+            {
                 string headsetId = messageData["headsetId"].ToString();
                 string message = messageData["behavior"].ToString();
                 UnityEngine.Debug.Log("handleWarning:" + message);
@@ -579,7 +603,8 @@ namespace EmotivUnityPlugin
             }
             else if (code == WarningCode.HeadsetWrongInformation ||
                      code == WarningCode.HeadsetCannotConnected ||
-                     code == WarningCode.HeadsetConnectingTimeout) {
+                     code == WarningCode.HeadsetConnectingTimeout)
+            {
                 string headsetId = messageData["headsetId"].ToString();
                 string message = messageData["behavior"].ToString();
                 HeadsetConnectNotify(this, new HeadsetConnectEventArgs(false, message, headsetId));
@@ -597,19 +622,22 @@ namespace EmotivUnityPlugin
             if (_wscTimer != null)
                 _wscTimer.Start();
         }
-        
+
         /// <summary>
         /// Handle when socket open
         /// </summary>
         private void WebSocketClient_Opened(object sender, EventArgs e)
         {
             m_OpenedEvent.Set();
-            if (_wSC.State == WebSocketState.Open) {
+            if (_wSC.State == WebSocketState.Open)
+            {
                 WSConnectDone(this, true);
                 // stop timer
                 _wscTimer.Stop();
 
-            } else {
+            }
+            else
+            {
                 UnityEngine.Debug.Log("Open Websocket unsuccessfully.");
             }
         }
@@ -621,7 +649,8 @@ namespace EmotivUnityPlugin
         {
             UnityEngine.Debug.Log(e.Exception.GetType() + ":" + e.Exception.Message + Environment.NewLine + e.Exception.StackTrace);
 
-            if (e.Exception.InnerException != null) {
+            if (e.Exception.InnerException != null)
+            {
                 UnityEngine.Debug.Log(e.Exception.InnerException.GetType());
                 WSConnectDone(this, false);
                 // start connecting cortex service again
@@ -640,7 +669,7 @@ namespace EmotivUnityPlugin
             m_OpenedEvent.Reset();
             if (_wSC == null || (_wSC.State != WebSocketState.None && _wSC.State != WebSocketState.Closed))
                 return;
-            
+
             _wSC.Open();
         }
 
@@ -668,7 +697,8 @@ namespace EmotivUnityPlugin
             JObject param = new JObject();
             param.Add("clientId", Config.AppClientId);
             param.Add("clientSecret", Config.AppClientSecret);
-            if (!String.IsNullOrEmpty(licenseID)) {
+            if (!String.IsNullOrEmpty(licenseID))
+            {
                 param.Add("license", licenseID);
             }
             param.Add("debit", debitNumber);
@@ -692,7 +722,7 @@ namespace EmotivUnityPlugin
 
         // GetUserLogin
         public void GetUserLogin()
-        {        
+        {
             JObject param = new JObject();
             SendTextMessage(param, "getUserLogin", false);
         }
@@ -711,7 +741,8 @@ namespace EmotivUnityPlugin
         public void QueryHeadsets(string headsetId)
         {
             JObject param = new JObject();
-            if (!String.IsNullOrEmpty(headsetId)) {
+            if (!String.IsNullOrEmpty(headsetId))
+            {
                 param.Add("id", headsetId);
             }
             SendTextMessage(param, "queryHeadsets", false);
@@ -727,10 +758,12 @@ namespace EmotivUnityPlugin
         {
             JObject param = new JObject();
             param.Add("command", command);
-            if (!String.IsNullOrEmpty(headsetId)) {
+            if (!String.IsNullOrEmpty(headsetId))
+            {
                 param.Add("headset", headsetId);
             }
-            if (mappings != null && mappings.Count > 0) {
+            if (mappings != null && mappings.Count > 0)
+            {
                 param.Add("mappings", mappings);
             }
             SendTextMessage(param, "controlDevice", true);
@@ -741,7 +774,8 @@ namespace EmotivUnityPlugin
         public void CreateSession(string cortexToken, string headsetId, string status)
         {
             JObject param = new JObject();
-            if (!String.IsNullOrEmpty(headsetId)) {
+            if (!String.IsNullOrEmpty(headsetId))
+            {
                 param.Add("headset", headsetId);
             }
             param.Add("cortexToken", cortexToken);
@@ -763,20 +797,23 @@ namespace EmotivUnityPlugin
         // CreateRecord
         // Required params: session, title, cortexToken
         public void CreateRecord(string cortexToken, string sessionId, string title,
-                                 string description = null, string subjectName = null, List<string> tags= null)
+                                 string description = null, string subjectName = null, List<string> tags = null)
         {
             JObject param = new JObject();
             param.Add("session", sessionId);
             param.Add("cortexToken", cortexToken);
             param.Add("title", title);
-            if (description != null) {
+            if (description != null)
+            {
                 param.Add("description", description);
             }
-            if (subjectName != null) {
+            if (subjectName != null)
+            {
                 param.Add("subjectName", subjectName);
             }
-            if (tags != null) {
-                param.Add("tags",JArray.FromObject(tags));
+            if (tags != null)
+            {
+                param.Add("tags", JArray.FromObject(tags));
             }
             SendTextMessage(param, "createRecord", true);
         }
@@ -799,10 +836,12 @@ namespace EmotivUnityPlugin
             JObject param = new JObject();
             param.Add("record", recordId);
             param.Add("cortexToken", cortexToken);
-            if (description != null) {
+            if (description != null)
+            {
                 param.Add("description", description);
             }
-            if (tags != null) {
+            if (tags != null)
+            {
                 param.Add("tags", JArray.FromObject(tags));
             }
             SendTextMessage(param, "updateRecord", true);
@@ -815,13 +854,16 @@ namespace EmotivUnityPlugin
             JObject param = new JObject();
             param.Add("query", query);
             param.Add("cortexToken", cortexToken);
-            if (orderBy != null) {
+            if (orderBy != null)
+            {
                 param.Add("orderBy", orderBy);
             }
-            if (offset != null) {
+            if (offset != null)
+            {
                 param.Add("offset", (long)offset);
             }
-            if (limit != null) {
+            if (limit != null)
+            {
                 param.Add("limit", (long)limit);
             }
             SendTextMessage(param, "queryRecords", true);
@@ -839,7 +881,7 @@ namespace EmotivUnityPlugin
 
         // InjectMarker
         // Required params: session, cortexToken, label, value, time
-        public void InjectMarker(string cortexToken, string sessionId, 
+        public void InjectMarker(string cortexToken, string sessionId,
                                  string label, JToken value, double time,
                                  string port = null, JObject extras = null)
         {
@@ -858,7 +900,7 @@ namespace EmotivUnityPlugin
 
         // UpdateMarker
         // Required params: session, cortexToken, label, value, time
-        public void UpdateMarker(string cortexToken, string sessionId, string markerId, 
+        public void UpdateMarker(string cortexToken, string sessionId, string markerId,
                                  double time, JObject extras = null)
         {
             JObject param = new JObject();
@@ -880,7 +922,8 @@ namespace EmotivUnityPlugin
             param.Add("session", sessionId);
             param.Add("cortexToken", cortexToken);
             JArray streamArr = new JArray();
-            foreach (var ele in streams){
+            foreach (var ele in streams)
+            {
                 streamArr.Add(ele);
             }
             param.Add("streams", streamArr);
@@ -895,7 +938,8 @@ namespace EmotivUnityPlugin
             param.Add("session", sessionId);
             param.Add("cortexToken", cortexToken);
             JArray streamArr = new JArray();
-            foreach (var ele in streams){
+            foreach (var ele in streams)
+            {
                 streamArr.Add(ele);
             }
             param.Add("streams", streamArr);
@@ -928,10 +972,12 @@ namespace EmotivUnityPlugin
             param.Add("profile", profile);
             param.Add("cortexToken", cortexToken);
             param.Add("status", status);
-            if (headsetId != null) {
+            if (headsetId != null)
+            {
                 param.Add("headset", headsetId);
             }
-            if (newProfileName != null) {
+            if (newProfileName != null)
+            {
                 param.Add("newProfileName", newProfileName);
             }
             SendTextMessage(param, "setupProfile", true);
