@@ -41,9 +41,13 @@ public class MentalCommandBuffer
         float pow = (float)Convert.ToDouble(data[2]);
         AddToBuffer(new MentalCommand(act, time, pow));
     }
+    public void OnDataRecieved(object sender, MentalCommandEventArgs e)
+    {
+        AddToBuffer(new MentalCommand(e));
+    }
     public void OnDataRecieved(MentalCommandEventArgs e)
     {
-        AddToBuffer(new MentalCommand(e.Act, e.Time, (float)e.Pow));
+        AddToBuffer(new MentalCommand(e));
     }
 }
 
@@ -59,6 +63,12 @@ public struct MentalCommand
         action = act;
         timestamp = time;
         power = pow;
+    }
+    public MentalCommand(MentalCommandEventArgs e)
+    {
+        action = e.Act;
+        timestamp = e.Time;
+        power = (float)e.Pow;
     }
 
     public override string ToString()

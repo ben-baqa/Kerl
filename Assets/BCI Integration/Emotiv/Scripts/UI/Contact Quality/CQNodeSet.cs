@@ -10,8 +10,8 @@ public class CQNodeSet : MonoBehaviour
 
     CQNode[] nodes;
 
-    float cqUpdateTimer = 0;
-    const float CQ_UPDATE_INTERVAL = 0.5f;
+    DevData devData;
+    bool newData;
 
     void Start()
     {
@@ -22,31 +22,28 @@ public class CQNodeSet : MonoBehaviour
 
         foreach (CQNode node in nodes)
             node.SetColours(nodeColours);
-
-        //DataProcessing.Instance.onContactQualityUpdated += OnCQUpdate;
-    }
-    private void OnDestroy()
-    {
-        //DataProcessing.Instance.onContactQualityUpdated -= OnCQUpdate;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        cqUpdateTimer += Time.deltaTime;
-        if (cqUpdateTimer < CQ_UPDATE_INTERVAL)
-            return;
-
-        cqUpdateTimer -= CQ_UPDATE_INTERVAL;
-
-        //DataProcessing.Instance.updateContactQuality();
-        foreach (CQNode node in nodes)
-            node.UpdateQuality();
+        if (newData)
+        {
+            newData = false;
+            foreach (CQNode node in nodes)
+                node.UpdateQuality(devData);
+        }
     }
 
-    void OnCQUpdate(object sender, EventArgs args)
+    void OnCQUpdate(object sender, DevData data)
     {
-        foreach (CQNode node in nodes)
-            node.UpdateQuality();
+        devData = data;
+        newData = true;
+    }
+
+    public void Init(string headsetID)
+    {
+        Debug.Log($"Contact quality Node set successfully activated for headset: {headsetID}");
+        gameObject.SetActive(true);
+        DataStreamManager.Instance[headsetID].DevDataReceived += OnCQUpdate;
     }
 }
