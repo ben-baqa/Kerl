@@ -768,6 +768,23 @@ namespace EmotivUnityPlugin
             }
             SendTextMessage(param, "controlDevice", true);
         }
+        // connect device
+        // required params: headsetID
+        // mappings is required if connect to epoc flex
+        public void ConnectDevice(string headsetId, JObject mappings = null)
+        {
+            JObject param = new JObject();
+            param.Add("command", "connect");
+            if (!String.IsNullOrEmpty(headsetId))
+            {
+                param.Add("headset", headsetId);
+            }
+            if (mappings != null && mappings.Count > 0)
+            {
+                param.Add("mappings", mappings);
+            }
+            SendTextMessage(param, "controlDevice", true);
+        }
 
         // CreateSession
         // Required params: cortexToken, status

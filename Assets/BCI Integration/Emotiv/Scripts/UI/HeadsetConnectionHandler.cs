@@ -89,7 +89,7 @@ public class HeadsetConnectionHandler : MonoBehaviour
         print("=================== Headset connected!");
         //training.QueryProfile();
         connected = true;
-        contactQualityDisplay.headsetID = headsetID;
+        contactQualityDisplay.AssignHeadset(headsetID);
     }
 
     public void TriggerHeadsetQuery()

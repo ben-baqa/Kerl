@@ -10,8 +10,8 @@ public class CQNodeSet : MonoBehaviour
 
     CQNode[] nodes;
 
-    DevData devData;
-    bool newData;
+    //DevData devData;
+    //bool newData;
 
     void Start()
     {
@@ -24,26 +24,26 @@ public class CQNodeSet : MonoBehaviour
             node.SetColours(nodeColours);
     }
 
-    void Update()
+    //void Update()
+    //{
+    //    if (newData)
+    //    {
+    //        newData = false;
+    //    }
+    //}
+
+    public void OnCQUpdate(DevData data)
     {
-        if (newData)
-        {
-            newData = false;
-            foreach (CQNode node in nodes)
-                node.UpdateQuality(devData);
-        }
+        foreach (CQNode node in nodes)
+            node.UpdateQuality(data);
+        //devData = data;
+        //newData = true;
     }
 
-    void OnCQUpdate(object sender, DevData data)
-    {
-        devData = data;
-        newData = true;
-    }
-
-    public void Init(string headsetID)
-    {
-        Debug.Log($"Contact quality Node set successfully activated for headset: {headsetID}");
-        gameObject.SetActive(true);
-        DataStreamManager.Instance[headsetID].DevDataReceived += OnCQUpdate;
-    }
+    //public void Init(string headsetID)
+    //{
+    //    Debug.Log($"Contact quality Node set successfully activated for headset: {headsetID}");
+    //    gameObject.SetActive(true);
+    //    DataStreamManager.Instance[headsetID].DevDataReceived += OnCQUpdate;
+    //}
 }

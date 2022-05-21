@@ -8,18 +8,12 @@ namespace EmotivUnityPlugin
 {
     /// <summary>
     /// Handles the data stream of a single session
-    /// TODO: add eeg quality - "eq"
     /// </summary>
     public class DataStream
     {
-        public event EventHandler<MentalCommandEventArgs> MentalCommandReceived;
+        public event EventHandler<MentalCommand> MentalCommandReceived;
         public event EventHandler<SysEventArgs> SysEventReceived;
         public event EventHandler<DevData> DevDataReceived;
-
-        //public event EventHandler
-        // TODO
-        // add headset connection event
-
 
         DevData devData;
 
@@ -59,12 +53,12 @@ namespace EmotivUnityPlugin
                     case DataStreamName.MentalCommands:
                         string act = Convert.ToString(data[1]);
                         double pow = Convert.ToDouble(data[2]);
-                        MentalCommandEventArgs comEvent = new MentalCommandEventArgs(time, act, pow);
+                        MentalCommand comEvent = new MentalCommand(time, act, pow);
 
                         MentalCommandReceived(this, comEvent);
 
                         if (debugPrint)
-                            Debug.Log($"Mental Command Recieved | {new MentalCommand(comEvent)}");
+                            Debug.Log($"Mental Command Recieved | {comEvent}");
                         break;
 
                     case DataStreamName.SysEvents:
@@ -99,8 +93,10 @@ namespace EmotivUnityPlugin
     }
 
 
-
-    public class DevData
+    /// <summary>
+    /// Represents and handles data from the devinfo channel
+    /// </summary>
+    public class DevData: EventArgs
     {
         public List<string> cqHeaders;
         public Dictionary<Channel_t, float> contactQuality;
@@ -108,6 +104,9 @@ namespace EmotivUnityPlugin
         public float cqOverall;
         public float signalStrength;
 
+        /// <summary>
+        /// Initialize object with data headers
+        /// </summary>
         public DevData(JArray cols)
         {
             cqHeaders = new List<string>();

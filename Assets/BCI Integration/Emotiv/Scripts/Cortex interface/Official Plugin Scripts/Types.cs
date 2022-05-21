@@ -537,17 +537,28 @@ namespace EmotivUnityPlugin
     }
 
     // metal command data object
-    public class MentalCommandEventArgs
+    public class MentalCommand : EventArgs
     {
-        public MentalCommandEventArgs(double time, string act, double pow)
+        public MentalCommand(double time, string act, double pow)
         {
-            Time    = time;
-            Act     = act;
-            Pow     = pow;
+            timestamp    = time;
+            action     = act;
+            power     = pow;
         }
-        public double Time { get; set; }
-        public string Act { get; set; }
-        public double Pow { get; set; }
+        public double timestamp { get; set; }
+        public string action { get; set; }
+        public double power { get; set; }
+
+        public override string ToString()
+        {
+            return $"Mental Command:   {action}, Power: {power}, timestamp: {timestamp}";
+        }
+
+        public override bool Equals(object obj) => obj is MentalCommand other && Equals(other);
+        public bool Equals(MentalCommand m) => action == m.action && power == m.power;
+        public override int GetHashCode() => (action, power, action).GetHashCode();
+        public static bool operator ==(MentalCommand lhs, MentalCommand rhs) => lhs.Equals(rhs);
+        public static bool operator !=(MentalCommand lhs, MentalCommand rhs) => !lhs.Equals(rhs);
     }
     // Facial expression data object
     public class FacEventArgs
@@ -572,7 +583,7 @@ namespace EmotivUnityPlugin
     }
 
     // Sys events data object
-    public class SysEventArgs
+    public class SysEventArgs : EventArgs
     {
         public SysEventArgs(double time, string detection, string eventMsg)
         {

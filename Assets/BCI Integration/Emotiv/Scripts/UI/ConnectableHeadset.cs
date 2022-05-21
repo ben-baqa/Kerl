@@ -8,7 +8,7 @@ using EmotivUnityPlugin;
 public class ConnectableHeadset : MonoBehaviour
 {
     public TextMeshProUGUI deviceName;
-    public Button bluetoothButton, dongleButton, cableButton;
+    public Button bluetoothButton, dongleButton, cableButton, pairButton;
     public Transform connectingText;
 
     string headsetID;
@@ -19,6 +19,7 @@ public class ConnectableHeadset : MonoBehaviour
         bluetoothButton.onClick.AddListener(InitiateConnection);
         dongleButton.onClick.AddListener(InitiateConnection);
         cableButton.onClick.AddListener(InitiateConnection);
+        pairButton.onClick.AddListener(Pair);
 
         //DataProcessing.Instance.HeadsetConnected += OnConnection;
         //DataProcessing.Instance.HeadsetConnectFail += OnConnectionFailed;
@@ -35,9 +36,17 @@ public class ConnectableHeadset : MonoBehaviour
         headsetID = info.headsetID;
         deviceName.text = headsetID;
 
-        dongleButton.gameObject.SetActive(info.connectedBy == ConnectionType.CONN_TYPE_DONGLE);
-        bluetoothButton.gameObject.SetActive(info.connectedBy == ConnectionType.CONN_TYPE_BTLE);
-        cableButton.gameObject.SetActive(info.connectedBy == ConnectionType.CONN_TYPE_USB_CABLE);
+        bool connected = info.status == "connected";
+
+        pairButton.gameObject.SetActive(!connected);
+        dongleButton.gameObject.SetActive(connected && info.connectedBy == ConnectionType.CONN_TYPE_DONGLE);
+        bluetoothButton.gameObject.SetActive(connected && info.connectedBy == ConnectionType.CONN_TYPE_BTLE);
+        cableButton.gameObject.SetActive(connected && info.connectedBy == ConnectionType.CONN_TYPE_USB_CABLE);
+    }
+
+    void Pair()
+    {
+        DataStreamManager.Instance.ConnectDevice(headsetID);
     }
 
     void InitiateConnection()

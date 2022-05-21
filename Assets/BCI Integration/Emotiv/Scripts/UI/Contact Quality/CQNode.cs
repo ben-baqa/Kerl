@@ -29,9 +29,17 @@ public class CQNode : MonoBehaviour
         if (data.contactQuality.ContainsKey(channel))
             val = (int)data.contactQuality[channel];
         else
-            val = (int)(data.cqOverall / 20);
+            val = GetReferenceQuality(data);
 
         if (val < colours.Length)
             display.color = colours[val];
+    }
+
+    int GetReferenceQuality(DevData data)
+    {
+        foreach (var channel in data.contactQuality.Values)
+            if (channel > (int)ContactQualityValue.VERY_BAD)
+                return (int)ContactQualityValue.GOOD;
+        return (int)ContactQualityValue.VERY_BAD;
     }
 }

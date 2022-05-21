@@ -39,46 +39,14 @@ public class MentalCommandBuffer
         double time = Convert.ToDouble(data[0]);
         string act = Convert.ToString(data[1]);
         float pow = (float)Convert.ToDouble(data[2]);
-        AddToBuffer(new MentalCommand(act, time, pow));
+        AddToBuffer(new MentalCommand(time, act, pow));
     }
-    public void OnDataRecieved(object sender, MentalCommandEventArgs e)
+    public void OnDataRecieved(object sender, MentalCommand e)
     {
-        AddToBuffer(new MentalCommand(e));
+        AddToBuffer(e);
     }
-    public void OnDataRecieved(MentalCommandEventArgs e)
+    public void OnDataRecieved(MentalCommand e)
     {
-        AddToBuffer(new MentalCommand(e));
+        AddToBuffer(e);
     }
-}
-
-#nullable enable
-public struct MentalCommand
-{
-    public string action;
-    public double timestamp;
-    public float power;
-
-    public MentalCommand(string act, double time, float pow)
-    {
-        action = act;
-        timestamp = time;
-        power = pow;
-    }
-    public MentalCommand(MentalCommandEventArgs e)
-    {
-        action = e.Act;
-        timestamp = e.Time;
-        power = (float)e.Pow;
-    }
-
-    public override string ToString()
-    {
-        return $"Mental Command:   {action}, Power: {power}, timestamp: {timestamp}";
-    }
-
-    public override bool Equals(object? obj) => obj is MentalCommand other && Equals(other);
-    public bool Equals(MentalCommand m) => action == m.action && power == m.power;
-    public override int GetHashCode() => (action, power, action).GetHashCode();
-    public static bool operator ==(MentalCommand lhs, MentalCommand rhs) => lhs.Equals(rhs);
-    public static bool operator !=(MentalCommand lhs, MentalCommand rhs) => !lhs.Equals(rhs);
 }
