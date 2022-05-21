@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using EmotivUnityPlugin;
 using System;
+using TMPro;
 
 public class CQNodeSet : MonoBehaviour
 {
     public Color[] nodeColours;
 
-    CQNode[] nodes;
+    protected CQNode[] nodes;
 
     //DevData devData;
     //bool newData;
 
-    void Start()
+    public virtual void Start()
     {
         List<CQNode> nodeList = new List<CQNode>();
         foreach (Transform child in transform)
@@ -32,7 +33,7 @@ public class CQNodeSet : MonoBehaviour
     //    }
     //}
 
-    public void OnCQUpdate(DevData data)
+    public virtual void OnCQUpdate(DevData data)
     {
         foreach (CQNode node in nodes)
             node.UpdateQuality(data);
