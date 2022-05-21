@@ -535,6 +535,7 @@ GameObject:
   - component: {fileID: 1623605093}
   - component: {fileID: 1623605094}
   - component: {fileID: 1623605095}
+  - component: {fileID: 1623605096}
   m_Layer: 5
   m_Name: Manager
   m_TagString: Untagged
@@ -576,7 +577,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rows: 3
   columns: 4
-  nodes: 0000010000000000010101
+  nodes: 0101010100000001010101
   delayTime: 0.6
   cursorUpdate:
     m_PersistentCalls:
@@ -591,7 +592,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1623605092}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ae67d4ac5b2f8df4c8f7094cc08f55af, type: 3}
   m_Name: 
@@ -599,4 +600,20 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: e8c49f0e94d6a474ba7f12b587a364d8, type: 3}
   nodeSize: 100
   selectorSize: 125
+  spacing: 150
+--- !u!114 &1623605096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1623605092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae67d4ac5b2f8df4c8f7094cc08f55af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprite: {fileID: 0}
+  nodeSize: 100
+  selectorSize: 140
   spacing: 150

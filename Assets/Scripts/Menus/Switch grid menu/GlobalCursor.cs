@@ -36,10 +36,10 @@ public class GlobalCursor : MonoBehaviour
             int nodeCount;
             if (i < rows)
             {
-                nodeCount = Mathf.Min(columns, nodes.Length - i * columns - 1);
+                nodeCount = Mathf.Min(columns, nodes.Length - i * columns);
             }
             else {
-                nodeCount = Mathf.Min(rows, (nodes.Length) / (i + 1 - rows));
+                nodeCount = Mathf.Min(rows, nodes.Length / (i + 1 - rows));
             }
             for (int j = 0; j < nodeCount; j++) {
                 int currentNode;
@@ -129,7 +129,7 @@ public class GlobalCursor : MonoBehaviour
             currentCursor = 0;
         }
         if (skipped[currentCursor]) {
-            currentCursor++;
+            UpdateCursor();
         }
     }
 

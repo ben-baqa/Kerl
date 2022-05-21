@@ -72,7 +72,7 @@ public class GridManager : MonoBehaviour
         int nodeCount;
         if (cursor < gc.rows)
         {
-            nodeCount = Mathf.Min(gc.columns, gc.nodes.Length - cursor * gc.columns - 1);
+            nodeCount = Mathf.Min(gc.columns, gc.nodes.Length - cursor * gc.columns);
         }
         else
         {
