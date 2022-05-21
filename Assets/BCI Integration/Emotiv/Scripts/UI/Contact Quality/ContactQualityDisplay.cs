@@ -23,7 +23,7 @@ public class ContactQualityDisplay : MonoBehaviour
         if (newData)
         {
             newData = false;
-            activeDisplay.OnCQUpdate(devData);
+            activeDisplay?.OnCQUpdate(devData);
             contactQualityPercentage.text = $"{devData.cqOverall}%";
         }
     }
@@ -53,6 +53,7 @@ public class ContactQualityDisplay : MonoBehaviour
                 i.nodeSet.gameObject.SetActive(false);
         if(activeDisplay == null)
         {
+            activeDisplay = fallback;
             fallback.gameObject.SetActive(true);
         }
     }
