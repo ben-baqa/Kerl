@@ -11,21 +11,19 @@ public class ContactQualityDisplay : MonoBehaviour
 
     public NodeSet[] displays;
     public CQNodeSet fallback;
+    public Color[] nodeColours;
     public Text contactQualityPercentage;
 
     CQNodeSet activeDisplay = null;
-    DevData devData;
     string headsetID;
-    bool newData;
 
-    private void Update()
+    private void Start()
     {
-        if (newData)
+        foreach(var display in displays)
         {
-            newData = false;
-            activeDisplay?.OnCQUpdate(devData);
-            contactQualityPercentage.text = $"{devData.cqOverall}%";
+            display.nodeSet.Init(nodeColours);
         }
+        fallback.Init(nodeColours);
     }
 
     private void OnEnable()
@@ -68,13 +66,8 @@ public class ContactQualityDisplay : MonoBehaviour
 
     void OnDevDataRecieved(DevData data)
     {
-        newData = true;
-        devData = data;
-    }
-
-    public void Continue()
-    {
-        // move on to choosing or training a profile
+        activeDisplay?.OnCQUpdate(data);
+        contactQualityPercentage.text = $"{data.cqOverall}%";
     }
 
     [System.Serializable]

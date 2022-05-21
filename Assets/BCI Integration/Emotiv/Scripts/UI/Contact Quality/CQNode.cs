@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using EmotivUnityPlugin;
+using TMPro;
 
 public class CQNode : MonoBehaviour
 {
@@ -12,15 +13,16 @@ public class CQNode : MonoBehaviour
 
     Color[] colours;
 
-    private void Start()
-    {
-        display = GetComponent<Image>();
-        channel = ChannelStringList.StringToChannel(channelID);
-    }
-
-    public void SetColours(Color[] ar)
+    public void Init(Color[] ar)
     {
         colours = ar;
+
+        display = GetComponent<Image>();
+        channel = ChannelStringList.StringToChannel(channelID);
+
+        TextMeshProUGUI label = GetComponentInChildren<TextMeshProUGUI>();
+        if (label)
+            label.text = channelID;
     }
 
     public void UpdateQuality(DevData data)

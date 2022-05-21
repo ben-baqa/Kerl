@@ -134,5 +134,16 @@ namespace EmotivUnityPlugin
             battery = (float)Convert.ToDouble(data[i + 3]);
             cqOverall = contactQuality[Channel_t.CHAN_CQ_OVERALL];
         }
+
+        public override string ToString()
+        {
+            string res = "Contact Quality: {";
+            foreach(var kvp in contactQuality)
+            {
+                res += $"[{ChannelStringList.ChannelToString(kvp.Key)}, {kvp.Value}], ";
+            }
+            res += $"}},  Battery: {battery}, signalStrength: {signalStrength}";
+            return res;
+        }
     }
 }

@@ -14,6 +14,7 @@ namespace EmotivUnityPlugin
         static readonly object locker = new object();
         CortexClient ctxClient = CortexClient.Instance;
         Authorizer authorizer = Authorizer.Instance;
+        DataSubscriber dataSubscriber = DataSubscriber.Instance;
 
         /// <summary>
         /// Active DataStreams from all open sessions
@@ -40,16 +41,14 @@ namespace EmotivUnityPlugin
             remove { HeadsetFinder.Instance.QueryHeadsetOK -= value; }
         }
 
-        // verbose logs
-        bool debugPrint;
+        //private DataStreamManager()
+        //{
+        //    Init();
+        //}
 
-        private DataStreamManager()
+        public void Init()
         {
-            Init();
-        }
-
-        void Init()
-        {
+            dataSubscriber = DataSubscriber.Instance;
             sessions = new Dictionary<string, DataStream>();
             headsetToSessionID = new Dictionary<string, string>();
 
@@ -91,8 +90,9 @@ namespace EmotivUnityPlugin
                 ctxClient.Subscribe(authorizer.CortexToken, id, Config.dataStreams);
                 lock (locker)
                 {
-                    sessions[id] = new DataStream(id, debugPrint);
+                    sessions[id] = new DataStream(id, Cortex.debugPrint);
                     headsetToSessionID[e.HeadsetId] = id;
+                    dataSubscriber.AddStream(sessions[id], id, e.HeadsetId);
                 }
 
                 HeadsetConnected(this, e.HeadsetId);
@@ -139,14 +139,19 @@ namespace EmotivUnityPlugin
         /// <param name="debug">enable verbose logs</param>
         /// <param name="license">uneccessary in most cases,
         /// if you need this you probably know what you are doing and will be changing this code anyways</param>
-        public void Start(bool debug, string license = "")
-        {
-            ctxClient.InitWebSocketClient();
-            // Start connecting to cortex service
-            authorizer.StartAction(license);
+        //public void Start(bool debug, string license = "")
+        //{
+        //    ctxClient.InitWebSocketClient();
+        //    // Start connecting to cortex service
+        //    authorizer.StartAction(license);
 
-            debugPrint = debug;
-        }
+        //    // create DataSubscriber gameobject to drive in engine events
+        //    GameObject dataSubscriberGameObject = new GameObject();
+        //    dataSubscriberGameObject.name = "DataSubscriber Object";
+        //    dataSubscriber = dataSubscriberGameObject.AddComponent<DataSubscriber>();
+
+        //    debugPrint = debug;
+        //}
 
         /// <summary>
         /// Stops the connection to the Cortex service,
@@ -180,6 +185,7 @@ namespace EmotivUnityPlugin
         {
             ctxClient.UpdateSession(authorizer.CortexToken, sessionID, "close");
             sessions.Remove(sessionID);
+            dataSubscriber.RemoveStreamBySessionID(sessionID);
             foreach (var item in headsetToSessionID.Where(kvp => kvp.Value == sessionID))
                 headsetToSessionID.Remove(item.Key);
         }
@@ -199,43 +205,44 @@ namespace EmotivUnityPlugin
         /// <typeparam name="T">The type of data to subscribe to</typeparam>
         /// <param name="headsetID">ID of the desired headset stream</param>
         /// <param name="callBack">Function to be called</param>
-        /// <returns>truew if successful</returns>
+        /// <returns>true if successful</returns>
         public bool SubscribeTo<T>(string headsetID, Action<T> callBack) where T : EventArgs
         {
-            if (!headsetToSessionID.ContainsKey(headsetID))
+            if (string.IsNullOrEmpty(headsetID) || !headsetToSessionID.ContainsKey(headsetID))
             {
                 Debug.LogWarning("Attempted to Subscribe to a headset stream that doesn't exist");
                 return false;
             }
 
-            try
-            {
-                DataStream dataStream = sessions[headsetToSessionID[headsetID]];
-                switch (typeof(T))
-                {
-                    case Type mType when mType == typeof(MentalCommand):
-                        dataStream.MentalCommandReceived +=
-                            (object sender, MentalCommand data) => callBack(data as T);
-                        break;
-                    case Type dType when dType == typeof(DevData):
-                        dataStream.DevDataReceived +=
-                            (object sender, DevData data) => callBack(data as T);
-                        break;
-                    case Type sType when sType == typeof(SysEventArgs):
-                        dataStream.SysEventReceived +=
-                            (object sender, SysEventArgs data) => callBack(data as T);
-                        break;
-                    default:
-                        Debug.LogWarning($"Attempted to subscribe to unsupported data stream: {typeof(T)}");
-                        return false;
-                }
-                return true;
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e);
-                return false;
-            }
+            return dataSubscriber.SubscribeDataStream(headsetID, callBack);
+            //try
+            //{
+            //    DataStream dataStream = sessions[headsetToSessionID[headsetID]];
+            //    switch (typeof(T))
+            //    {
+            //        case Type mType when mType == typeof(MentalCommand):
+            //            dataStream.MentalCommandReceived +=
+            //                (object sender, MentalCommand data) => callBack(data as T);
+            //            break;
+            //        case Type dType when dType == typeof(DevData):
+            //            dataStream.DevDataReceived +=
+            //                (object sender, DevData data) => callBack(data as T);
+            //            break;
+            //        case Type sType when sType == typeof(SysEventArgs):
+            //            dataStream.SysEventReceived +=
+            //                (object sender, SysEventArgs data) => callBack(data as T);
+            //            break;
+            //        default:
+            //            Debug.LogWarning($"Attempted to subscribe to unsupported data stream: {typeof(T)}");
+            //            return false;
+            //    }
+            //    return true;
+            //}
+            //catch (Exception e)
+            //{
+            //    Debug.LogError(e);
+            //    return false;
+            //}
         }
         /// <summary>
         /// Disconnects the provided callback function from the typed
@@ -247,42 +254,43 @@ namespace EmotivUnityPlugin
         /// <returns>true if successful</returns>
         public bool Unsubscribe<T>(string headsetID, Action<T> callBack) where T : EventArgs
         {
-            if (!headsetToSessionID.ContainsKey(headsetID))
+            if (string.IsNullOrEmpty(headsetID) || !headsetToSessionID.ContainsKey(headsetID))
             {
-                if (debugPrint)
+                if (Cortex.debugPrint)
                     Debug.LogWarning("Attempted to Unsubscribe from a headset stream that doesn't exist");
                 return false;
             }
 
-            try
-            {
-                DataStream dataStream = sessions[headsetToSessionID[headsetID]];
-                switch (typeof(T))
-                {
-                    case Type mType when mType == typeof(MentalCommand):
-                        dataStream.MentalCommandReceived -=
-                            (object sender, MentalCommand data) => callBack(data as T);
-                        break;
-                    case Type dType when dType == typeof(DevData):
-                        dataStream.DevDataReceived -=
-                            (object sender, DevData data) => callBack(data as T);
-                        break;
-                    case Type sType when sType == typeof(SysEventArgs):
-                        dataStream.SysEventReceived -=
-                            (object sender, SysEventArgs data) => callBack(data as T);
-                        break;
-                    default:
-                        if (debugPrint)
-                            Debug.LogWarning($"Attempted to Unsibscribe from unsupported data stream: {typeof(T)}");
-                        return false;
-                }
-                return true;
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e);
-                return false;
-            }
+            return dataSubscriber.UnSubscribeDataStream<T>(headsetID, callBack);
+            //try
+            //{
+            //    DataStream dataStream = sessions[headsetToSessionID[headsetID]];
+            //    switch (typeof(T))
+            //    {
+            //        case Type mType when mType == typeof(MentalCommand):
+            //            dataStream.MentalCommandReceived -=
+            //                (object sender, MentalCommand data) => callBack(data as T);
+            //            break;
+            //        case Type dType when dType == typeof(DevData):
+            //            dataStream.DevDataReceived -=
+            //                (object sender, DevData data) => callBack(data as T);
+            //            break;
+            //        case Type sType when sType == typeof(SysEventArgs):
+            //            dataStream.SysEventReceived -=
+            //                (object sender, SysEventArgs data) => callBack(data as T);
+            //            break;
+            //        default:
+            //            if (debugPrint)
+            //                Debug.LogWarning($"Attempted to Unsibscribe from unsupported data stream: {typeof(T)}");
+            //            return false;
+            //    }
+            //    return true;
+            //}
+            //catch (Exception e)
+            //{
+            //    Debug.LogError(e);
+            //    return false;
+            //}
         }
     }
 }

@@ -20,7 +20,8 @@ public class ConnectToCortex : MonoBehaviour
     {
         logger.Init();
 
-        dataStream.Start(printDebugForDataStreams);
+        Cortex.Start(printDebugForDataStreams);
+        //dataStream.Start(printDebugForDataStreams);
     }
 
     private void OnApplicationQuit()
