@@ -612,5 +612,4 @@ namespace EmotivUnityPlugin
         public List<string> Events { get; set; }
         public List<string> Signature { get; set; }
     }
-    
 }

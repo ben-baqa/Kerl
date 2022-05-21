@@ -7,14 +7,10 @@ using TMPro;
 
 public class CQNodeSet : MonoBehaviour
 {
-    public Color[] nodeColours;
-
     protected CQNode[] nodes;
 
-    //DevData devData;
-    //bool newData;
 
-    public virtual void Start()
+    public virtual void Init(Color[] nodeColours)
     {
         List<CQNode> nodeList = new List<CQNode>();
         foreach (Transform child in transform)
@@ -22,29 +18,12 @@ public class CQNodeSet : MonoBehaviour
         nodes = nodeList.ToArray();
 
         foreach (CQNode node in nodes)
-            node.SetColours(nodeColours);
+            node.Init(nodeColours);
     }
-
-    //void Update()
-    //{
-    //    if (newData)
-    //    {
-    //        newData = false;
-    //    }
-    //}
 
     public virtual void OnCQUpdate(DevData data)
     {
         foreach (CQNode node in nodes)
             node.UpdateQuality(data);
-        //devData = data;
-        //newData = true;
     }
-
-    //public void Init(string headsetID)
-    //{
-    //    Debug.Log($"Contact quality Node set successfully activated for headset: {headsetID}");
-    //    gameObject.SetActive(true);
-    //    DataStreamManager.Instance[headsetID].DevDataReceived += OnCQUpdate;
-    //}
 }

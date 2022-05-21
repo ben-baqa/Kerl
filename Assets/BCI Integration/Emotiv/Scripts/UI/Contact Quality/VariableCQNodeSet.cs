@@ -9,9 +9,12 @@ public class VariableCQNodeSet : CQNodeSet
     public GameObject nodePrefab;
     public Transform nodeList;
 
-    public override void Start()
+    Color[] nodeColours;
+
+    public override void Init(Color[] colours)
     {
         nodes = new CQNode[0];
+        nodeColours = colours;
     }
 
     public override void OnCQUpdate(DevData data)
@@ -19,16 +22,15 @@ public class VariableCQNodeSet : CQNodeSet
         int expectedNodeCount = data.cqHeaders.Count;
         if (nodes.Length != expectedNodeCount)
         {
-            Init(data, expectedNodeCount);
+            MakeNodes(data, expectedNodeCount);
         }
 
         foreach (CQNode node in nodes)
             node.UpdateQuality(data);
     }
 
-    void Init(DevData data, int count)
+    void MakeNodes(DevData data, int count)
     {
-        print("Initializing variable contact quality display");
         nodes = new CQNode[count];
         nodes[0] = MakeNode("Ref");
         for (int i = 1; i < count; i++)
@@ -37,14 +39,13 @@ public class VariableCQNodeSet : CQNodeSet
         }
 
         foreach (CQNode node in nodes)
-            node.SetColours(nodeColours);
+            node.Init(nodeColours);
     }
 
     CQNode MakeNode(string header)
     {
         CQNode node = Instantiate(nodePrefab, nodeList).GetComponentInChildren<CQNode>();
         node.channelID = header;
-        node.GetComponentInChildren<TextMeshProUGUI>().text = header;
         return node;
     }
 }

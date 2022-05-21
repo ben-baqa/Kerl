@@ -15,6 +15,9 @@ public class QualityHUD : MonoBehaviour
     public Image contactQualityBackground;
     public Sprite[] backgroundSprites;
 
+    string headsetID;
+    //DevData data
+
     float batteryUpdateTimer = 1;
     const float BATTERY_UPDATE_INTERVAL = 2f;
 
@@ -25,7 +28,14 @@ public class QualityHUD : MonoBehaviour
     }
     private void OnDestroy()
     {
+        DataStreamManager.Instance.Unsubscribe<DevData>(headsetID, OnCQUpdate);
         //DataProcessing.Instance.onContactQualityUpdated -= OnCQUpdate;
+    }
+
+    public void Init(string headset)
+    {
+        headsetID = headset;
+        DataStreamManager.Instance.SubscribeTo<DevData>(headset, OnCQUpdate);
     }
 
     void Update()
@@ -40,6 +50,11 @@ public class QualityHUD : MonoBehaviour
         //print($"Battery: {DataStreamManager.Instance.Battery()}," +
         //    $"Battery Max: {DataStreamManager.Instance.BatteryMax()}");
         //batteryIndicator.sprite = batterySprites[Index(batteryLevel * 100, batterySprites.Length)];
+    }
+
+    void OnCQUpdate(DevData data)
+    {
+
     }
 
     //void OnCQUpdate(object sender, System.EventArgs args)
