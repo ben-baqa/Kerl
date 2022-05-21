@@ -29,12 +29,12 @@ public class ContactQualityDisplay : MonoBehaviour
     private void OnEnable()
     {
         if (!string.IsNullOrEmpty(headsetID))
-            dataStreamManager.SubscribeTo<DevData>(headsetID, OnDevDataRecieved);
+            dataStreamManager.SubscribeTo<DevInfo>(headsetID, OnDevDataRecieved);
     }
     private void OnDisable()
     {
         if (!string.IsNullOrEmpty(headsetID))
-            dataStreamManager.Unsubscribe<DevData>(headsetID, OnDevDataRecieved);
+            dataStreamManager.Unsubscribe<DevInfo>(headsetID, OnDevDataRecieved);
     }
 
     public void Activate()
@@ -59,12 +59,13 @@ public class ContactQualityDisplay : MonoBehaviour
     public void AssignHeadset(string id)
     {
         if (!string.IsNullOrEmpty(headsetID))
-            dataStreamManager.Unsubscribe<DevData>(headsetID, OnDevDataRecieved);
+            dataStreamManager.Unsubscribe<DevInfo>(headsetID, OnDevDataRecieved);
         headsetID = id;
-        dataStreamManager.SubscribeTo<DevData>(headsetID, OnDevDataRecieved);
+        Cortex.SubscribeDeviceInfo(headsetID, OnDevDataRecieved);
+        //dataStreamManager.SubscribeTo<DevInfo>(headsetID, OnDevDataRecieved);
     }
 
-    void OnDevDataRecieved(DevData data)
+    void OnDevDataRecieved(DevInfo data)
     {
         activeDisplay?.OnCQUpdate(data);
         contactQualityPercentage.text = $"{data.cqOverall}%";

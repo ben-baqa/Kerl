@@ -28,14 +28,14 @@ public class QualityHUD : MonoBehaviour
     }
     private void OnDestroy()
     {
-        DataStreamManager.Instance.Unsubscribe<DevData>(headsetID, OnCQUpdate);
+        DataStreamManager.Instance.Unsubscribe<DevInfo>(headsetID, OnCQUpdate);
         //DataProcessing.Instance.onContactQualityUpdated -= OnCQUpdate;
     }
 
     public void Init(string headset)
     {
         headsetID = headset;
-        DataStreamManager.Instance.SubscribeTo<DevData>(headset, OnCQUpdate);
+        DataStreamManager.Instance.SubscribeTo<DevInfo>(headset, OnCQUpdate);
     }
 
     void Update()
@@ -52,7 +52,7 @@ public class QualityHUD : MonoBehaviour
         //batteryIndicator.sprite = batterySprites[Index(batteryLevel * 100, batterySprites.Length)];
     }
 
-    void OnCQUpdate(DevData data)
+    void OnCQUpdate(DevInfo data)
     {
 
     }
