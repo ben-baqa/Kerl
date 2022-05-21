@@ -27,7 +27,8 @@ public class ConnectToCortex : MonoBehaviour
     private void OnApplicationQuit()
     {
         Debug.Log("Application ending after " + Time.time + " seconds");
-        dataStream.Stop();
+        //dataStream.Stop();
+        Cortex.Stop();
     }
 
     string EmotivAppslicationPath()

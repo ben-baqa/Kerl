@@ -24,6 +24,10 @@ namespace EmotivUnityPlugin
         /// Maps each open session ID to the respective headset, used to enable subscriptions by headset ID
         /// </summary>
         Dictionary<string, string> headsetToSessionID;
+        /// <summary>
+        /// set when creating a session, used to send our headsetConnected event when first data comes in
+        /// </summary>
+        string connectingHeadset = null;
 
         
         public ConnectToCortexStates connectionState = ConnectToCortexStates.Service_connecting;
@@ -73,6 +77,15 @@ namespace EmotivUnityPlugin
         /// <param name="e"></param>
         private void OnStreamDataRecieved(object sender, StreamDataEventArgs e)
         {
+            if (connectingHeadset != null)
+            {
+                foreach (var kvp in headsetToSessionID)
+                    if (kvp.Key == connectingHeadset && kvp.Value == e.Sid)
+                    {
+                        HeadsetConnected(this, connectingHeadset);
+                        connectingHeadset = null;
+                    }
+            }
             //Debug.Log($"DataStreamManager: Stream Data received - {e.Sid}");
             lock (locker) if (sessions.ContainsKey(e.Sid))
                     sessions[e.Sid].OnStreamDataRecieved(e);
@@ -95,7 +108,7 @@ namespace EmotivUnityPlugin
                     dataSubscriber.AddStream(sessions[id], id, e.HeadsetId);
                 }
 
-                HeadsetConnected(this, e.HeadsetId);
+                //HeadsetConnected(this, e.HeadsetId);
                 Debug.Log($"Session created successfuly, new session id: {id}");
             }catch (System.Exception ex)
             {
@@ -163,9 +176,6 @@ namespace EmotivUnityPlugin
                 ctxClient.UpdateSession(authorizer.CortexToken, k.Key, "close");
             sessions.Clear();
             headsetToSessionID.Clear();
-
-            HeadsetFinder.Instance.StopQueryHeadset();
-            ctxClient.ForceCloseWSC();
         }
 
         /// <summary>
@@ -176,6 +186,7 @@ namespace EmotivUnityPlugin
         {
             Debug.Log($"Attempting to start session with headset: {headsetID}");
             ctxClient.CreateSession(authorizer.CortexToken, headsetID, "open");
+            connectingHeadset = headsetID;
         }
         /// <summary>
         /// Closes an individual session
@@ -206,7 +217,7 @@ namespace EmotivUnityPlugin
         /// <param name="headsetID">ID of the desired headset stream</param>
         /// <param name="callBack">Function to be called</param>
         /// <returns>true if successful</returns>
-        public bool SubscribeTo<T>(string headsetID, Action<T> callBack) where T : EventArgs
+        public bool SubscribeTo<T>(string headsetID, Action<T> callBack) where T : DataStreamEventArgs
         {
             if (string.IsNullOrEmpty(headsetID) || !headsetToSessionID.ContainsKey(headsetID))
             {
@@ -252,7 +263,7 @@ namespace EmotivUnityPlugin
         /// <param name="headsetID">ID of the desired headset stream</param>
         /// <param name="callBack">Function to be removed</param>
         /// <returns>true if successful</returns>
-        public bool Unsubscribe<T>(string headsetID, Action<T> callBack) where T : EventArgs
+        public bool Unsubscribe<T>(string headsetID, Action<T> callBack) where T : DataStreamEventArgs
         {
             if (string.IsNullOrEmpty(headsetID) || !headsetToSessionID.ContainsKey(headsetID))
             {
@@ -261,7 +272,7 @@ namespace EmotivUnityPlugin
                 return false;
             }
 
-            return dataSubscriber.UnSubscribeDataStream<T>(headsetID, callBack);
+            return dataSubscriber.UnsubscribeDataStream<T>(headsetID, callBack);
             //try
             //{
             //    DataStream dataStream = sessions[headsetToSessionID[headsetID]];

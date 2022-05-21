@@ -20,13 +20,6 @@ namespace EmotivUnityPlugin
                 Instance = this;
         }
 
-        // Start is called before the first frame update
-        void Start()
-        {
-            DontDestroyOnLoad(gameObject);
-        }
-
-        // Update is called once per frame
         void Update()
         {
             foreach (var subscriber in dataStreamSubscribers.Values)
@@ -66,7 +59,7 @@ namespace EmotivUnityPlugin
         /// <param name="headsetID">ID of the desired headset stream</param>
         /// <param name="callBack">Function to be called</param>
         /// <returns>true if successful</returns>
-        public bool SubscribeDataStream<T>(string headsetID, Action<T> callBack) where T : EventArgs
+        public bool SubscribeDataStream<T>(string headsetID, Action<T> callBack) where T : DataStreamEventArgs
         {
             try
             {
@@ -77,9 +70,9 @@ namespace EmotivUnityPlugin
                         dataStreamSubscriber.MentalCommandReceived +=
                             (object sender, MentalCommand data) => callBack(data as T);
                         break;
-                    case Type dType when dType == typeof(DevData):
+                    case Type dType when dType == typeof(DevInfo):
                         dataStreamSubscriber.DevDataReceived +=
-                            (object sender, DevData data) => callBack(data as T);
+                            (object sender, DevInfo data) => callBack(data as T);
                         break;
                     case Type sType when sType == typeof(SysEventArgs):
                         dataStreamSubscriber.SysEventReceived +=
@@ -106,7 +99,7 @@ namespace EmotivUnityPlugin
         /// <param name="headsetID">ID of the desired headset stream</param>
         /// <param name="callBack">Function to be called</param>
         /// <returns>true if successful</returns>
-        public bool UnSubscribeDataStream<T>(string headsetID, Action<T> callBack) where T : EventArgs
+        public bool UnsubscribeDataStream<T>(string headsetID, Action<T> callBack) where T : DataStreamEventArgs
         {
             if (!dataStreamSubscribers.ContainsKey(headsetID))
             {
@@ -123,9 +116,9 @@ namespace EmotivUnityPlugin
                         dataStreamSubscriber.MentalCommandReceived -=
                             (object sender, MentalCommand data) => callBack(data as T);
                         break;
-                    case Type dType when dType == typeof(DevData):
+                    case Type dType when dType == typeof(DevInfo):
                         dataStreamSubscriber.DevDataReceived -=
-                            (object sender, DevData data) => callBack(data as T);
+                            (object sender, DevInfo data) => callBack(data as T);
                         break;
                     case Type sType when sType == typeof(SysEventArgs):
                         dataStreamSubscriber.SysEventReceived -=
@@ -144,10 +137,6 @@ namespace EmotivUnityPlugin
             }
         }
 
-        public bool SubscribeMentalCommands(string headsetID, Action<MentalCommand> action) => SubscribeDataStream(headsetID, action);
-        public bool SubscribeDevInfo(string headsetID, Action<DevData> action) => SubscribeDataStream(headsetID, action);
-        public bool SubsribeSysEvents(string headsetID, Action<SysEventArgs> action) => SubscribeDataStream(headsetID, action);
-
     }
 
     public class DataStreamEventBuffer
@@ -156,7 +145,7 @@ namespace EmotivUnityPlugin
         public string sessionID, headsetID;
 
         EventUpdater<MentalCommand> mentalCommandEventHandler = new EventUpdater<MentalCommand>();
-        EventUpdater<DevData> devDataEventHandler = new EventUpdater<DevData>();
+        EventUpdater<DevInfo> devDataEventHandler = new EventUpdater<DevInfo>();
         EventUpdater<SysEventArgs> sysEventHandler = new EventUpdater<SysEventArgs>();
 
         public event EventHandler<MentalCommand> MentalCommandReceived
@@ -164,7 +153,7 @@ namespace EmotivUnityPlugin
             add { mentalCommandEventHandler.OnNewData += value; }
             remove { mentalCommandEventHandler.OnNewData -= value; }
         }
-        public event EventHandler<DevData> DevDataReceived
+        public event EventHandler<DevInfo> DevDataReceived
         {
             add { devDataEventHandler.OnNewData += value; }
             remove { devDataEventHandler.OnNewData -= value; }
@@ -192,7 +181,7 @@ namespace EmotivUnityPlugin
             sysEventHandler.Process();
         }
 
-        public class EventUpdater<T> where T : EventArgs
+        public class EventUpdater<T> where T : DataStreamEventArgs
         {
             public event EventHandler<T> OnNewData;
 

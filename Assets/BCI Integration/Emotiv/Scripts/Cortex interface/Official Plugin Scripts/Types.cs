@@ -536,8 +536,11 @@ namespace EmotivUnityPlugin
         public string HeadsetId { get; set; }
     }
 
+    // base class for Data Stream Event parameters
+    public abstract class DataStreamEventArgs {
+    };
     // metal command data object
-    public class MentalCommand : EventArgs
+    public class MentalCommand : DataStreamEventArgs
     {
         public MentalCommand(double time, string act, double pow)
         {
@@ -545,9 +548,9 @@ namespace EmotivUnityPlugin
             action     = act;
             power     = pow;
         }
-        public double timestamp { get; set; }
-        public string action { get; set; }
-        public double power { get; set; }
+        public double timestamp;
+        public string action;
+        public double power;
 
         public override string ToString()
         {
@@ -583,17 +586,17 @@ namespace EmotivUnityPlugin
     }
 
     // Sys events data object
-    public class SysEventArgs : EventArgs
+    public class SysEventArgs : DataStreamEventArgs
     {
-        public SysEventArgs(double time, string detection, string eventMsg)
+        public SysEventArgs(double time, string detect, string eventMsg)
         {
-            Time            = time;
-            Detection       = detection;
-            EventMessage    = eventMsg;
+            timestamp            = time;
+            detection       = detect;
+            eventMessage    = eventMsg;
         }
-        public double Time { get; set; }
-        public string Detection { get; set; }
-        public string EventMessage { get; set; }
+        public double timestamp;
+        public string detection;
+        public string eventMessage;
     }
 
     // Detection information

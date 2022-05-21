@@ -25,7 +25,7 @@ public class CQNode : MonoBehaviour
             label.text = channelID;
     }
 
-    public void UpdateQuality(DevData data)
+    public void UpdateQuality(DevInfo data)
     {
         int val;
         if (data.contactQuality.ContainsKey(channel))
@@ -37,7 +37,7 @@ public class CQNode : MonoBehaviour
             display.color = colours[val];
     }
 
-    int GetReferenceQuality(DevData data)
+    int GetReferenceQuality(DevInfo data)
     {
         foreach (var channel in data.contactQuality.Values)
             if (channel > (int)ContactQualityValue.VERY_BAD)
