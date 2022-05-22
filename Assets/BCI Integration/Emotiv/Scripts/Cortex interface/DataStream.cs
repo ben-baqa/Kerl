@@ -13,10 +13,9 @@ namespace EmotivUnityPlugin
     {
         public event EventHandler<MentalCommand> MentalCommandReceived;
         public event EventHandler<SysEventArgs> SysEventReceived;
-        public event EventHandler<DevInfo> DevDataReceived;
+        public event EventHandler<DeviceInfo> DevDataReceived;
 
-        DevInfo devData;
-
+        DeviceInfo devData;
         public MentalCommandBuffer mentalCommands;
 
         string sessionID;
@@ -38,7 +37,7 @@ namespace EmotivUnityPlugin
 
         public void ConfigureDevHeaders(JArray cols)
         {
-            devData = new DevInfo(cols);
+            devData = new DeviceInfo(cols);
         }
 
         public void OnStreamDataRecieved(StreamDataEventArgs e)
@@ -96,7 +95,7 @@ namespace EmotivUnityPlugin
     /// <summary>
     /// Represents and handles data from the devinfo channel
     /// </summary>
-    public class DevInfo: DataStreamEventArgs
+    public class DeviceInfo: DataStreamEventArgs
     {
         public List<string> cqHeaders;
         public Dictionary<Channel_t, float> contactQuality;
@@ -107,7 +106,7 @@ namespace EmotivUnityPlugin
         /// <summary>
         /// Initialize object with data headers
         /// </summary>
-        public DevInfo(JArray cols)
+        public DeviceInfo(JArray cols)
         {
             cqHeaders = new List<string>();
             contactQuality = new Dictionary<Channel_t, float>();

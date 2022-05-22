@@ -41,6 +41,8 @@ namespace EmotivUnityPlugin
          * 
          * start session
          * close session
+         * query headsets
+         * 
          * 
          * sub/unsub to:
          *      data streams, including mental commands, devInfo, and system events by headset session
@@ -86,12 +88,15 @@ namespace EmotivUnityPlugin
             GameObject eventBufferObject = new GameObject();
             GameObject.DontDestroyOnLoad(eventBufferObject);
             eventBufferObject.name = "Event Buffer Object";
+
             // add data subscriber (data stream event buffer handler)
             dataSubscriber = eventBufferObject.AddComponent<DataSubscriber>();
+
             // add buffer for headset query completion
             queryHeadsetBuffer = new EventBuffer<List<Headset>>();
             headsetFinder.QueryHeadsetOK += queryHeadsetBuffer.OnParentEvent;
             eventBufferObject.AddComponent<EventBufferInstance>().buffer = queryHeadsetBuffer;
+
             //add buffer for headset connection
             headsetConnectedBuffer = new EventBuffer<string>();
             dataStreamManager.HeadsetConnected += headsetConnectedBuffer.OnParentEvent;
@@ -111,19 +116,34 @@ namespace EmotivUnityPlugin
             ctxClient.ForceCloseWSC();
         }
 
-        public static void StartSession(string headsetID)
-        {
+        /// <summary>
+        /// Start a session with the given headset,
+        /// will automatically subscribe to basic data streams
+        /// and trigger HeadsetConnected event
+        /// </summary>
+        /// <param name="headsetID"></param>
+        public static void StartSession(string headsetID) => dataStreamManager.StartSession(headsetID);
+        /// <summary>
+        /// Ends the sessions specified by the given ID
+        /// </summary>
+        public static void EndSession(string sessionID) => dataStreamManager.CloseSession(sessionID);
 
-        }
-
-        public static void EndSession(string headsetID)
-        {
-
-        }
-
+        /// <summary>
+        /// Trigger a query into the availaale headsets,
+        /// subscribe to QueryHeadsetOK for result
+        /// </summary>
         public static void QueryHeadsets()
         {
             headsetFinder.TriggerQuery();
+        }
+
+        /// <summary>
+        /// Connect a Device that is discovered, but unavailable
+        /// (bluetooth pairing, basically)
+        /// </summary>
+        public static void ConnectDevice(string headsetID)
+        {
+            ctxClient.ConnectDevice(headsetID);
         }
 
         /// <summary>
@@ -163,23 +183,23 @@ namespace EmotivUnityPlugin
         /// <summary>
         /// Simplified interface to SubscribeDataStream for device information
         /// </summary>
-        public static bool SubscribeDeviceInfo(string headsetID, Action<DevInfo> action)
+        public static bool SubscribeDeviceInfo(string headsetID, Action<DeviceInfo> action)
             => SubscribeDataStream(headsetID, action);
         /// <summary>
         /// Simplified interface to UnsubscribeDataStream for devide information
         /// </summary>
-        public static bool UnsubscribeDeviceInfo(string headsetID, Action<DevInfo> action)
+        public static bool UnsubscribeDeviceInfo(string headsetID, Action<DeviceInfo> action)
             => UnsubscribeDataStream(headsetID, action);
 
         /// <summary>
         /// Simplified interface to SubscribeDataStream for system events
         /// </summary>
-        public static bool SubscribeSysEvents(string headsetID, Action<DevInfo> action)
+        public static bool SubscribeSysEvents(string headsetID, Action<DeviceInfo> action)
             => SubscribeDataStream(headsetID, action);
         /// <summary>
         /// Simplified interface to UnsubscribeDataStream for system events
         /// </summary>
-        public static bool UnsubscribeSysEvents(string headsetID, Action<DevInfo> action)
+        public static bool UnsubscribeSysEvents(string headsetID, Action<DeviceInfo> action)
             => UnsubscribeDataStream(headsetID, action);
     }
 }

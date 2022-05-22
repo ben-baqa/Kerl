@@ -16,62 +16,41 @@ public class QualityHUD : MonoBehaviour
     public Sprite[] backgroundSprites;
 
     string headsetID;
-    //DevData data
 
-    float batteryUpdateTimer = 1;
-    const float BATTERY_UPDATE_INTERVAL = 2f;
-
-    
-    void Start()
+    private void Start()
     {
-        //DataProcessing.Instance.onContactQualityUpdated += OnCQUpdate;
+        Cortex.HeadsetConnected += Init;
+    }
+
+    void OnEnable()
+    {
+        if (!string.IsNullOrEmpty(headsetID))
+            Cortex.SubscribeDeviceInfo(headsetID, OnCQUpdate);
     }
     private void OnDestroy()
     {
-        DataStreamManager.Instance.Unsubscribe<DevInfo>(headsetID, OnCQUpdate);
-        //DataProcessing.Instance.onContactQualityUpdated -= OnCQUpdate;
+        Cortex.UnsubscribeDeviceInfo(headsetID, OnCQUpdate);
     }
 
-    public void Init(string headset)
+    public void Init(object sender, string headset)
     {
         headsetID = headset;
-        DataStreamManager.Instance.SubscribeTo<DevInfo>(headset, OnCQUpdate);
+        Cortex.SubscribeDeviceInfo(headset, OnCQUpdate);
     }
 
-    void Update()
+    void OnCQUpdate(DeviceInfo data)
     {
-        batteryUpdateTimer += Time.deltaTime;
-        if (batteryUpdateTimer < BATTERY_UPDATE_INTERVAL)
-            return;
-        batteryUpdateTimer -= BATTERY_UPDATE_INTERVAL;
+        double quality = data.cqOverall;
+        contactQualityText.text = $"{quality}";
 
-        //double batteryLevel = DataStreamManager.Instance.Battery()
-        //    / DataStreamManager.Instance.BatteryMax();
-        //print($"Battery: {DataStreamManager.Instance.Battery()}," +
-        //    $"Battery Max: {DataStreamManager.Instance.BatteryMax()}");
-        //batteryIndicator.sprite = batterySprites[Index(batteryLevel * 100, batterySprites.Length)];
+        contactQualityText.color = colours[PercentToIndex(quality, colours.Length)];
+        contactQualityBackground.sprite =
+        backgroundSprites[PercentToIndex(quality, backgroundSprites.Length)];
+
+        batteryIndicator.sprite = batterySprites[PercentToIndex(data.battery, batterySprites.Length)];
     }
 
-    void OnCQUpdate(DevInfo data)
-    {
-
-    }
-
-    //void OnCQUpdate(object sender, System.EventArgs args)
-    //{
-    //    double quality = DataStreamManager.Instance.GetContactQuality(Channel_t.CHAN_CQ_OVERALL);// DataProcessing.Instance.GetCQOverAll();
-    //    contactQualityText.text = $"{(int)quality}";
-
-    //    contactQualityText.color = colours[Index(quality, colours.Length)];
-    //    contactQualityBackground.sprite =
-    //        backgroundSprites[Index(quality,backgroundSprites.Length)];
-
-    //    double batteryLevel = DataStreamManager.Instance.GetContactQuality(Channel_t.CHAN_BATTERY_PERCENT);
-    //    //print($"Battery: {batteryLevel}");
-    //    batteryIndicator.sprite = batterySprites[Index(batteryLevel, batterySprites.Length)];
-    //}
-
-    int Index(double percentage, int options)
+    int PercentToIndex(double percentage, int options)
     {
         return (int)Mathf.Clamp((float)percentage * options / 101 , 0, options - 1);
     }

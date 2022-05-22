@@ -7,11 +7,13 @@ using System.Linq;
 
 namespace EmotivUnityPlugin
 {
+    /// <summary>
+    /// Provides buffered events from active data streams to Unity synchronous events
+    /// </summary>
     public class DataSubscriber : MonoBehaviour
     {
         public static DataSubscriber Instance;
 
-        //List<DataStreamSubscriber> dataStreamSubscribers = new List<DataStreamSubscriber>();
         Dictionary<string, DataStreamEventBuffer> dataStreamSubscribers = new Dictionary<string, DataStreamEventBuffer>();
 
         DataSubscriber()
@@ -26,6 +28,12 @@ namespace EmotivUnityPlugin
                 subscriber.Process();
         }
 
+        /// <summary>
+        /// Add a new data stream to the event handling process
+        /// </summary>
+        /// <param name="newStream">Stream to add</param>
+        /// <param name="sessionID">id of the corresponding session</param>
+        /// <param name="headsetID">id of the relevant headset</param>
         public void AddStream(DataStream newStream, string sessionID, string headsetID)
         {
             try
@@ -61,6 +69,11 @@ namespace EmotivUnityPlugin
         /// <returns>true if successful</returns>
         public bool SubscribeDataStream<T>(string headsetID, Action<T> callBack) where T : DataStreamEventArgs
         {
+            if (string.IsNullOrEmpty(headsetID) || !dataStreamSubscribers.ContainsKey(headsetID))
+            {
+                Debug.LogWarning("DataSubscriber: attempted to Subscribe to a headset stream that doesn't exist");
+                return false;
+            }
             try
             {
                 DataStreamEventBuffer dataStreamSubscriber = dataStreamSubscribers[headsetID];
@@ -70,9 +83,9 @@ namespace EmotivUnityPlugin
                         dataStreamSubscriber.MentalCommandReceived +=
                             (object sender, MentalCommand data) => callBack(data as T);
                         break;
-                    case Type dType when dType == typeof(DevInfo):
+                    case Type dType when dType == typeof(DeviceInfo):
                         dataStreamSubscriber.DevDataReceived +=
-                            (object sender, DevInfo data) => callBack(data as T);
+                            (object sender, DeviceInfo data) => callBack(data as T);
                         break;
                     case Type sType when sType == typeof(SysEventArgs):
                         dataStreamSubscriber.SysEventReceived +=
@@ -101,9 +114,9 @@ namespace EmotivUnityPlugin
         /// <returns>true if successful</returns>
         public bool UnsubscribeDataStream<T>(string headsetID, Action<T> callBack) where T : DataStreamEventArgs
         {
-            if (!dataStreamSubscribers.ContainsKey(headsetID))
+            if (string.IsNullOrEmpty(headsetID) || !dataStreamSubscribers.ContainsKey(headsetID))
             {
-                Debug.LogWarning("DataSubscriber: attempted to unsubscribe from a headset stream that doesn't exist");
+                Debug.LogWarning("DataSubscriber: attempted to Unsubscribe from a headset stream that doesn't exist");
                 return false;
             }
 
@@ -116,9 +129,9 @@ namespace EmotivUnityPlugin
                         dataStreamSubscriber.MentalCommandReceived -=
                             (object sender, MentalCommand data) => callBack(data as T);
                         break;
-                    case Type dType when dType == typeof(DevInfo):
+                    case Type dType when dType == typeof(DeviceInfo):
                         dataStreamSubscriber.DevDataReceived -=
-                            (object sender, DevInfo data) => callBack(data as T);
+                            (object sender, DeviceInfo data) => callBack(data as T);
                         break;
                     case Type sType when sType == typeof(SysEventArgs):
                         dataStreamSubscriber.SysEventReceived -=
@@ -139,29 +152,33 @@ namespace EmotivUnityPlugin
 
     }
 
+    /// <summary>
+    /// Specialized Event Buffer than handles desired streams of each open session
+    /// You will need to add to this to manage additional data streams
+    /// </summary>
     public class DataStreamEventBuffer
     {
         DataStream dataStream;
         public string sessionID, headsetID;
 
-        EventUpdater<MentalCommand> mentalCommandEventHandler = new EventUpdater<MentalCommand>();
-        EventUpdater<DevInfo> devDataEventHandler = new EventUpdater<DevInfo>();
-        EventUpdater<SysEventArgs> sysEventHandler = new EventUpdater<SysEventArgs>();
+        EventBuffer<MentalCommand> mentalCommandEventHandler = new EventBuffer<MentalCommand>();
+        EventBuffer<DeviceInfo> devDataEventHandler = new EventBuffer<DeviceInfo>();
+        EventBuffer<SysEventArgs> sysEventHandler = new EventBuffer<SysEventArgs>();
 
         public event EventHandler<MentalCommand> MentalCommandReceived
         {
-            add { mentalCommandEventHandler.OnNewData += value; }
-            remove { mentalCommandEventHandler.OnNewData -= value; }
+            add { mentalCommandEventHandler.Event += value; }
+            remove { mentalCommandEventHandler.Event -= value; }
         }
-        public event EventHandler<DevInfo> DevDataReceived
+        public event EventHandler<DeviceInfo> DevDataReceived
         {
-            add { devDataEventHandler.OnNewData += value; }
-            remove { devDataEventHandler.OnNewData -= value; }
+            add { devDataEventHandler.Event += value; }
+            remove { devDataEventHandler.Event -= value; }
         }
         public event EventHandler<SysEventArgs> SysEventReceived
         {
-            add { sysEventHandler.OnNewData += value; }
-            remove { sysEventHandler.OnNewData -= value; }
+            add { sysEventHandler.Event += value; }
+            remove { sysEventHandler.Event -= value; }
         }
 
         public DataStreamEventBuffer(DataStream stream, string sessionID, string headsetID)
@@ -179,34 +196,6 @@ namespace EmotivUnityPlugin
             mentalCommandEventHandler.Process();
             devDataEventHandler.Process();
             sysEventHandler.Process();
-        }
-
-        public class EventUpdater<T> where T : DataStreamEventArgs
-        {
-            public event EventHandler<T> OnNewData;
-
-            bool newData;
-            T data;
-
-            public void Process()
-            {
-                if (newData)
-                {
-                    newData = false;
-                    if (OnNewData != null)
-                    {
-                        //Debug.Log($"Sending out new data: {data}");
-                        OnNewData(this, data);
-                    }
-                }
-            }
-
-            public void OnParentEvent(object sender, T args)
-            {
-                //Debug.Log($"New data received: {args}");
-                data = args;
-                newData = true;
-            }
         }
     }
 }

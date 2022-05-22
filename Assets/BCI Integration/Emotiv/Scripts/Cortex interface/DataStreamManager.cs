@@ -8,6 +8,9 @@ using System.Linq;
 
 namespace EmotivUnityPlugin
 {
+    /// <summary>
+    /// Manages the creation and data subcription of mutliple headset sessios at once
+    /// </summary>
     public class DataStreamManager
     {
         public static DataStreamManager Instance { get; } = new DataStreamManager();
@@ -44,11 +47,6 @@ namespace EmotivUnityPlugin
             add { HeadsetFinder.Instance.QueryHeadsetOK += value; }
             remove { HeadsetFinder.Instance.QueryHeadsetOK -= value; }
         }
-
-        //private DataStreamManager()
-        //{
-        //    Init();
-        //}
 
         public void Init()
         {
@@ -146,27 +144,6 @@ namespace EmotivUnityPlugin
         }
 
         /// <summary>
-        /// Initiates the authorizer and cortex client,
-        /// called externally at the beginning of the program
-        /// </summary>
-        /// <param name="debug">enable verbose logs</param>
-        /// <param name="license">uneccessary in most cases,
-        /// if you need this you probably know what you are doing and will be changing this code anyways</param>
-        //public void Start(bool debug, string license = "")
-        //{
-        //    ctxClient.InitWebSocketClient();
-        //    // Start connecting to cortex service
-        //    authorizer.StartAction(license);
-
-        //    // create DataSubscriber gameobject to drive in engine events
-        //    GameObject dataSubscriberGameObject = new GameObject();
-        //    dataSubscriberGameObject.name = "DataSubscriber Object";
-        //    dataSubscriber = dataSubscriberGameObject.AddComponent<DataSubscriber>();
-
-        //    debugPrint = debug;
-        //}
-
-        /// <summary>
         /// Stops the connection to the Cortex service,
         /// called externally (preferably in OnApplicationQuit)
         /// </summary>
@@ -199,109 +176,6 @@ namespace EmotivUnityPlugin
             dataSubscriber.RemoveStreamBySessionID(sessionID);
             foreach (var item in headsetToSessionID.Where(kvp => kvp.Value == sessionID))
                 headsetToSessionID.Remove(item.Key);
-        }
-
-        /// <summary>
-        /// Connect a Device that is discovered, but unavailable
-        /// </summary>
-        public void ConnectDevice(string headsetID)
-        {
-            ctxClient.ConnectDevice(headsetID);
-        }
-
-        /// <summary>
-        /// Connects the provided callback function to the typed
-        /// data stream of the given headset, provided it exists.
-        /// </summary>
-        /// <typeparam name="T">The type of data to subscribe to</typeparam>
-        /// <param name="headsetID">ID of the desired headset stream</param>
-        /// <param name="callBack">Function to be called</param>
-        /// <returns>true if successful</returns>
-        public bool SubscribeTo<T>(string headsetID, Action<T> callBack) where T : DataStreamEventArgs
-        {
-            if (string.IsNullOrEmpty(headsetID) || !headsetToSessionID.ContainsKey(headsetID))
-            {
-                Debug.LogWarning("Attempted to Subscribe to a headset stream that doesn't exist");
-                return false;
-            }
-
-            return dataSubscriber.SubscribeDataStream(headsetID, callBack);
-            //try
-            //{
-            //    DataStream dataStream = sessions[headsetToSessionID[headsetID]];
-            //    switch (typeof(T))
-            //    {
-            //        case Type mType when mType == typeof(MentalCommand):
-            //            dataStream.MentalCommandReceived +=
-            //                (object sender, MentalCommand data) => callBack(data as T);
-            //            break;
-            //        case Type dType when dType == typeof(DevData):
-            //            dataStream.DevDataReceived +=
-            //                (object sender, DevData data) => callBack(data as T);
-            //            break;
-            //        case Type sType when sType == typeof(SysEventArgs):
-            //            dataStream.SysEventReceived +=
-            //                (object sender, SysEventArgs data) => callBack(data as T);
-            //            break;
-            //        default:
-            //            Debug.LogWarning($"Attempted to subscribe to unsupported data stream: {typeof(T)}");
-            //            return false;
-            //    }
-            //    return true;
-            //}
-            //catch (Exception e)
-            //{
-            //    Debug.LogError(e);
-            //    return false;
-            //}
-        }
-        /// <summary>
-        /// Disconnects the provided callback function from the typed
-        /// data stream of the given headset, provided it exists
-        /// </summary>
-        /// <typeparam name="T">The type of data to subscribe to</typeparam>
-        /// <param name="headsetID">ID of the desired headset stream</param>
-        /// <param name="callBack">Function to be removed</param>
-        /// <returns>true if successful</returns>
-        public bool Unsubscribe<T>(string headsetID, Action<T> callBack) where T : DataStreamEventArgs
-        {
-            if (string.IsNullOrEmpty(headsetID) || !headsetToSessionID.ContainsKey(headsetID))
-            {
-                if (Cortex.debugPrint)
-                    Debug.LogWarning("Attempted to Unsubscribe from a headset stream that doesn't exist");
-                return false;
-            }
-
-            return dataSubscriber.UnsubscribeDataStream<T>(headsetID, callBack);
-            //try
-            //{
-            //    DataStream dataStream = sessions[headsetToSessionID[headsetID]];
-            //    switch (typeof(T))
-            //    {
-            //        case Type mType when mType == typeof(MentalCommand):
-            //            dataStream.MentalCommandReceived -=
-            //                (object sender, MentalCommand data) => callBack(data as T);
-            //            break;
-            //        case Type dType when dType == typeof(DevData):
-            //            dataStream.DevDataReceived -=
-            //                (object sender, DevData data) => callBack(data as T);
-            //            break;
-            //        case Type sType when sType == typeof(SysEventArgs):
-            //            dataStream.SysEventReceived -=
-            //                (object sender, SysEventArgs data) => callBack(data as T);
-            //            break;
-            //        default:
-            //            if (debugPrint)
-            //                Debug.LogWarning($"Attempted to Unsibscribe from unsupported data stream: {typeof(T)}");
-            //            return false;
-            //    }
-            //    return true;
-            //}
-            //catch (Exception e)
-            //{
-            //    Debug.LogError(e);
-            //    return false;
-            //}
         }
     }
 }
