@@ -17,7 +17,7 @@ public class VariableCQNodeSet : CQNodeSet
         nodeColours = colours;
     }
 
-    public override void OnCQUpdate(DevInfo data)
+    public override void OnCQUpdate(DeviceInfo data)
     {
         int expectedNodeCount = data.cqHeaders.Count;
         if (nodes.Length != expectedNodeCount)
@@ -29,7 +29,7 @@ public class VariableCQNodeSet : CQNodeSet
             node.UpdateQuality(data);
     }
 
-    void MakeNodes(DevInfo data, int count)
+    void MakeNodes(DeviceInfo data, int count)
     {
         nodes = new CQNode[count];
         nodes[0] = MakeNode("Ref");

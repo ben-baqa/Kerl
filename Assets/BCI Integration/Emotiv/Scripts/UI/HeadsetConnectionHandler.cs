@@ -8,16 +8,8 @@ using Newtonsoft.Json.Linq;
 
 public class HeadsetConnectionHandler : MonoBehaviour
 {
-    HeadsetFinder headsetFinder = HeadsetFinder.Instance;
-    //DataStreamManager data = DataStreamManager.Instance;
-
     [SerializeField] GameObject headsetItemPrefab;
     [SerializeField] Transform headsetList;
-
-    //bool connected = false;
-
-    //List<Headset> headsets;
-    //bool newInfo = false;
 
     public ContactQualityDisplay contactQualityDisplay;
 
@@ -26,38 +18,17 @@ public class HeadsetConnectionHandler : MonoBehaviour
         Cortex.QueryHeadsetOK += OnHeadsetChanged;
         Cortex.HeadsetConnected += OnConnect;
 
-        //data.HeadsetConnected += OnConnect;
-        //data.QueryHeadsetOK += OnHeadsetChanged;
         TriggerHeadsetQuery();
     }
     private void OnDisable()
     {
-        //data.HeadsetConnected -= OnConnect;
-        //data.QueryHeadsetOK += OnHeadsetChanged;
-
         Cortex.QueryHeadsetOK -= OnHeadsetChanged;
         Cortex.HeadsetConnected -= OnConnect;
-    }
-
-    private void Update()
-    {
-        //if(connected)
-        //{
-        //}
-        //if (newInfo)
-        //{
-        //    newInfo = false;
-        //    ShowHeadsets();
-        //}
     }
 
     // called by the event system when there is a change in the list of available headsets
     private void OnHeadsetChanged(object sender, List<Headset> headsets)
     {
-        //newInfo = true;
-        //headsets = newHeadsets;
-        //if (connected)
-        //    return;
         // destroy all headsets in list
         foreach (Transform child in headsetList)
             Destroy(child.gameObject);
@@ -83,15 +54,10 @@ public class HeadsetConnectionHandler : MonoBehaviour
         }
     }
 
-    private void ShowHeadsets()
-    {
-    }
-
     private void OnConnect(object sender, string headsetID)
     {
         print("=================== Headset connected!");
-        //training.QueryProfile();
-        //connected = true;
+
         contactQualityDisplay.AssignHeadset(headsetID);
         contactQualityDisplay.Activate();
         gameObject.SetActive(false);
@@ -99,6 +65,6 @@ public class HeadsetConnectionHandler : MonoBehaviour
 
     public void TriggerHeadsetQuery()
     {
-        headsetFinder.TriggerQuery();
+        Cortex.QueryHeadsets();
     }
 }

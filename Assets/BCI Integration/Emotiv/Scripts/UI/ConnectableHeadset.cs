@@ -20,14 +20,6 @@ public class ConnectableHeadset : MonoBehaviour
         dongleButton.onClick.AddListener(InitiateConnection);
         cableButton.onClick.AddListener(InitiateConnection);
         pairButton.onClick.AddListener(Pair);
-
-        //DataProcessing.Instance.HeadsetConnected += OnConnection;
-        //DataProcessing.Instance.HeadsetConnectFail += OnConnectionFailed;
-    }
-    private void OnDestroy()
-    {
-        //DataProcessing.Instance.HeadsetConnected -= OnConnection;
-        //DataProcessing.Instance.HeadsetConnectFail -= OnConnectionFailed;
     }
 
     public void Init(Headset info)
@@ -46,7 +38,7 @@ public class ConnectableHeadset : MonoBehaviour
 
     void Pair()
     {
-        DataStreamManager.Instance.ConnectDevice(headsetID);
+        Cortex.ConnectDevice(headsetID);
     }
 
     void InitiateConnection()
@@ -57,10 +49,7 @@ public class ConnectableHeadset : MonoBehaviour
 
         connectingText.gameObject.SetActive(true);
 
-        List<string> dataStreamList = new List<string>() {
-            DataStreamName.SysEvents, DataStreamName.MentalCommands, DataStreamName.DevInfos };
-        DataStreamManager.Instance.StartSession(headsetID);
-        //DataProcessing.Instance.SetConnectedHeadset(headsetInfo);
+        Cortex.StartSession(headsetID);
     }
 
     void OnConnection(object sender, string headsetId)

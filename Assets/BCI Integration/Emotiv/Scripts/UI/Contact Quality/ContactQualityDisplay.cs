@@ -7,8 +7,6 @@ using Text = TMPro.TextMeshProUGUI;
 
 public class ContactQualityDisplay : MonoBehaviour
 {
-    DataStreamManager dataStreamManager = DataStreamManager.Instance;
-
     public NodeSet[] displays;
     public CQNodeSet fallback;
     public Color[] nodeColours;
@@ -29,12 +27,12 @@ public class ContactQualityDisplay : MonoBehaviour
     private void OnEnable()
     {
         if (!string.IsNullOrEmpty(headsetID))
-            dataStreamManager.SubscribeTo<DevInfo>(headsetID, OnDevDataRecieved);
+            Cortex.SubscribeDeviceInfo(headsetID, OnDevDataRecieved);
     }
     private void OnDisable()
     {
         if (!string.IsNullOrEmpty(headsetID))
-            dataStreamManager.Unsubscribe<DevInfo>(headsetID, OnDevDataRecieved);
+            Cortex.UnsubscribeDeviceInfo(headsetID, OnDevDataRecieved);
     }
 
     public void Activate()
@@ -59,13 +57,12 @@ public class ContactQualityDisplay : MonoBehaviour
     public void AssignHeadset(string id)
     {
         if (!string.IsNullOrEmpty(headsetID))
-            dataStreamManager.Unsubscribe<DevInfo>(headsetID, OnDevDataRecieved);
+            Cortex.UnsubscribeDeviceInfo(headsetID, OnDevDataRecieved);
         headsetID = id;
         Cortex.SubscribeDeviceInfo(headsetID, OnDevDataRecieved);
-        //dataStreamManager.SubscribeTo<DevInfo>(headsetID, OnDevDataRecieved);
     }
 
-    void OnDevDataRecieved(DevInfo data)
+    void OnDevDataRecieved(DeviceInfo data)
     {
         activeDisplay?.OnCQUpdate(data);
         contactQualityPercentage.text = $"{data.cqOverall}%";

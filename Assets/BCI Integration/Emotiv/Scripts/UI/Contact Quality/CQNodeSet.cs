@@ -21,7 +21,7 @@ public class CQNodeSet : MonoBehaviour
             node.Init(nodeColours);
     }
 
-    public virtual void OnCQUpdate(DevInfo data)
+    public virtual void OnCQUpdate(DeviceInfo data)
     {
         foreach (CQNode node in nodes)
             node.UpdateQuality(data);
