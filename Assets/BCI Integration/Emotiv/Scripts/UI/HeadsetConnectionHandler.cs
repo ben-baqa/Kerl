@@ -27,7 +27,7 @@ public class HeadsetConnectionHandler : MonoBehaviour
     }
 
     // called by the event system when there is a change in the list of available headsets
-    private void OnHeadsetChanged(object sender, List<Headset> headsets)
+    private void OnHeadsetChanged(List<Headset> headsets)
     {
         // destroy all headsets in list
         foreach (Transform child in headsetList)
@@ -54,7 +54,7 @@ public class HeadsetConnectionHandler : MonoBehaviour
         }
     }
 
-    private void OnConnect(object sender, string headsetID)
+    private void OnConnect(string headsetID)
     {
         print("=================== Headset connected!");
 
