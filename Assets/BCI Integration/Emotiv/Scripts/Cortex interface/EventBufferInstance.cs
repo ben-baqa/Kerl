@@ -37,6 +37,27 @@ namespace EmotivUnityPlugin
             }
         }
 
+        public void Subscribe(Action<T> action)
+        {
+            Event += (object o, T args) => action(args);
+        }
+
+        public void Unsubscribe(Action<T> action)
+        {
+            Event -= (object o, T args) => action(args);
+        }
+
+        public static EventBuffer<T> operator +(EventBuffer<T> lhs, Action<T> rhs)
+        {
+            lhs.Subscribe(rhs);
+            return lhs;
+        }
+        public static EventBuffer<T> operator -(EventBuffer<T> lhs, Action<T> rhs)
+        {
+            lhs.Unsubscribe(rhs);
+            return lhs;
+        }
+
         public void OnParentEvent(object sender, T args)
         {
             trigger = true;

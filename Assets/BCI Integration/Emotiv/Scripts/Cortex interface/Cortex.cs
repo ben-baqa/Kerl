@@ -20,21 +20,10 @@ namespace EmotivUnityPlugin
         public static bool debugPrint;
 
         // Event buffers, enable event calls within Unity from other threads
-        static EventBuffer<List<Headset>> queryHeadsetBuffer;
-        static EventBuffer<string> headsetConnectedBuffer;
-        
-        // Events called from event buffers
-        public static event EventHandler<List<Headset>> QueryHeadsetOK
-        {
-            add { queryHeadsetBuffer.Event += value; }
-            remove { queryHeadsetBuffer.Event -= value; }
-        }
-        public static event EventHandler<string> HeadsetConnected
-        {
-            add { headsetConnectedBuffer.Event += value; }
-            remove { headsetConnectedBuffer.Event -= value; }
-        }
+        public static EventBuffer<List<Headset>> QueryHeadsetOK;
+        public static EventBuffer<string> HeadsetConnected;
 
+        public static TrainingHandler training;
         /*
          * Initiate
          * Stop
@@ -93,14 +82,18 @@ namespace EmotivUnityPlugin
             dataSubscriber = eventBufferObject.AddComponent<DataSubscriber>();
 
             // add buffer for headset query completion
-            queryHeadsetBuffer = new EventBuffer<List<Headset>>();
-            headsetFinder.QueryHeadsetOK += queryHeadsetBuffer.OnParentEvent;
-            eventBufferObject.AddComponent<EventBufferInstance>().buffer = queryHeadsetBuffer;
+            QueryHeadsetOK = new EventBuffer<List<Headset>>();
+            headsetFinder.QueryHeadsetOK += QueryHeadsetOK.OnParentEvent;
+            eventBufferObject.AddComponent<EventBufferInstance>().buffer = QueryHeadsetOK;
 
-            //add buffer for headset connection
-            headsetConnectedBuffer = new EventBuffer<string>();
-            dataStreamManager.HeadsetConnected += headsetConnectedBuffer.OnParentEvent;
-            eventBufferObject.AddComponent<EventBufferInstance>().buffer = headsetConnectedBuffer;
+            // add buffer for headset connection
+            HeadsetConnected = new EventBuffer<string>();
+            dataStreamManager.HeadsetConnected += HeadsetConnected.OnParentEvent;
+            eventBufferObject.AddComponent<EventBufferInstance>().buffer = HeadsetConnected;
+
+            // initialize Training handler
+            training = new TrainingHandler();
+            training.InstantiateEventBuffers(eventBufferObject);
 
             // Initiate data stream manager
             dataStreamManager.Init();

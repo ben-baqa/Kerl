@@ -32,7 +32,7 @@ public class QualityHUD : MonoBehaviour
         Cortex.UnsubscribeDeviceInfo(headsetID, OnCQUpdate);
     }
 
-    public void Init(object sender, string headset)
+    public void Init(string headset)
     {
         headsetID = headset;
         Cortex.SubscribeDeviceInfo(headset, OnCQUpdate);
