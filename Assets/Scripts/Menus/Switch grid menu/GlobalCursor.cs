@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,25 +6,28 @@ using UnityEngine.Events;
 
 public class GlobalCursor : MonoBehaviour
 {
+    public int colors;
+
     public int rows;
     public int columns;
     public bool[] nodes;
 
     public float delayTime;
 
+    [HideInInspector]
     public UnityEvent cursorUpdate;
+    [HideInInspector]
     public UnityEvent selectionUpdate;
 
-    private int selectedRow;
-    private int selectedColumn;
-    private int selectedNode;
+    private int[] selectedRow;
+    private int[] selectedColumn;
+    private int[] selectedNode;
     private int currentCursor;
 
     private bool[] skipped;
     private int[] singleNode;
 
-    private bool rowConfirmed;
-    private bool columnConfirmed;
+    private bool confirmed;
 
     private float timer;
 
@@ -31,6 +35,14 @@ public class GlobalCursor : MonoBehaviour
     {
         skipped = new bool[rows + columns];
         singleNode = new int[rows + columns];
+
+        selectedRow = new int[colors];
+        Array.Fill(selectedRow, -1);
+        selectedColumn = new int[colors];
+        Array.Fill(selectedColumn, -1);
+        selectedNode = new int[colors];
+        Array.Fill(selectedNode, -1);
+
         for (int i = 0; i < rows + columns; i++) {
             int disabled = 0;
             int nodeCount;
@@ -67,21 +79,17 @@ public class GlobalCursor : MonoBehaviour
                 singleNode[i] = -1;
             }
         }
+        if (skipped[currentCursor]) {
+            UpdateCursor();
+        }
         timer = delayTime;
     }
 
     void Update()
     {
-        if (rowConfirmed && columnConfirmed)
+        if (confirmed)
         {
-            if (singleNode[currentCursor] > 0)
-            {
-                selectedNode = singleNode[currentCursor];
-            }
-            else {
-                selectedNode = GetNode(selectedRow, selectedColumn);
-                selectionUpdate.Invoke();
-            }
+
         }
         else
         {
@@ -98,26 +106,22 @@ public class GlobalCursor : MonoBehaviour
         }
 
         if (Input.GetButton("Submit")) {
-            SelectCursor();
+            SelectCursor(0);
         }
     }
 
-    void SelectCursor() {
+    void SelectCursor(int color) {
         if (singleNode[currentCursor] > 0) {
-            selectedNode = singleNode[currentCursor];
-            rowConfirmed = true;
-            columnConfirmed = true;
+            selectedNode[color] = singleNode[currentCursor];
         }
 
         if (currentCursor < rows)
         {
-            selectedRow = currentCursor;
-            rowConfirmed = true;
+            selectedRow[color] = currentCursor;
         }
         else
         {
-            selectedColumn = currentCursor - rows;
-            columnConfirmed = true;
+            selectedColumn[color] = currentCursor - rows;
         }
         selectionUpdate.Invoke();
     }
@@ -142,19 +146,16 @@ public class GlobalCursor : MonoBehaviour
         return currentCursor;
     }
 
-    public int GetSelectedRow()
+    public int GetSelectedRow(int color)
     {
-        if (!rowConfirmed) return -1;
-        return selectedRow;
+        return selectedRow[color];
     }
 
-    public int GetSelectedColumn() {
-        if (!columnConfirmed) return -1;
-        return selectedColumn;
+    public int GetSelectedColumn(int color) {
+        return selectedColumn[color];
     }
 
-    public int GetSelectedNode() {
-        if (rowConfirmed && columnConfirmed) return selectedNode;
-        return -1;
+    public int GetSelectedNode(int color) {
+        return selectedNode[color];
     }
 }

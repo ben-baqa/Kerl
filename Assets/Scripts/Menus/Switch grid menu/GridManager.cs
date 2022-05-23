@@ -95,11 +95,11 @@ public class GridManager : MonoBehaviour
 
     void SelectionUpdate()
     {
-        int currentNode = gc.GetSelectedNode();
+        int currentNode = gc.GetSelectedNode(0);
         if (currentNode < 0)
         {
-            int currentRow = gc.GetSelectedRow();
-            int currentColumn = gc.GetSelectedColumn();
+            int currentRow = gc.GetSelectedRow(0);
+            int currentColumn = gc.GetSelectedColumn(0);
             selectors[0].GetComponent<RectTransform>().localPosition = new Vector3((gc.columns - 1) * spacing / 2, -currentRow * spacing, 0);
             selectors[1].GetComponent<RectTransform>().localPosition = new Vector3(currentColumn * spacing, (1 - gc.rows) * spacing / 2, 0);
             if (currentRow > 0) selectors[0].SetActive(true);
