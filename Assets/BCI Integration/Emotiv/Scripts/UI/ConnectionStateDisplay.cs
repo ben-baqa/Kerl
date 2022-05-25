@@ -7,36 +7,12 @@ using TMPro;
 /// <summary>
 /// Keeps track of connection state to update UI
 /// </summary>
-public class ConnectionState : MonoBehaviour
+public class ConnectionStateDisplay : MonoBehaviour
 {
-    ConnectToCortexStates connectionState = ConnectToCortexStates.Service_connecting;
-    ConnectToCortexStates previousState;
-    //bool connected = false;
-
     public TextMeshProUGUI stateText;
-    public GameObject installApp, Login, headsetPairing;
+    public GameObject installApp, Login;
 
-    private void Start()
-    {
-        Authorizer.Instance.ConnectServiceStateChanged += OnConnectionStateChanged;
-        ActOnStateChange();
-    }
-    private void OnDestroy()
-    {
-        Authorizer.Instance.ConnectServiceStateChanged -= OnConnectionStateChanged;
-    }
-
-    void Update()
-    {
-        if (connectionState != previousState)
-        {
-            previousState = connectionState;
-            // Update UI elements
-            ActOnStateChange();
-        }
-    }
-
-    private void ActOnStateChange()
+    public void OnConnectionStateChanged(ConnectToCortexStates connectionState)
     {
         installApp.SetActive(connectionState == ConnectToCortexStates.EmotivApp_NotFound);
         Login.SetActive(connectionState == ConnectToCortexStates.Login_notYet);
@@ -81,8 +57,7 @@ public class ConnectionState : MonoBehaviour
                 }
             case ConnectToCortexStates.Authorized:
                 {
-                    headsetPairing.SetActive(true);
-                    gameObject.SetActive(false);
+                    stateText.text = "Connected!";
                     Debug.Log("=============== Authorized");
                     break;
                 }
@@ -99,11 +74,6 @@ public class ConnectionState : MonoBehaviour
                     break;
                 }
         }
-    }
-
-    private void OnConnectionStateChanged(object sender, ConnectToCortexStates newState)
-    {
-        connectionState = newState;
     }
 
     public void InstallApp()

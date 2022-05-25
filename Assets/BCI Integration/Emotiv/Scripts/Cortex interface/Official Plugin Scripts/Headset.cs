@@ -94,5 +94,10 @@ namespace EmotivUnityPlugin
             }
             settings = (JObject)jHeadset["settings"];
         }
+
+        public bool Equals(Headset rhs)
+        {
+            return headsetID == rhs.headsetID;
+        }
     }
 }

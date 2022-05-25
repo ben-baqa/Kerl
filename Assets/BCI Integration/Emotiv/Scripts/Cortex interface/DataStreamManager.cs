@@ -98,6 +98,8 @@ namespace EmotivUnityPlugin
             try
             {
                 string id = e.SessionId;
+                // automatically set up training handler with new session
+                Cortex.training.sessionID = id;
                 ctxClient.Subscribe(authorizer.CortexToken, id, Config.dataStreams);
                 lock (locker)
                 {

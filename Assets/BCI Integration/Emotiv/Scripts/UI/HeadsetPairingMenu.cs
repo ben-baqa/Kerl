@@ -5,30 +5,37 @@ using EmotivUnityPlugin;
 using System;
 using WebSocket4Net;
 using Newtonsoft.Json.Linq;
+using System.Linq;
 
-public class HeadsetConnectionHandler : MonoBehaviour
+public class HeadsetPairingMenu : MonoBehaviour
 {
-    [SerializeField] GameObject headsetItemPrefab;
-    [SerializeField] Transform headsetList;
+    public GameObject headsetEntryPrefab;
+    public Transform headsetList;
 
     public ContactQualityDisplay contactQualityDisplay;
 
+    List<Headset> previousData = new List<Headset>();
+
     void OnEnable()
     {
-        Cortex.QueryHeadsetOK += OnHeadsetChanged;
-        Cortex.HeadsetConnected += OnConnect;
+        Cortex.HeadsetQueryResult += OnHeadsetChanged;
 
         TriggerHeadsetQuery();
     }
     private void OnDisable()
     {
-        Cortex.QueryHeadsetOK -= OnHeadsetChanged;
-        Cortex.HeadsetConnected -= OnConnect;
+        Cortex.HeadsetQueryResult -= OnHeadsetChanged;
     }
 
     // called by the event system when there is a change in the list of available headsets
     private void OnHeadsetChanged(List<Headset> headsets)
     {
+        // Only update display if incoming data is new
+        if (!IsNewHeadsets(headsets))
+            return;
+        previousData = headsets;
+        Debug.Log("new headsetInfo recieved, updating display");
+
         // destroy all headsets in list
         foreach (Transform child in headsetList)
             Destroy(child.gameObject);
@@ -49,18 +56,28 @@ public class HeadsetConnectionHandler : MonoBehaviour
                 continue;
             }
 
-            ConnectableHeadset newHeadset = Instantiate(headsetItemPrefab, headsetList).GetComponent<ConnectableHeadset>();
+            ConnectableHeadset newHeadset = Instantiate(headsetEntryPrefab, headsetList).GetComponent<ConnectableHeadset>();
             newHeadset.Init(item);
         }
     }
 
-    private void OnConnect(string headsetID)
+    bool IsNewHeadsets(List<Headset> headsets)
     {
-        print("=================== Headset connected!");
+        if(headsets.Count != previousData.Count)
+        {
+            previousData = headsets;
+            return true;
+        }
 
-        contactQualityDisplay.AssignHeadset(headsetID);
-        contactQualityDisplay.Activate();
-        gameObject.SetActive(false);
+        for (int i = 0; i < headsets.Count; i++)
+        {
+            if (!headsets[i].Equals(previousData[i]))
+            {
+                previousData = headsets;
+                return true;
+            }
+        }
+        return false;
     }
 
     public void TriggerHeadsetQuery()

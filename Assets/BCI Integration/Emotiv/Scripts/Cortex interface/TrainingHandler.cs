@@ -36,14 +36,14 @@ namespace EmotivUnityPlugin
         **/
 
         // event buffers to enable engine synchronous callbacks
-        public EventBuffer<DetectionInfo> GetDetectionInfoOK;
-        public EventBuffer<List<string>> QueryProfileOK;
-        public EventBuffer<string> GetCurrentProfileOK;
+        public EventBuffer<DetectionInfo> GetDetectionInfoResult;
+        public EventBuffer<List<string>> ProfileQueryResult;
+        public EventBuffer<string> GetCurrentProfileResult;
         public EventBuffer<string> ProfileCreated;
         public EventBuffer<string> ProfileLoaded;
         public EventBuffer<bool> ProfileUnloaded;
         public EventBuffer<string> ProfileSaved;
-        public EventBuffer<JObject> TrainingOK;
+        public EventBuffer<JObject> TrainingCompleted;
 
         public string sessionID
         {
@@ -53,12 +53,13 @@ namespace EmotivUnityPlugin
                     Debug.LogWarning("Attempted to train BCI without specifying a session");
                 return sessionID;
             }
+            set { }
         }
 
         string token { get => auth.CortexToken; }
 
         // profile management
-        public void QueryProfiles() => ctxClient.QueryProfile(token);
+        public void QueryProfiles() { try { ctxClient.QueryProfile(token); } catch (System.Exception e) { Debug.LogWarning(e); } }
         public void GetCurrentProfile(string headsetID) => ctxClient.GetCurrentProfile(token, headsetID);
         public void CreateProfile(string profileName) => ctxClient.SetupProfile(token, profileName, "create");
         public void DeleteProfile(string profileName) => ctxClient.SetupProfile(token, profileName, "delete");
@@ -88,17 +89,17 @@ namespace EmotivUnityPlugin
         public void InstantiateEventBuffers(GameObject host)
         {
 
-            GetDetectionInfoOK = new EventBuffer<DetectionInfo>();
+            GetDetectionInfoResult = new EventBuffer<DetectionInfo>();
             ctxClient.GetDetectionInfoDone += ParseDetectionInfo;
-            host.AddComponent<EventBufferInstance>().buffer = GetDetectionInfoOK;
+            host.AddComponent<EventBufferInstance>().buffer = GetDetectionInfoResult;
 
-            QueryProfileOK = new EventBuffer<List<string>>();
+            ProfileQueryResult = new EventBuffer<List<string>>();
             ctxClient.QueryProfileOK += ParseProfileList;
-            host.AddComponent<EventBufferInstance>().buffer = QueryProfileOK;
+            host.AddComponent<EventBufferInstance>().buffer = ProfileQueryResult;
 
-            GetCurrentProfileOK = new EventBuffer<string>();
+            GetCurrentProfileResult = new EventBuffer<string>();
             ctxClient.GetCurrentProfileDone += OnGetCurrentProfileOK;
-            host.AddComponent<EventBufferInstance>().buffer = GetDetectionInfoOK;
+            host.AddComponent<EventBufferInstance>().buffer = GetDetectionInfoResult;
 
             ProfileCreated = new EventBuffer<string>();
             ctxClient.CreateProfileOK += ProfileCreated.OnParentEvent;
@@ -116,9 +117,9 @@ namespace EmotivUnityPlugin
             ctxClient.SaveProfileOK += ProfileSaved.OnParentEvent;
             host.AddComponent<EventBufferInstance>().buffer = ProfileSaved;
 
-            TrainingOK = new EventBuffer<JObject>();
+            TrainingCompleted = new EventBuffer<JObject>();
             ctxClient.TrainingOK += OnTrainingOK;
-            host.AddComponent<EventBufferInstance>().buffer = TrainingOK;
+            host.AddComponent<EventBufferInstance>().buffer = TrainingCompleted;
         }
 
         /// <summary>
@@ -127,30 +128,37 @@ namespace EmotivUnityPlugin
         /// <param name="data">data to be parsed (raw from websocket)</param>
         void ParseDetectionInfo(object sender, JObject data)
         {
-            UnityEngine.Debug.Log("GetDetectionInfoOK: " + data);
-            DetectionInfo detectioninfo = new DetectionInfo("mentalCommand");
+            try
+            {
+                UnityEngine.Debug.Log("GetDetectionInfoOK: " + data);
+                DetectionInfo detectioninfo = new DetectionInfo("mentalCommand");
 
-            JArray actions = (JArray)data["actions"];
-            foreach (var ele in actions)
-            {
-                detectioninfo.Actions.Add(ele.ToString());
+                JArray actions = (JArray)data["actions"];
+                foreach (var ele in actions)
+                {
+                    detectioninfo.Actions.Add(ele.ToString());
+                }
+                JArray controls = (JArray)data["controls"];
+                foreach (var ele in actions)
+                {
+                    detectioninfo.Controls.Add(ele.ToString());
+                }
+                JArray events = (JArray)data["events"];
+                foreach (var ele in actions)
+                {
+                    detectioninfo.Events.Add(ele.ToString());
+                }
+                JArray signature = (JArray)data["signature"];
+                foreach (var ele in actions)
+                {
+                    detectioninfo.Signature.Add(ele.ToString());
+                }
+                GetDetectionInfoResult.OnParentEvent(sender, detectioninfo);
             }
-            JArray controls = (JArray)data["controls"];
-            foreach (var ele in actions)
+            catch (System.Exception e)
             {
-                detectioninfo.Controls.Add(ele.ToString());
+                Debug.LogWarning(e);
             }
-            JArray events = (JArray)data["events"];
-            foreach (var ele in actions)
-            {
-                detectioninfo.Events.Add(ele.ToString());
-            }
-            JArray signature = (JArray)data["signature"];
-            foreach (var ele in actions)
-            {
-                detectioninfo.Signature.Add(ele.ToString());
-            }
-            GetDetectionInfoOK.OnParentEvent(sender, detectioninfo);
         }
 
         /// <summary>
@@ -159,14 +167,20 @@ namespace EmotivUnityPlugin
         /// <param name="profiles">data to be parsed into a list of profiles</param>
         void ParseProfileList(object sender, JArray profiles)
         {
-            UnityEngine.Debug.Log("QueryProfileOK" + profiles);
-            List<string> profileLists = new List<string>();
-            foreach (JObject ele in profiles)
+            try
             {
-                string name = (string)ele["name"];
-                profileLists.Add(name);
+                UnityEngine.Debug.Log("QueryProfileOK" + profiles);
+                List<string> profileLists = new List<string>();
+                foreach (JObject ele in profiles)
+                {
+                    string name = (string)ele["name"];
+                    profileLists.Add(name);
+                }
+                ProfileQueryResult.OnParentEvent(this, profileLists);
+            }catch (System.Exception e)
+            {
+                Debug.LogWarning(e);
             }
-            QueryProfileOK.OnParentEvent(this, profileLists);
         }
 
         /// <summary>
@@ -186,7 +200,7 @@ namespace EmotivUnityPlugin
                 if (!loadByThisApp)
                     Debug.LogWarning($"Profile: {profileName} is loaded, but by another app");
 
-                GetCurrentProfileOK.OnParentEvent(sender, profileName);
+                GetCurrentProfileResult.OnParentEvent(sender, profileName);
             }
         }
 
@@ -196,7 +210,7 @@ namespace EmotivUnityPlugin
         void OnTrainingOK(object sender, JObject data)
         {
             Debug.Log("Training was completed! results: " + data);
-            TrainingOK.OnParentEvent(sender, data);
+            TrainingCompleted.OnParentEvent(sender, data);
         }
     }
 }

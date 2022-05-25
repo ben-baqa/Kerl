@@ -35,9 +35,12 @@ public class ContactQualityDisplay : MonoBehaviour
             Cortex.UnsubscribeDeviceInfo(headsetID, OnDevDataRecieved);
     }
 
-    public void Activate()
+    public void Activate(string id)
     {
-        gameObject.SetActive(true);
+        if (!string.IsNullOrEmpty(headsetID))
+            Cortex.UnsubscribeDeviceInfo(headsetID, OnDevDataRecieved);
+        headsetID = id;
+        Cortex.SubscribeDeviceInfo(headsetID, OnDevDataRecieved);
 
         foreach (var i in displays)
             if (headsetID.StartsWith(i.type))
@@ -52,14 +55,6 @@ public class ContactQualityDisplay : MonoBehaviour
             activeDisplay = fallback;
             fallback.gameObject.SetActive(true);
         }
-    }
-
-    public void AssignHeadset(string id)
-    {
-        if (!string.IsNullOrEmpty(headsetID))
-            Cortex.UnsubscribeDeviceInfo(headsetID, OnDevDataRecieved);
-        headsetID = id;
-        Cortex.SubscribeDeviceInfo(headsetID, OnDevDataRecieved);
     }
 
     void OnDevDataRecieved(DeviceInfo data)

@@ -9,25 +9,22 @@ using System.IO;
 /// </summary>
 public class ConnectToCortex : MonoBehaviour
 {
-    DataStreamManager dataStream = DataStreamManager.Instance;
-
     // logs debug prints to an external file
     Logger logger = Logger.Instance;
 
     public bool printDebugForDataStreams;
 
-    private void Start()
+    // using awake so that this is the first thing called (could also use execution order)
+    private void Awake()
     {
         logger.Init();
 
         Cortex.Start(printDebugForDataStreams);
-        //dataStream.Start(printDebugForDataStreams);
     }
 
     private void OnApplicationQuit()
     {
         Debug.Log("Application ending after " + Time.time + " seconds");
-        //dataStream.Stop();
         Cortex.Stop();
     }
 
