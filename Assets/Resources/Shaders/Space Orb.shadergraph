@@ -1,5 +1,5 @@
 {
-    "m_SGVersion": 2,
+    "m_SGVersion": 3,
     "m_Type": "UnityEditor.ShaderGraph.GraphData",
     "m_ObjectId": "218c5903f8df4abd9e1a432c504b2d80",
     "m_Properties": [
@@ -23,9 +23,18 @@
         },
         {
             "m_Id": "0995f177f69a413dae2d31aca8c670be"
+        },
+        {
+            "m_Id": "f25c0b459dde436ab6e977828d760286"
         }
     ],
     "m_Keywords": [],
+    "m_Dropdowns": [],
+    "m_CategoryData": [
+        {
+            "m_Id": "02cb05d13034479996578173cb3e88d3"
+        }
+    ],
     "m_Nodes": [
         {
             "m_Id": "a29e85f4387f4bdaa55e1ca017f86163"
@@ -617,10 +626,11 @@
         "serializedMesh": {
             "m_SerializedMesh": "{\"mesh\":{\"instanceID\":0}}",
             "m_Guid": ""
-        }
+        },
+        "preventRotation": false
     },
     "m_Path": "Shader Graphs",
-    "m_ConcretePrecision": 0,
+    "m_GraphPrecision": 0,
     "m_PreviewMode": 2,
     "m_OutputNode": {
         "m_Id": ""
@@ -678,6 +688,39 @@
         "z": 0.0,
         "w": 0.0
     }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.CategoryData",
+    "m_ObjectId": "02cb05d13034479996578173cb3e88d3",
+    "m_Name": "",
+    "m_ChildObjectList": [
+        {
+            "m_Id": "9dae123d8c774ca795d858a793fd5b9b"
+        },
+        {
+            "m_Id": "6c27b2c98c63442884ca1cc280bf4c96"
+        },
+        {
+            "m_Id": "0cabcae1e9fc4369aed9d1606c16f75b"
+        },
+        {
+            "m_Id": "c81122ef2e5047658bee0fa3246f573f"
+        },
+        {
+            "m_Id": "90a79fd1eecb4d9aa865ad8ab0ca689f"
+        },
+        {
+            "m_Id": "3afeef1dc3a34e45b76488c96b8314d6"
+        },
+        {
+            "m_Id": "0995f177f69a413dae2d31aca8c670be"
+        },
+        {
+            "m_Id": "f25c0b459dde436ab6e977828d760286"
+        }
+    ]
 }
 
 {
@@ -818,9 +861,13 @@
         "m_GuidSerialized": "7cc4a0b2-a23d-40a1-8fa0-d6e13fa55ae2"
     },
     "m_Name": "cloud alpha",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_0995f177f69a413dae2d31aca8c670be",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -841,9 +888,13 @@
         "m_GuidSerialized": "5f93c648-082c-454b-9bb3-f22d7570f17c"
     },
     "m_Name": "starColour",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Color_0cabcae1e9fc4369aed9d1606c16f75b",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -854,6 +905,7 @@
         "b": 0.5568627715110779,
         "a": 0.0
     },
+    "isMainColor": false,
     "m_ColorMode": 1
 }
 
@@ -1055,17 +1107,23 @@
 }
 
 {
-    "m_SGVersion": 0,
+    "m_SGVersion": 1,
     "m_Type": "UnityEditor.Rendering.Universal.ShaderGraph.UniversalTarget",
     "m_ObjectId": "17ff2e957ab34018896ced28a8319ecd",
     "m_ActiveSubTarget": {
         "m_Id": "e88e25051d7948ada6fb7f37cffd7ce8"
     },
+    "m_AllowMaterialOverride": false,
     "m_SurfaceType": 0,
+    "m_ZTestMode": 4,
+    "m_ZWriteControl": 0,
     "m_AlphaMode": 0,
-    "m_TwoSided": true,
+    "m_RenderFace": 0,
     "m_AlphaClip": false,
-    "m_CustomEditorGUI": ""
+    "m_CastShadows": true,
+    "m_ReceiveShadows": true,
+    "m_CustomEditorGUI": "",
+    "m_SupportVFX": false
 }
 
 {
@@ -1262,7 +1320,9 @@
         1068104061,
         442134040,
         -1256355684
-    ]
+    ],
+    "m_Dropdowns": [],
+    "m_DropdownSelectedEntries": []
 }
 
 {
@@ -1523,9 +1583,13 @@
         "m_GuidSerialized": "8c9ade8e-0046-4d33-b7d4-75203809ee7b"
     },
     "m_Name": "highlight Alpha",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_3afeef1dc3a34e45b76488c96b8314d6",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -2236,9 +2300,13 @@
         "m_GuidSerialized": "1505749c-950b-4474-a71a-4f55a29fb5d4"
     },
     "m_Name": "star scale",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_6c27b2c98c63442884ca1cc280bf4c96",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -2762,9 +2830,13 @@
         "m_GuidSerialized": "5bafd53c-bb0e-4c5b-942f-afac998289a8"
     },
     "m_Name": "cloudColour",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Color_90a79fd1eecb4d9aa865ad8ab0ca689f",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -2775,6 +2847,7 @@
         "b": 0.5156718492507935,
         "a": 0.1921568661928177
     },
+    "isMainColor": false,
     "m_ColorMode": 1
 }
 
@@ -2808,7 +2881,8 @@
     "m_CustomColors": {
         "m_SerializableColors": []
     },
-    "m_Space": 2
+    "m_Space": 2,
+    "m_PositionSource": 0
 }
 
 {
@@ -3088,9 +3162,13 @@
         "m_GuidSerialized": "7d10e195-d5c7-4120-a381-77605f1b1558"
     },
     "m_Name": "scroll speed",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Vector1_9dae123d8c774ca795d858a793fd5b9b",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -3574,9 +3652,13 @@
         "m_GuidSerialized": "fed7f454-2d67-4ebb-b7c8-fd4a26f46fbf"
     },
     "m_Name": "highColour",
+    "m_DefaultRefNameVersion": 0,
+    "m_RefNameGeneratedByDisplayName": "",
     "m_DefaultReferenceName": "Color_c81122ef2e5047658bee0fa3246f573f",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
     "m_Precision": 0,
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
@@ -3587,6 +3669,7 @@
         "b": 0.27901381254196169,
         "a": 0.0
     },
+    "isMainColor": false,
     "m_ColorMode": 1
 }
 
@@ -4213,6 +4296,35 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.Texture2DShaderProperty",
+    "m_ObjectId": "f25c0b459dde436ab6e977828d760286",
+    "m_Guid": {
+        "m_GuidSerialized": "10e61832-8c9c-4425-9c5e-f4647ab790cd"
+    },
+    "m_Name": "_MainTex",
+    "m_DefaultRefNameVersion": 1,
+    "m_RefNameGeneratedByDisplayName": "_MainTex",
+    "m_DefaultReferenceName": "_MainTex",
+    "m_OverrideReferenceName": "",
+    "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": {
+        "m_SerializedTexture": "{\"texture\":{\"instanceID\":0}}",
+        "m_Guid": ""
+    },
+    "isMainTexture": false,
+    "useTilingAndOffset": false,
+    "m_Modifiable": true,
+    "m_DefaultType": 0
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.DynamicVectorMaterialSlot",
     "m_ObjectId": "f3693f1ff50f4bf1bb210e7c674f2a98",
     "m_Id": 0,
@@ -4341,7 +4453,9 @@
     "m_PropertyIds": [
         -188847503,
         793785750
-    ]
+    ],
+    "m_Dropdowns": [],
+    "m_DropdownSelectedEntries": []
 }
 
 {

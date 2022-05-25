@@ -20,10 +20,13 @@ namespace EmotivUnityPlugin
         public static bool debugPrint;
 
         // Event buffers, enable event calls within Unity from other threads
-        public static EventBuffer<List<Headset>> QueryHeadsetOK;
+        public static EventBuffer<List<Headset>> HeadsetQueryResult;
         public static EventBuffer<string> HeadsetConnected;
+        public static EventBuffer<ConnectToCortexStates> ConnectionStateChanged;
 
         public static TrainingHandler training;
+        public static TrainingHandler profiles => training;
+
         /*
          * Initiate
          * Stop
@@ -64,7 +67,8 @@ namespace EmotivUnityPlugin
 
         /// <summary>
         /// Initiates the authorizer and cortex client,
-        /// called externally at the beginning of the program
+        /// called externally at the beginning of the program.
+        /// It is best to call this in Awake() from a script with execution priority
         /// </summary>
         /// <param name="debug">enable verbose logs</param>
         /// <param name="license">uneccessary in most cases,
@@ -82,14 +86,19 @@ namespace EmotivUnityPlugin
             dataSubscriber = eventBufferObject.AddComponent<DataSubscriber>();
 
             // add buffer for headset query completion
-            QueryHeadsetOK = new EventBuffer<List<Headset>>();
-            headsetFinder.QueryHeadsetOK += QueryHeadsetOK.OnParentEvent;
-            eventBufferObject.AddComponent<EventBufferInstance>().buffer = QueryHeadsetOK;
+            HeadsetQueryResult = new EventBuffer<List<Headset>>();
+            headsetFinder.QueryHeadsetOK += HeadsetQueryResult.OnParentEvent;
+            eventBufferObject.AddComponent<EventBufferInstance>().buffer = HeadsetQueryResult;
 
             // add buffer for headset connection
             HeadsetConnected = new EventBuffer<string>();
             dataStreamManager.HeadsetConnected += HeadsetConnected.OnParentEvent;
             eventBufferObject.AddComponent<EventBufferInstance>().buffer = HeadsetConnected;
+
+            // add buffer for connection state changing
+            ConnectionStateChanged = new EventBuffer<ConnectToCortexStates>();
+            authorizer.ConnectServiceStateChanged += ConnectionStateChanged.OnParentEvent;
+            eventBufferObject.AddComponent<EventBufferInstance>().buffer = ConnectionStateChanged;
 
             // initialize Training handler
             training = new TrainingHandler();

@@ -8,28 +8,58 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class InputProxy : MonoBehaviour
 {
-    public int playerCount => inputs.Count;
+    public static int playerCount
+    {
+        get
+        {
+            if (playerCountOverride > 0)
+                return playerCountOverride;
+            return inputs.Count;
+        }
+    }
+    public static int playerCountOverride;
+    private static List<InputBase> inputs;
 
-    private List<InputBase> inputs;
+    public static InputProxy instance;
 
-    public bool enableDebugInput;
+    public static bool enableDebugInput;
+    public bool debugInput = true;
+    public int playerCountDebugOverride = 0;
 
-    public bool p1 => this[0];
-    public bool p2 => this[1];
-    public bool p3 => this[2];
-    public bool p4 => this[3];
+    public bool p1 => instance[0];
+    public bool p2 => instance[1];
+    public bool p3 => instance[2];
+    public bool p4 => instance[3];
+    public bool p5 => instance[4];
+    public bool p6 => instance[5];
+    public bool p7 => instance[6];
+    public bool p8 => instance[7];
 
     public bool this[int n]
     {
         get
         {
-            if (enableDebugInput && Keyboard.current[$"numpad{n}Key"].IsPressed())
+            if (enableDebugInput && (Keyboard.current[$"numpad{n}Key"].IsPressed()
+                || Keyboard.current[$"digit{n}Key"].IsPressed()))
                 return true;
 
             if (n >= playerCount)
                 return false;
             return inputs[n];
         }
+    }
+    public static bool P(int n) => instance[n];
+
+    private void Start()
+    {
+        if (instance)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        DontDestroyOnLoad(gameObject);
+        instance = this;
+        playerCountOverride = playerCountDebugOverride;
     }
 
     private void Update()
@@ -38,20 +68,20 @@ public class InputProxy : MonoBehaviour
             i.Process();
     }
 
-    public void AddInput(InputBase input)
+    public static void AddInput(InputBase input)
     {
         inputs.Add(input);
     }
-    public void RemoveInput(InputBase input)
+    public static void RemoveInput(InputBase input)
     {
         inputs.Remove(input);
     }
-    public void RemoveInput(int index)
+    public static void RemoveInput(int index)
     {
         inputs.RemoveAt(index);
     }
 
-    public void AddNetworkInput(string id)
+    public static void AddNetworkInput(string id)
     {
         inputs.Add(new NetworkInput(id));
         //NetworkMessageHandler.Instance.InputRecieved += NetworkInput.NetworkUpdate;

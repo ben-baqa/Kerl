@@ -219,119 +219,127 @@ namespace EmotivUnityPlugin
         /// </summary> 
         private void WebSocketClient_MessageReceived(object sender, MessageReceivedEventArgs e)
         {
-            string receievedMsg = e.Message;
-            //UnityEngine.Debug.Log($"Message from Websocket: {e.Message}");
-
-            JObject response = JObject.Parse(e.Message);
-
-            if (response["id"] != null)
+            try
             {
-                string method = ""; // method name
-                lock (_locker)
+                string receievedMsg = e.Message;
+                //UnityEngine.Debug.Log($"Message from Websocket: {e.Message}");
+
+                JObject response = JObject.Parse(e.Message);
+
+                if (response["id"] != null)
                 {
-                    int id = (int)response["id"];
-                    method = _methodForRequestId[id];
-                    _methodForRequestId.Remove(id);
-                }
-
-
-                if (response["error"] != null)
-                {
-                    JObject error = (JObject)response["error"];
-                    int code = (int)error["code"];
-                    //if(code == -32103)
-                    //{
-                    //    UnityEngine.Debug.Log("Application info could not be found, reauthorizing");
-                    //    RequestAccess();
-                    //    return;
-                    //}
-
-                    string messageError = (string)error["message"];
-                    UnityEngine.Debug.Log("An error received: " + messageError);
-                    //Send Error message event
-                    ErrorMsgReceived(this, new ErrorMsgEventArgs(code, messageError, method));
-
-
-                }
-                else
-                {
-                    // handle response
-                    JToken data = response["result"];
-                    HandleResponse(method, data);
-                    // check bluetooth permisison granted
-                    if (method == "queryHeadsets" && response.ContainsKey("attention"))
+                    string method = ""; // method name
+                    lock (_locker)
                     {
-                        JObject attentionObj = (JObject)response["attention"];
-                        bool btlePermisionGranted = true;
-                        if ((int)attentionObj["code"] == WarningCode.BTLEPermissionNotGranted)
+                        int id = (int)response["id"];
+                        method = _methodForRequestId[id];
+                        _methodForRequestId.Remove(id);
+                    }
+
+
+                    if (response["error"] != null)
+                    {
+                        JObject error = (JObject)response["error"];
+                        int code = (int)error["code"];
+                        //if(code == -32103)
+                        //{
+                        //    UnityEngine.Debug.Log("Application info could not be found, reauthorizing");
+                        //    RequestAccess();
+                        //    return;
+                        //}
+
+                        string messageError = (string)error["message"];
+                        UnityEngine.Debug.Log("An error received: " + messageError);
+                        //Send Error message event
+                        ErrorMsgReceived(this, new ErrorMsgEventArgs(code, messageError, method));
+
+
+                    }
+                    else
+                    {
+                        // handle response
+                        JToken data = response["result"];
+                        HandleResponse(method, data);
+                        // check bluetooth permisison granted
+                        if (method == "queryHeadsets" && response.ContainsKey("attention"))
                         {
-                            btlePermisionGranted = false;
+                            JObject attentionObj = (JObject)response["attention"];
+                            bool btlePermisionGranted = true;
+                            if ((int)attentionObj["code"] == WarningCode.BTLEPermissionNotGranted)
+                            {
+                                btlePermisionGranted = false;
+                            }
+                            BTLEPermissionGrantedNotify(this, btlePermisionGranted);
                         }
-                        BTLEPermissionGrantedNotify(this, btlePermisionGranted);
                     }
                 }
-            }
-            else if (response["sid"] != null)
-            {
-                string sid = (string)response["sid"];
-                double time = 0;
-                if (response["time"] != null)
-                    time = (double)response["time"];
-
-                foreach (JProperty property in response.Properties())
+                else if (response["sid"] != null)
                 {
-                    if (property.Name != "sid" && property.Name != "time")
+                    string sid = (string)response["sid"];
+                    double time = 0;
+                    if (response["time"] != null)
+                        time = (double)response["time"];
+
+                    foreach (JProperty property in response.Properties())
                     {
-                        ArrayList data = new ArrayList();
-                        data.Add(time); // insert timestamp to datastream
-                        // spread to one array intead of a array included in a array
-                        foreach (var ele in property.Value)
+                        if (property.Name != "sid" && property.Name != "time")
                         {
-                            if (ele.Type == JTokenType.Array)
+                            ArrayList data = new ArrayList();
+                            data.Add(time); // insert timestamp to datastream
+                                            // spread to one array intead of a array included in a array
+                            foreach (var ele in property.Value)
                             {
-                                foreach (var item in ele)
+                                if (ele.Type == JTokenType.Array)
                                 {
-                                    if (item.Type == JTokenType.Object)
+                                    foreach (var item in ele)
                                     {
-                                        // Ignore marker data 
-                                        UnityEngine.Debug.Log("marker object " + item);
+                                        if (item.Type == JTokenType.Object)
+                                        {
+                                            // Ignore marker data 
+                                            UnityEngine.Debug.Log("marker object " + item);
+                                        }
+                                        else
+                                            data.Add(Convert.ToDouble(item));
                                     }
-                                    else
-                                        data.Add(Convert.ToDouble(item));
+                                }
+                                else if (ele.Type == JTokenType.String)
+                                {
+                                    data.Add(Convert.ToString(ele));
+                                }
+                                else if (ele.Type == JTokenType.Boolean)
+                                {
+                                    data.Add(Convert.ToBoolean(ele));
+                                }
+                                else if (ele.Type == JTokenType.Null)
+                                {
+                                    data.Add(-1); // use -1 for null value
+                                }
+                                else
+                                {
+                                    data.Add(Convert.ToDouble(ele));
                                 }
                             }
-                            else if (ele.Type == JTokenType.String)
-                            {
-                                data.Add(Convert.ToString(ele));
-                            }
-                            else if (ele.Type == JTokenType.Boolean)
-                            {
-                                data.Add(Convert.ToBoolean(ele));
-                            }
-                            else if (ele.Type == JTokenType.Null)
-                            {
-                                data.Add(-1); // use -1 for null value
-                            }
-                            else
-                            {
-                                data.Add(Convert.ToDouble(ele));
-                            }
+                            // UnityEngine.Debug.Log("WebSocketClient_MessageReceived: name " + property.Name + " count " + data.Count);
+                            StreamDataReceived(this, new StreamDataEventArgs(sid, data, property.Name));
                         }
-                        // UnityEngine.Debug.Log("WebSocketClient_MessageReceived: name " + property.Name + " count " + data.Count);
-                        StreamDataReceived(this, new StreamDataEventArgs(sid, data, property.Name));
                     }
                 }
-            }
-            else if (response["warning"] != null)
-            {
-                JObject warning = (JObject)response["warning"];
-                int code = -1;
-                if (warning["code"] != null)
+                else if (response["warning"] != null)
                 {
-                    code = (int)warning["code"];
+                    JObject warning = (JObject)response["warning"];
+                    int code = -1;
+                    if (warning["code"] != null)
+                    {
+                        code = (int)warning["code"];
+                    }
+                    JToken messageData = warning["message"];
+                    HandleWarning(code, messageData);
                 }
-                JToken messageData = warning["message"];
-                HandleWarning(code, messageData);
+            }catch(Exception ex)
+            {
+                if (Cortex.debugPrint)
+                    UnityEngine.Debug.LogWarning($"An Exception occured while handling websocket response," +
+                        $"likely just an unused event attempting to fire: {ex}");
             }
         }
 

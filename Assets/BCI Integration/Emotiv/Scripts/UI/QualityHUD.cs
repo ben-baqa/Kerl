@@ -19,6 +19,7 @@ public class QualityHUD : MonoBehaviour
 
     private void Start()
     {
+        gameObject.SetActive(false);
         Cortex.HeadsetConnected += Init;
     }
 
@@ -36,6 +37,7 @@ public class QualityHUD : MonoBehaviour
     {
         headsetID = headset;
         Cortex.SubscribeDeviceInfo(headset, OnCQUpdate);
+        gameObject.SetActive(true);
     }
 
     void OnCQUpdate(DeviceInfo data)
