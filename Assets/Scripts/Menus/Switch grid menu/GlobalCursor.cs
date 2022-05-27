@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,8 +7,6 @@ using UnityEngine.Events;
 
 public class GlobalCursor : MonoBehaviour
 {
-    public int colors;
-
     public int rows;
     public int columns;
     public bool[] nodes;
@@ -18,6 +17,8 @@ public class GlobalCursor : MonoBehaviour
     public UnityEvent cursorUpdate;
     [HideInInspector]
     public UnityEvent selectionUpdate;
+
+    private int colors;
 
     private int[] selectedRow;
     private int[] selectedColumn;
@@ -33,6 +34,8 @@ public class GlobalCursor : MonoBehaviour
 
     void Start()
     {
+        colors = InputProxy.playerCount;
+
         skipped = new bool[rows + columns];
         singleNode = new int[rows + columns];
 
@@ -105,13 +108,15 @@ public class GlobalCursor : MonoBehaviour
             }
         }
 
-        if (Input.GetButton("Submit")) {
-            SelectCursor(0);
+        for (int i = 0; i < colors; i++) {
+            if (InputProxy.instance[i]) {
+                SelectCursor(i);
+            }
         }
     }
 
     void SelectCursor(int color) {
-        if (singleNode[currentCursor] > 0) {
+        if (singleNode[currentCursor] >= 0) {
             selectedNode[color] = singleNode[currentCursor];
         }
 
@@ -123,6 +128,11 @@ public class GlobalCursor : MonoBehaviour
         {
             selectedColumn[color] = currentCursor - rows;
         }
+
+        if (selectedColumn[color] >= 0 && selectedRow[color] >= 0) {
+            selectedNode[color] = GetNode(selectedColumn[color], selectedRow[color]);
+        }
+        confirmed = selectedNode.All(i => i >= 0);
         selectionUpdate.Invoke();
     }
 

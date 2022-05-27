@@ -1,41 +1,63 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
-/// Provides a simple interface intended to obscure a mroe complex input system
+/// Provides a simple interface intended to obscure a more complex input system
+/// </summary>
+/// <summary>
+/// Provides a simple interface intended to obscure a more complex input system
 /// </summary>
 public class InputProxy : MonoBehaviour
 {
-    public bool p1 { get { return bcip1 || keyp1; } }
-    public bool p2 { get { return bcip2 || keyp2; } }
-    public bool p3 { get { return bcip3 || keyp3; } }
-    public bool p4 { get { return bcip4 || keyp4; } }
-
-    public bool enableNumpadInput = true;
-
-    private bool bcip1, bcip2, bcip3, bcip4,
-        keyp1, keyp2, keyp3, keyp4;
-
-
-    private void Update()
+    public static int playerCount
     {
-        keyp1 = Input.GetKey(KeyCode.Keypad1) || Input.GetKey(KeyCode.A);
-        keyp2 = Input.GetKey(KeyCode.Keypad2) || Input.GetKey(KeyCode.F);
-        keyp3 = Input.GetKey(KeyCode.Keypad3) || Input.GetKey(KeyCode.J);
-        keyp4 = Input.GetKey(KeyCode.Keypad4) || Input.GetKey(KeyCode.Semicolon);
+        get
+        {
+            return playerCountOverride;
+        }
     }
+    public static int playerCountOverride;
 
-    public void OnInput(bool P1)
+    public static InputProxy instance;
+
+    public bool enableDebugInput;
+    public int playerCountDebugOverride = 0;
+
+    public bool p1 => instance[0];
+    public bool p2 => instance[1];
+    public bool p3 => instance[2];
+    public bool p4 => instance[3];
+    public bool p5 => instance[4];
+    public bool p6 => instance[5];
+    public bool p7 => instance[6];
+    public bool p8 => instance[7];
+
+    public bool this[int n]
     {
-        bcip1 = P1;
-        bcip2 = false;
-        bcip3 = false;
-        bcip4 = false;
-    }
+        get
+        {
+            if (enableDebugInput && (Keyboard.current[$"numpad{n}"].IsPressed()
+                || Keyboard.current[new string[] { "a", "s", "d", "f", "g", "h", "j", "k" }[n]].IsPressed()))
+                return true;
 
-    public void SetP1(bool b) { bcip1 = b; }
-    public void SetP2(bool b) { bcip2 = b; }
-    public void SetP3(bool b) { bcip3 = b; }
-    public void SetP4(bool b) { bcip4 = b; }
+            if (n >= playerCount)
+                return false;
+            return false;
+        }
+    }
+    public static bool P(int n) => instance[n];
+
+    private void Start()
+    {
+        if (instance)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        DontDestroyOnLoad(gameObject);
+        instance = this;
+        playerCountOverride = playerCountDebugOverride;
+    }
 }
