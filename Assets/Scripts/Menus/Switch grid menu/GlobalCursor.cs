@@ -28,6 +28,8 @@ public class GlobalCursor : MonoBehaviour
     private bool[] skipped;
     private int[] singleNode;
 
+    private bool onlyColumns;
+    private bool onlyRows;
     private bool confirmed;
 
     private float timer;
@@ -46,17 +48,20 @@ public class GlobalCursor : MonoBehaviour
         selectedNode = new int[colors];
         Array.Fill(selectedNode, -1);
 
-        for (int i = 0; i < rows + columns; i++) {
+        for (int i = 0; i < rows + columns; i++)
+        {
             int disabled = 0;
             int nodeCount;
             if (i < rows)
             {
                 nodeCount = Mathf.Min(columns, nodes.Length - i * columns);
             }
-            else {
+            else
+            {
                 nodeCount = Mathf.Min(rows, nodes.Length / (i + 1 - rows));
             }
-            for (int j = 0; j < nodeCount; j++) {
+            for (int j = 0; j < nodeCount; j++)
+            {
                 int currentNode;
                 if (i < rows)
                 {
@@ -70,7 +75,8 @@ public class GlobalCursor : MonoBehaviour
                 {
                     disabled++;
                 }
-                else {
+                else
+                {
                     singleNode[i] = currentNode;
                 }
             }
@@ -78,11 +84,19 @@ public class GlobalCursor : MonoBehaviour
             {
                 skipped[i] = true;
             }
-            if (nodeCount - disabled != 1) {
+            if (nodeCount - disabled != 1)
+            {
                 singleNode[i] = -1;
             }
         }
-        if (skipped[currentCursor]) {
+
+        onlyRows = false;
+        onlyColumns = false;
+        if (rows == 1 || Enumerable.Range(rows - 1, columns).All(i => skipped[i] || singleNode[i] >= 0)) onlyColumns = true;
+        else if (columns == 1 || Enumerable.Range(0, rows).All(i => skipped[i] || singleNode[i] >= 0)) onlyRows = true;
+
+        if (skipped[currentCursor] || onlyColumns)
+        {
             UpdateCursor();
         }
         timer = delayTime;
@@ -108,15 +122,19 @@ public class GlobalCursor : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < colors; i++) {
-            if (InputProxy.instance[i]) {
+        for (int i = 0; i < colors; i++)
+        {
+            if (InputProxy.instance[i])
+            {
                 SelectCursor(i);
             }
         }
     }
 
-    void SelectCursor(int color) {
-        if (singleNode[currentCursor] >= 0) {
+    void SelectCursor(int color)
+    {
+        if (singleNode[currentCursor] >= 0)
+        {
             selectedNode[color] = singleNode[currentCursor];
         }
 
@@ -129,7 +147,8 @@ public class GlobalCursor : MonoBehaviour
             selectedColumn[color] = currentCursor - rows;
         }
 
-        if (selectedColumn[color] >= 0 && selectedRow[color] >= 0) {
+        if (selectedColumn[color] >= 0 && selectedRow[color] >= 0)
+        {
             selectedNode[color] = GetNode(selectedColumn[color], selectedRow[color]);
         }
         confirmed = selectedNode.All(i => i >= 0);
@@ -139,19 +158,30 @@ public class GlobalCursor : MonoBehaviour
     void UpdateCursor()
     {
         currentCursor++;
-        if (currentCursor >= rows + columns) {
+        if (onlyColumns && currentCursor < rows - 1)
+        {
+            currentCursor = rows - 1;
+        }
+        else if (onlyRows && currentCursor >= rows)
+        {
             currentCursor = 0;
         }
-        if (skipped[currentCursor]) {
+        else if (currentCursor >= rows + columns)
+        {
+            currentCursor = onlyColumns ? rows - 1 : 0;
+        }
+        if (skipped[currentCursor])
+        {
             UpdateCursor();
         }
     }
 
-    int GetNode(int row, int column) {
+    int GetNode(int row, int column)
+    {
         return row * columns + column;
     }
 
-    public int GetCursor() 
+    public int GetCursor()
     {
         return currentCursor;
     }
@@ -161,11 +191,13 @@ public class GlobalCursor : MonoBehaviour
         return selectedRow[color];
     }
 
-    public int GetSelectedColumn(int color) {
+    public int GetSelectedColumn(int color)
+    {
         return selectedColumn[color];
     }
 
-    public int GetSelectedNode(int color) {
+    public int GetSelectedNode(int color)
+    {
         return selectedNode[color];
     }
 }

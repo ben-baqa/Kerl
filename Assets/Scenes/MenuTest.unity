@@ -555,7 +555,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rows: 3
   columns: 4
-  nodes: 0100010100010101010101
+  nodes: 0100010100010101000101
   delayTime: 0.6
   cursorUpdate:
     m_PersistentCalls:
