@@ -88,7 +88,6 @@ namespace EmotivUnityPlugin
         /// <param name="host">gameobject to attach event buffers to</param>
         public void InstantiateEventBuffers(GameObject host)
         {
-
             GetDetectionInfoResult = new EventBuffer<DetectionInfo>();
             ctxClient.GetDetectionInfoDone += ParseDetectionInfo;
             host.AddComponent<EventBufferInstance>().buffer = GetDetectionInfoResult;

@@ -33,6 +33,8 @@ public class EmotivSetupMenu : MonoBehaviour
         profileMenu = GetComponentInChildren<ProfileMenu>(true);
         trainingMenu = GetComponentInChildren<TrainingMenu>(true);
 
+        profileMenu.trainingMenu = trainingMenu;
+
         ApplyState();
     }
     void OnEnable()
