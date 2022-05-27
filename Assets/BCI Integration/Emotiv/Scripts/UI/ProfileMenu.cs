@@ -20,8 +20,9 @@ public class ProfileMenu : MonoBehaviour
 
     [HideInInspector]
     public string headsetID;
+    [HideInInspector]
+    public TrainingMenu trainingMenu;
 
-    
     void Start()
     {
         splitEditField = newProfileInput.GetComponentInChildren<TMP_InputField>(true);
@@ -60,7 +61,7 @@ public class ProfileMenu : MonoBehaviour
 
         foreach (string profileName in names)
         {
-            Instantiate(profileEntryPrefab, profileList).GetComponent<ProfileListEntry>().Init(profileName, headsetID);
+            Instantiate(profileEntryPrefab, profileList).GetComponent<ProfileListEntry>().Init(profileName, headsetID, trainingMenu);
         }
     }
 
@@ -68,10 +69,13 @@ public class ProfileMenu : MonoBehaviour
     {
         Cortex.profiles.CreateProfile(profileName);
         Cortex.profiles.ProfileCreated += LoadProfile;
+
+        trainingMenu.Init(true);
     }
 
     public void LoadProfile(string profileName)
     {
         Cortex.profiles.LoadProfile(profileName, headsetID);
+        trainingMenu.Init(true);
     }
 }

@@ -14,7 +14,7 @@ public class ProfileListEntry : MonoBehaviour
 
     TMP_InputField editText;
 
-    public void Init(string name, string hID)
+    public void Init(string name, string hID, TrainingMenu trainingMenu)
     {
         profileName = name;
         selectButton.GetComponentInChildren<TextMeshProUGUI>(true).text = name;
@@ -23,6 +23,7 @@ public class ProfileListEntry : MonoBehaviour
         selectButton.onClick.AddListener(() =>
         {
             Cortex.profiles.LoadProfile(profileName, hID);
+            trainingMenu.Init(false);
         });
         editButton.onClick.AddListener(() =>
         {

@@ -97,7 +97,7 @@ namespace EmotivUnityPlugin
 
         public bool Equals(Headset rhs)
         {
-            return headsetID == rhs.headsetID;
+            return headsetID == rhs.headsetID && status == rhs.status;
         }
     }
 }
