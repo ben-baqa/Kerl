@@ -1,12 +1,24 @@
 using System;
 using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class GlobalCursor : MonoBehaviour
 {
+    private enum State
+    {
+        Select,
+        Confirm,
+        Done
+    }
+
+    private enum SelectType
+    {
+        Columns,
+        Rows,
+        Both
+    }
+
     public int rows;
     public int columns;
     public bool[] nodes;
@@ -25,12 +37,12 @@ public class GlobalCursor : MonoBehaviour
     private int[] selectedNode;
     private int currentCursor;
 
+    private bool[] confirmed;
     private bool[] skipped;
     private int[] singleNode;
 
-    private bool onlyColumns;
-    private bool onlyRows;
-    private bool confirmed;
+    private SelectType selectType;
+    private State state;
 
     private float timer;
 
@@ -47,6 +59,8 @@ public class GlobalCursor : MonoBehaviour
         Array.Fill(selectedColumn, -1);
         selectedNode = new int[colors];
         Array.Fill(selectedNode, -1);
+        confirmed = new bool[colors];
+        Array.Fill(confirmed, false);
 
         for (int i = 0; i < rows + columns; i++)
         {
@@ -90,12 +104,11 @@ public class GlobalCursor : MonoBehaviour
             }
         }
 
-        onlyRows = false;
-        onlyColumns = false;
-        if (rows == 1 || Enumerable.Range(rows - 1, columns).All(i => skipped[i] || singleNode[i] >= 0)) onlyColumns = true;
-        else if (columns == 1 || Enumerable.Range(0, rows).All(i => skipped[i] || singleNode[i] >= 0)) onlyRows = true;
+        selectType = SelectType.Both;
+        if (rows == 1 || Enumerable.Range(rows - 1, columns).All(i => skipped[i] || singleNode[i] >= 0)) selectType = SelectType.Columns;
+        else if (columns == 1 || Enumerable.Range(0, rows).All(i => skipped[i] || singleNode[i] >= 0)) selectType = SelectType.Rows;
 
-        if (skipped[currentCursor] || onlyColumns)
+        if (skipped[currentCursor] || selectType == SelectType.Columns)
         {
             UpdateCursor();
         }
@@ -104,11 +117,7 @@ public class GlobalCursor : MonoBehaviour
 
     void Update()
     {
-        if (confirmed)
-        {
-
-        }
-        else
+        if (state != State.Done)
         {
             if (timer <= 0)
             {
@@ -126,7 +135,8 @@ public class GlobalCursor : MonoBehaviour
         {
             if (InputProxy.instance[i])
             {
-                SelectCursor(i);
+                if (state == State.Select) SelectCursor(i);
+                else if (state == State.Confirm) ConfirmCursor(i);
             }
         }
     }
@@ -151,29 +161,61 @@ public class GlobalCursor : MonoBehaviour
         {
             selectedNode[color] = GetNode(selectedColumn[color], selectedRow[color]);
         }
-        confirmed = selectedNode.All(i => i >= 0);
+
+        if (selectedNode.All(i => i >= 0))
+        {
+            state = State.Confirm;
+            currentCursor = 0;
+        }
         selectionUpdate.Invoke();
+    }
+
+    void ConfirmCursor(int color)
+    {
+        if (currentCursor == 0)
+        {
+            state = State.Select;
+            ResetSelection(color);
+            Array.Fill(confirmed, false);
+            return;
+        }
+        confirmed[color] = true;
+        if (confirmed.All(c =>  c)) {
+            state = State.Done;
+        }
     }
 
     void UpdateCursor()
     {
         currentCursor++;
-        if (onlyColumns && currentCursor < rows - 1)
+        if (state == State.Select)
         {
-            currentCursor = rows - 1;
+            if (selectType == SelectType.Columns && currentCursor < rows - 1)
+            {
+                currentCursor = rows - 1;
+            }
+            else if (selectType == SelectType.Rows && currentCursor >= rows)
+            {
+                currentCursor = 0;
+            }
+            else if (currentCursor >= rows + columns)
+            {
+                currentCursor = selectType == SelectType.Columns ? rows - 1 : 0;
+            }
+            if (skipped[currentCursor])
+            {
+                UpdateCursor();
+            }
+
         }
-        else if (onlyRows && currentCursor >= rows)
+        else if (state == State.Confirm)
         {
-            currentCursor = 0;
+            if (currentCursor > 1)
+            {
+                currentCursor = 0;
+            }
         }
-        else if (currentCursor >= rows + columns)
-        {
-            currentCursor = onlyColumns ? rows - 1 : 0;
-        }
-        if (skipped[currentCursor])
-        {
-            UpdateCursor();
-        }
+
     }
 
     int GetNode(int row, int column)
@@ -199,5 +241,12 @@ public class GlobalCursor : MonoBehaviour
     public int GetSelectedNode(int color)
     {
         return selectedNode[color];
+    }
+
+    public void ResetSelection(int color)
+    {
+        selectedColumn[color] = -1;
+        selectedRow[color] = -1;
+        selectedNode[color] = -1;
     }
 }
