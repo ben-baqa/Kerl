@@ -39,7 +39,8 @@ namespace EmotivUnityPlugin
             try
             {
                 dataStreamSubscribers[headsetID] = new DataStreamEventBuffer(newStream, sessionID, headsetID);
-                print("New stream added");
+                if (Cortex.debugPrint)
+                    print("New stream added");
             }catch(Exception e)
             {
                 print(e);
@@ -80,16 +81,13 @@ namespace EmotivUnityPlugin
                 switch (typeof(T))
                 {
                     case Type mType when mType == typeof(MentalCommand):
-                        dataStreamSubscriber.MentalCommandReceived +=
-                            (object sender, MentalCommand data) => callBack(data as T);
+                        dataStreamSubscriber.MentalCommandReceived += (Action<MentalCommand>)callBack;
                         break;
                     case Type dType when dType == typeof(DeviceInfo):
-                        dataStreamSubscriber.DevDataReceived +=
-                            (object sender, DeviceInfo data) => callBack(data as T);
+                        dataStreamSubscriber.DevDataReceived += (Action<DeviceInfo>)callBack;
                         break;
                     case Type sType when sType == typeof(SysEventArgs):
-                        dataStreamSubscriber.SysEventReceived +=
-                            (object sender, SysEventArgs data) => callBack(data as T);
+                        dataStreamSubscriber.SysEventReceived += (Action<SysEventArgs>)callBack;
                         break;
                     default:
                         Debug.LogWarning($"Attempted to subscribe to unsupported data stream: {typeof(T)}");
@@ -126,16 +124,13 @@ namespace EmotivUnityPlugin
                 switch (typeof(T))
                 {
                     case Type mType when mType == typeof(MentalCommand):
-                        dataStreamSubscriber.MentalCommandReceived -=
-                            (object sender, MentalCommand data) => callBack(data as T);
+                        dataStreamSubscriber.MentalCommandReceived -= (Action<MentalCommand>)callBack;
                         break;
                     case Type dType when dType == typeof(DeviceInfo):
-                        dataStreamSubscriber.DevDataReceived -=
-                            (object sender, DeviceInfo data) => callBack(data as T);
+                        dataStreamSubscriber.DevDataReceived -= (Action<DeviceInfo>)callBack;
                         break;
                     case Type sType when sType == typeof(SysEventArgs):
-                        dataStreamSubscriber.SysEventReceived -=
-                            (object sender, SysEventArgs data) => callBack(data as T);
+                        dataStreamSubscriber.SysEventReceived -= (Action<SysEventArgs>)callBack;
                         break;
                     default:
                         Debug.LogWarning($"Attempted to subscribe to unsupported data stream: {typeof(T)}");
@@ -161,41 +156,41 @@ namespace EmotivUnityPlugin
         DataStream dataStream;
         public string sessionID, headsetID;
 
-        EventBuffer<MentalCommand> mentalCommandEventHandler = new EventBuffer<MentalCommand>();
-        EventBuffer<DeviceInfo> devDataEventHandler = new EventBuffer<DeviceInfo>();
-        EventBuffer<SysEventArgs> sysEventHandler = new EventBuffer<SysEventArgs>();
+        public EventBuffer<MentalCommand> MentalCommandReceived = new EventBuffer<MentalCommand>();
+        public EventBuffer<DeviceInfo> DevDataReceived = new EventBuffer<DeviceInfo>();
+        public EventBuffer<SysEventArgs> SysEventReceived = new EventBuffer<SysEventArgs>();
 
-        public event EventHandler<MentalCommand> MentalCommandReceived
-        {
-            add { mentalCommandEventHandler.Event += value; }
-            remove { mentalCommandEventHandler.Event -= value; }
-        }
-        public event EventHandler<DeviceInfo> DevDataReceived
-        {
-            add { devDataEventHandler.Event += value; }
-            remove { devDataEventHandler.Event -= value; }
-        }
-        public event EventHandler<SysEventArgs> SysEventReceived
-        {
-            add { sysEventHandler.Event += value; }
-            remove { sysEventHandler.Event -= value; }
-        }
+        //public event EventHandler<MentalCommand> MentalCommandReceived
+        //{
+        //    add { mentalCommandEventHandler.Event += value; }
+        //    remove { mentalCommandEventHandler.Event -= value; }
+        //}
+        //public event EventHandler<DeviceInfo> DevDataReceived
+        //{
+        //    add { devDataEventHandler.Event += value; }
+        //    remove { devDataEventHandler.Event -= value; }
+        //}
+        //public event EventHandler<SysEventArgs> SysEventReceived
+        //{
+        //    add { sysEventHandler.Event += value; }
+        //    remove { sysEventHandler.Event -= value; }
+        //}
 
         public DataStreamEventBuffer(DataStream stream, string sessionID, string headsetID)
         {
             dataStream = stream;
             this.sessionID = sessionID;
             this.headsetID = headsetID;
-            dataStream.MentalCommandReceived += mentalCommandEventHandler.OnParentEvent;
-            dataStream.DevDataReceived += devDataEventHandler.OnParentEvent;
-            dataStream.SysEventReceived += sysEventHandler.OnParentEvent;
+            dataStream.MentalCommandReceived += MentalCommandReceived.OnParentEvent;
+            dataStream.DevDataReceived += DevDataReceived.OnParentEvent;
+            dataStream.SysEventReceived += SysEventReceived.OnParentEvent;
         }
 
         public void Process()
         {
-            mentalCommandEventHandler.Process();
-            devDataEventHandler.Process();
-            sysEventHandler.Process();
+            MentalCommandReceived.Process();
+            DevDataReceived.Process();
+            SysEventReceived.Process();
         }
     }
 }

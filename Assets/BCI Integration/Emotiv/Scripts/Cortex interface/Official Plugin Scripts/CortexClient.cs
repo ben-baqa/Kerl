@@ -99,6 +99,8 @@ namespace EmotivUnityPlugin
         public event EventHandler<string> RenameProfileOK;
         public event EventHandler<JArray> QueryProfileOK;
         public event EventHandler<double> GetTrainingTimeDone;
+        public event EventHandler<TrainedActions> GetTrainedSignatureActionsOK;
+        public event EventHandler<TrainingThreshold> MentalCommandTrainingThresholdOK;
         public event EventHandler<JObject> TrainingOK;
         public event EventHandler<string> StreamStopNotify;
         public event EventHandler<string> SessionClosedNotify;
@@ -125,7 +127,8 @@ namespace EmotivUnityPlugin
 
         public void ForceCloseWSC()
         {
-            UnityEngine.Debug.Log("Force close websocket client.");
+            if (Cortex.debugPrint)
+                UnityEngine.Debug.Log("Force close websocket client.");
             if (_wscTimer != null)
             {
                 _wscTimer = null;
@@ -249,7 +252,7 @@ namespace EmotivUnityPlugin
                         //}
 
                         string messageError = (string)error["message"];
-                        UnityEngine.Debug.Log("An error received: " + messageError);
+                        UnityEngine.Debug.Log("An error received: " + messageError + " on method " + method);
                         //Send Error message event
                         ErrorMsgReceived(this, new ErrorMsgEventArgs(code, messageError, method));
 
@@ -548,6 +551,14 @@ namespace EmotivUnityPlugin
             {
                 GetTrainingTimeDone(this, (double)data["time"]);
             }
+            else if (method == "getTrainedSignatureActions")
+            {
+                GetTrainedSignatureActionsOK(this, new TrainedActions((JObject)data));
+            }
+            else if (method == "mentalCommandTrainingThreshold")
+            {
+                MentalCommandTrainingThresholdOK(this, new TrainingThreshold((JObject)data));
+            }
         }
 
 
@@ -624,7 +635,8 @@ namespace EmotivUnityPlugin
         /// </summary>
         private void WebSocketClient_Closed(object sender, EventArgs e)
         {
-            UnityEngine.Debug.Log("Websocket closed");
+            if (Cortex.debugPrint)
+                UnityEngine.Debug.Log("Websocket closed");
             WSConnectDone(this, false);
             // start connecting cortex service again
             if (_wscTimer != null)
@@ -1024,6 +1036,31 @@ namespace EmotivUnityPlugin
             param.Add("detection", detection);
             param.Add("session", sessionId);
             SendTextMessage(param, "getTrainingTime", true);
+        }
+        // getTrainedSignatureActions
+        // required params: cortexTokenm, detection
+        public void GetTrainedSignatureActions(string cortexToken, string detection, string profile = null, string sessionId = null)
+        {
+            JObject param = new JObject();
+            param.Add("cortexToken", cortexToken);
+            param.Add("detection", detection);
+            if (profile != null)
+                param.Add("profile", profile);
+            if (sessionId != null)
+                param.Add("session", sessionId);
+            SendTextMessage(param, "getTrainedSignatureActions", true);
+        }
+        // mentalCommandTrainingThreshold
+        // required params: cortexToken
+        public void MentalCommandTrainingThreshold(string cortexToken, string profile = null, string sessionId = null)
+        {
+            JObject param = new JObject();
+            param.Add("cortexToken", cortexToken);
+            if (profile != null)
+                param.Add("profile", profile);
+            if (sessionId != null)
+                param.Add("session", sessionId);
+            SendTextMessage(param, "mentalCommandTrainingThreshold", true);
         }
         // training
         // Required params: cortexToken, profile, status

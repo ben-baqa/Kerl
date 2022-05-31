@@ -117,8 +117,6 @@ namespace EmotivUnityPlugin
                 cqHeaders.Add((string)header);
                 headerDisplay += (string)header + ", ";
             }
-
-            Debug.Log(headerDisplay);
         }
 
         public void UpdateInfo(ArrayList data)

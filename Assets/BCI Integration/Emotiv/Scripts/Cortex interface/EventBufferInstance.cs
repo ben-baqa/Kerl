@@ -22,29 +22,35 @@ namespace EmotivUnityPlugin
 
     public class EventBuffer<T> : EventBufferBase
     {
-        public event EventHandler<T> Event;
+        private List<Action<T>> callbacks = new List<Action<T>>();
 
         T data;
         bool trigger;
 
         public override void Process()
         {
-            if (trigger)
+            try {
+                if (trigger)
+                {
+                    trigger = false;
+                    foreach (Action<T> action in callbacks)
+                        action(data);
+                }
+            }
+            catch (Exception e)
             {
-                trigger = false;
-                if (Event != null)
-                    Event(this, data);
+                Debug.LogWarning("Exception in event Buffer process: " + e);
             }
         }
 
         public void Subscribe(Action<T> action)
         {
-            Event += (object o, T args) => action(args);
+            callbacks.Add(action);
         }
 
         public void Unsubscribe(Action<T> action)
         {
-            Event -= (object o, T args) => action(args);
+            callbacks.Remove(action);
         }
 
         public static EventBuffer<T> operator +(EventBuffer<T> lhs, Action<T> rhs)
@@ -60,8 +66,14 @@ namespace EmotivUnityPlugin
 
         public void OnParentEvent(object sender, T args)
         {
-            trigger = true;
-            data = args;
+            try
+            {
+                trigger = true;
+                data = args;
+            }catch(Exception e)
+            {
+                Debug.LogWarning("Exception in event Buffer parent event: " + e);
+            }
         }
     }
 }

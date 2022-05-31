@@ -41,7 +41,7 @@ public class EmotivSetupMenu : MonoBehaviour
     {
         Cortex.ConnectionStateChanged += OnConnectionStateChanged;
         Cortex.HeadsetConnected += OnHeadsetConnected;
-        Cortex.training.ProfileLoaded += (string s) => Continue();
+        Cortex.training.ProfileLoaded += OnProfileLoaded;
     }
     void OnDisable()
     {
@@ -77,10 +77,15 @@ public class EmotivSetupMenu : MonoBehaviour
 
     void OnHeadsetConnected(string headsetID)
     {
-        print("=================== Headset connected!");
-
         contactQualityDisplay.Activate(headsetID);
         profileMenu.headsetID = headsetID;
+        Continue();
+    }
+
+    void OnProfileLoaded(string profileName)
+    {
+        print("profile loaded, getting trained actions");
+        Cortex.profiles.GetTrainedActions(profileName);
         Continue();
     }
 }

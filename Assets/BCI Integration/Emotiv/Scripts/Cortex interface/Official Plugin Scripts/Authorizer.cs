@@ -120,7 +120,8 @@ namespace EmotivUnityPlugin
 
         private void OnRefreshTokenOK(object sender, string cortexToken)
         {
-            UnityEngine.Debug.Log("The cortex token is refreshed successfully.");
+            if (Cortex.debugPrint)
+                UnityEngine.Debug.Log("The cortex token is refreshed successfully.");
             // load cortexToken
             UserDataInfo tokenInfo = new UserDataInfo();
             tokenInfo.CortexToken = cortexToken;
@@ -263,7 +264,8 @@ namespace EmotivUnityPlugin
                     // byte[] dataByte = new UTF8Encoding(true).GetBytes(data);
                     // fileStream.Write(dataByte, 0, dataByte.Length);
                 }
-                UnityEngine.Debug.Log("Save token successfully.");
+                if (Cortex.debugPrint)
+                    UnityEngine.Debug.Log("Save token successfully.");
             }
             catch (Exception e)
             {
@@ -428,7 +430,8 @@ namespace EmotivUnityPlugin
                     return;
                 }
 
-                UnityEngine.Debug.Log("Refresh token for next using.");
+                if(Cortex.debugPrint)
+                    UnityEngine.Debug.Log("Refresh token for next using.");
                 // genereate new token
                 _ctxClient.GenerateNewToken(tokenInfo.CortexToken);
             }
