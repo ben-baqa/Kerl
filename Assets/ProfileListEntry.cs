@@ -23,7 +23,7 @@ public class ProfileListEntry : MonoBehaviour
         selectButton.onClick.AddListener(() =>
         {
             Cortex.profiles.LoadProfile(profileName, hID);
-            trainingMenu.Init(false);
+            //trainingMenu.Init(false);
         });
         editButton.onClick.AddListener(() =>
         {

@@ -2,168 +2,93 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using EmotivUnityPlugin;
-using Newtonsoft.Json.Linq;
-using TMPro;
 
+/* handles the flow between different training submenus including those for returning players
+ * new players, active training, and validation of extant training
+ */
 public class TrainingMenu : MonoBehaviour
 {
-    enum TrainingState { NEUTRAL, BRUSHING, VALIDATION }
-    TrainingState trainingState = TrainingState.NEUTRAL;
-
-    string trainingAction => trainingState == TrainingState.BRUSHING ? "brush" : "neutral";
-
     public int minTrainingRounds = 16, trainingCountdownTime = 4;
-    public GameObject returning, training, trainingExplanation, validation, trainingCompletionOptions;
+    public GameObject returningView, trainingExplanation, validationView;
 
-    public Transform feedBackCharacter, trainingBrusherPosition, validationBrusherPosition;
-
-    public TextMeshProUGUI trainingQualityText, countDownText;
+    public Transform feedback, trainingLocation, validationLocation;
 
     Animator feedbackAnim;
-    Vector3 trainingPos, validationPos, trainingRot, validationRot;
+    Vector3 trainPos, valPos, trainRot, valRot;
+    TrainingSubmenu training;
 
 
     string headsetID;
-    float trainingCountdownTimer = 0;
-    int trainingCount = 0;
-    bool realtimeFeedback = false, trainingCountdown = false;
+    bool validating = false;
 
     private void Start()
     {
-        Cortex.HeadsetConnected += (string s) => headsetID = s;
+        Cortex.HeadsetConnected += OnHeadsetConnected;
+        Cortex.training.GetTrainedActionsResult += Init;
         //Cortex.training.ProfileLoaded += (string s) => profileName = s;
-        feedbackAnim = feedBackCharacter.GetComponentInChildren<Animator>(true);
-        trainingPos = trainingBrusherPosition.localPosition;
-        trainingRot = trainingBrusherPosition.localEulerAngles;
-        validationPos = validationBrusherPosition.localPosition;
-        validationRot = validationBrusherPosition.localEulerAngles;
+        feedbackAnim = feedback.GetComponentInChildren<Animator>(true);
+        trainPos = trainingLocation.localPosition;
+        trainRot = trainingLocation.localEulerAngles;
+        valPos = validationLocation.localPosition;
+        valRot = validationLocation.localEulerAngles;
 
-        returning.SetActive(false);
-        training.SetActive(false);
+        returningView.SetActive(false);
         trainingExplanation.SetActive(false);
-        validation.SetActive(false);
-        trainingCompletionOptions.SetActive(false);
-        feedBackCharacter.gameObject.SetActive(false);
+        validationView.SetActive(false);
+        feedback.gameObject.SetActive(false);
+
+        training = GetComponentInChildren<TrainingSubmenu>(true);
+        training.OnTrainingComplete = OnTrainingSequenceComplete;
     }
 
     public void OnEnable()
     {
-        Cortex.training.TrainingCompleted += OnTrainingComplete;
         Cortex.SubscribeMentalCommands(headsetID, OnMentalCommandRecieved);
-        print("================ YEET");
     }
     public void OnDisable()
     {
-        Cortex.training.TrainingCompleted -= OnTrainingComplete;
         Cortex.UnsubscribeMentalCommands(headsetID, OnMentalCommandRecieved);
     }
 
-    public void Init(bool newProfile = false)
+    public void Init(TrainedActions trainedActions)
     {
-        if (newProfile)
+        print($"training menu intiated! {trainedActions.totalTimesTraining}");
+
+        if (trainedActions.totalTimesTraining < minTrainingRounds)
         {
             trainingExplanation.SetActive(true);
-            feedBackCharacter.gameObject.SetActive(true);
         }
         else
         {
-            returning.SetActive(true);
+            returningView.SetActive(true);
         }
+        feedback.gameObject.SetActive(true);
     }
 
     private void Update()
     {
-        if (trainingState == TrainingState.VALIDATION)
+        if (validating)
         {
-            feedBackCharacter.localPosition = Vector3.Lerp(feedBackCharacter.localPosition, validationPos, 0.1f);
-            feedBackCharacter.localEulerAngles = Vector3.Lerp(feedBackCharacter.localEulerAngles, validationRot, 0.1f);
+            feedback.localPosition = Vector3.Lerp(feedback.localPosition, valPos, 0.1f);
+            feedback.localEulerAngles = Vector3.Lerp(feedback.localEulerAngles, valRot, 0.1f);
         }
         else
         {
-            trainingCountdownTimer -= Time.deltaTime;
-            countDownText.text = $"{(int)trainingCountdownTimer}";
-            if (trainingCountdownTimer < 0)
-            {
-                if (trainingCountdown)
-                {
-                    Cortex.training.StartTraining(trainingAction);
-                    trainingCountdownTimer = 8;
-                    countDownText.enabled = false;
-                }
-                else
-                    trainingCountdown = false;
-            }
-
-            feedBackCharacter.localPosition = Vector3.Lerp(feedBackCharacter.localPosition, trainingPos, 0.1f);
-            feedBackCharacter.localEulerAngles = Vector3.Lerp(feedBackCharacter.localEulerAngles, trainingRot, 0.1f);
+            feedback.localPosition = Vector3.Lerp(feedback.localPosition, trainPos, 0.1f);
+            feedback.localEulerAngles = Vector3.Lerp(feedback.localEulerAngles, trainRot, 0.1f);
         }
+    }
+
+    void OnHeadsetConnected(string id)
+    {
+        headsetID = id;
+        training.headsetID = id;
     }
 
     void OnMentalCommandRecieved(MentalCommand command)
     {
-        print($"Mental command received: {command}");
-        if (realtimeFeedback && command.action != "neutral")
+        if (validating && command.action != "neutral")
             feedbackAnim.SetFloat("brush speed", (float)command.power);
-    }
-
-    void OnTrainingComplete(JObject result)
-    {
-        // if applicable, display grade if applicable and activate accept/deny options
-        if(trainingCount >= 4)
-        {
-            trainingQualityText.text = $"{41}%";
-            trainingCompletionOptions.SetActive(true);
-        }
-        Debug.Log("============== Training completed!");
-    }
-
-    public void Continue()
-    {
-        switch (trainingState)
-        {
-            case TrainingState.NEUTRAL:
-                trainingState = TrainingState.BRUSHING;
-                break;
-            case TrainingState.BRUSHING:
-                trainingState = TrainingState.NEUTRAL;
-                feedbackAnim.SetBool("brushing", true);
-                trainingCount++;
-                break;
-        }
-        if (trainingCount >= minTrainingRounds)
-        {
-            validation.SetActive(true);
-            training.SetActive(false);
-            trainingState = TrainingState.VALIDATION;
-            // activate option to finish training
-        }
-        else
-            StartTrainingCountdown();
-
-        realtimeFeedback = trainingCount > 4;
-        feedbackAnim.SetBool("brushing", trainingState != TrainingState.NEUTRAL);
-    }
-
-    public void StartTrainingCountdown()
-    {
-        trainingCountdown = true;
-        trainingCountdownTimer = trainingCountdownTime;
-        countDownText.enabled = true;
-        countDownText.text = $"{(int)trainingCountdownTimer}";
-    }
-
-    public void AcceptTraining()
-    {
-        Cortex.training.AcceptTraining(trainingAction);
-        trainingCompletionOptions.SetActive(false);
-        Continue();
-    }
-
-    public void RejectTraining()
-    {
-        Cortex.training.RejectTraining(trainingAction);
-        trainingCompletionOptions.SetActive(false);
-        StartTrainingCountdown();
     }
 
     public void FinishTraining()
@@ -174,29 +99,36 @@ public class TrainingMenu : MonoBehaviour
     public void ContinueTraining()
     {
         // return to training with button to switch to validation view
-        trainingState = TrainingState.NEUTRAL;
-        trainingCount = minTrainingRounds - 2;
-        Continue();
+        validating = false;
+        training.ResetTraining(4);
+        validationView.SetActive(false);
     }
 
     public void ResetTraining()
     {
-        Cortex.training.EraseTraining("brush");
+        validating = false;
+
+        Cortex.training.EraseTraining("push");
         Cortex.training.EraseTraining("neutral");
 
-        validation.SetActive(false);
-        training.SetActive(true);
-
-        trainingCount = 0;
-        trainingState = TrainingState.NEUTRAL;
+        training.ResetTraining();
+        validationView.SetActive(false);
     }
 
     public void SkipToValidation()
     {
-        returning.SetActive(false);
-        feedBackCharacter.gameObject.SetActive(true);
-        trainingState = TrainingState.VALIDATION;
-        trainingCount = minTrainingRounds;
-        Continue();
+        validating = true;
+        returningView.SetActive(false);
+        validationView.SetActive(true);
+
+        feedback.gameObject.SetActive(true);
+        feedbackAnim.SetBool("brushing", true);
+    }
+
+    void OnTrainingSequenceComplete()
+    {
+        validating = true;
+        training.gameObject.SetActive(false);
+        validationView.SetActive(true);
     }
 }

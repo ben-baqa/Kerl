@@ -196,12 +196,12 @@ namespace EmotivUnityPlugin
         /// <summary>
         /// Simplified interface to SubscribeDataStream for system events
         /// </summary>
-        public static bool SubscribeSysEvents(string headsetID, Action<DeviceInfo> action)
+        public static bool SubscribeSysEvents(string headsetID, Action<SysEventArgs> action)
             => SubscribeDataStream(headsetID, action);
         /// <summary>
         /// Simplified interface to UnsubscribeDataStream for system events
         /// </summary>
-        public static bool UnsubscribeSysEvents(string headsetID, Action<DeviceInfo> action)
+        public static bool UnsubscribeSysEvents(string headsetID, Action<SysEventArgs> action)
             => UnsubscribeDataStream(headsetID, action);
     }
 }

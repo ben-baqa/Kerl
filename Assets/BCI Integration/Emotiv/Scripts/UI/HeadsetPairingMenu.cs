@@ -34,7 +34,6 @@ public class HeadsetPairingMenu : MonoBehaviour
         if (!IsNewHeadsets(headsets))
             return;
         previousData = headsets;
-        Debug.Log("new headsetInfo recieved, updating display");
 
         // destroy all headsets in list
         foreach (Transform child in headsetList)

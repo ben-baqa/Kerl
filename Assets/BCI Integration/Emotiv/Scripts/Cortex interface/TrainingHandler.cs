@@ -43,18 +43,24 @@ namespace EmotivUnityPlugin
         public EventBuffer<string> ProfileLoaded;
         public EventBuffer<bool> ProfileUnloaded;
         public EventBuffer<string> ProfileSaved;
-        public EventBuffer<JObject> TrainingCompleted;
+
+        public EventBuffer<JObject> TrainingRequestResult;
+
+        public EventBuffer<double> TrainingTimeResult;
+        public EventBuffer<TrainedActions> GetTrainedActionsResult;
+        public EventBuffer<TrainingThreshold> TrainingThresholdResult;
 
         public string sessionID
         {
             get
             {
-                if (string.IsNullOrEmpty(sessionID))
+                if (string.IsNullOrEmpty(_sid))
                     Debug.LogWarning("Attempted to train BCI without specifying a session");
-                return sessionID;
+                return _sid;
             }
-            set { }
+            set { _sid = value; }
         }
+        string _sid;
 
         string token { get => auth.CortexToken; }
 
@@ -78,7 +84,9 @@ namespace EmotivUnityPlugin
 
         public void GetMentalCommandInfo() => GetDetectionInfo("mentalCommand");
         public void GetDetectionInfo(string detection) => ctxClient.GetDetectionInfo(detection);
-
+        public void GetTrainingTime() => ctxClient.GetTrainingTime(token, "mentalCommand", sessionID);
+        public void GetTrainedActions(string profileName) => ctxClient.GetTrainedSignatureActions(token, "mentalCommand", profileName);
+        public void GetTrainingThreshold() => ctxClient.MentalCommandTrainingThreshold(token, sessionId: sessionID);
 
 
         /// <summary>
@@ -90,35 +98,61 @@ namespace EmotivUnityPlugin
         {
             GetDetectionInfoResult = new EventBuffer<DetectionInfo>();
             ctxClient.GetDetectionInfoDone += ParseDetectionInfo;
-            host.AddComponent<EventBufferInstance>().buffer = GetDetectionInfoResult;
+            //host.AddComponent<EventBufferInstance>().buffer = GetDetectionInfoResult;
 
             ProfileQueryResult = new EventBuffer<List<string>>();
             ctxClient.QueryProfileOK += ParseProfileList;
-            host.AddComponent<EventBufferInstance>().buffer = ProfileQueryResult;
+            //host.AddComponent<EventBufferInstance>().buffer = ProfileQueryResult;
 
             GetCurrentProfileResult = new EventBuffer<string>();
             ctxClient.GetCurrentProfileDone += OnGetCurrentProfileOK;
-            host.AddComponent<EventBufferInstance>().buffer = GetDetectionInfoResult;
+            //host.AddComponent<EventBufferInstance>().buffer = GetDetectionInfoResult;
 
             ProfileCreated = new EventBuffer<string>();
             ctxClient.CreateProfileOK += ProfileCreated.OnParentEvent;
-            host.AddComponent<EventBufferInstance>().buffer = ProfileCreated;
+            //host.AddComponent<EventBufferInstance>().buffer = ProfileCreated;
 
             ProfileLoaded = new EventBuffer<string>();
             ctxClient.LoadProfileOK += ProfileLoaded.OnParentEvent;
-            host.AddComponent<EventBufferInstance>().buffer = ProfileLoaded;
+            //host.AddComponent<EventBufferInstance>().buffer = ProfileLoaded;
 
             ProfileUnloaded = new EventBuffer<bool>();
             ctxClient.UnloadProfileDone += ProfileUnloaded.OnParentEvent;
-            host.AddComponent<EventBufferInstance>().buffer = ProfileUnloaded;
+            //host.AddComponent<EventBufferInstance>().buffer = ProfileUnloaded;
 
             ProfileSaved = new EventBuffer<string>();
             ctxClient.SaveProfileOK += ProfileSaved.OnParentEvent;
-            host.AddComponent<EventBufferInstance>().buffer = ProfileSaved;
+            //host.AddComponent<EventBufferInstance>().buffer = ProfileSaved;
 
-            TrainingCompleted = new EventBuffer<JObject>();
+            TrainingRequestResult = new EventBuffer<JObject>();
             ctxClient.TrainingOK += OnTrainingOK;
-            host.AddComponent<EventBufferInstance>().buffer = TrainingCompleted;
+            //host.AddComponent<EventBufferInstance>().buffer = TrainingCompleted;
+
+            TrainingTimeResult = new EventBuffer<double>();
+            ctxClient.GetTrainingTimeDone += TrainingTimeResult.OnParentEvent;
+            //host.AddComponent<EventBufferInstance>().buffer = TrainingTimeResult;
+
+            GetTrainedActionsResult = new EventBuffer<TrainedActions>();
+            ctxClient.GetTrainedSignatureActionsOK += GetTrainedActionsResult.OnParentEvent;
+
+            TrainingThresholdResult = new EventBuffer<TrainingThreshold>();
+            ctxClient.MentalCommandTrainingThresholdOK += TrainingThresholdResult.OnParentEvent;
+
+            var buffers = new EventBufferBase[]
+            {
+                GetDetectionInfoResult,
+                ProfileQueryResult,
+                GetCurrentProfileResult,
+                ProfileCreated,
+                ProfileLoaded,
+                ProfileUnloaded,
+                ProfileSaved,
+                TrainingRequestResult,
+                TrainingTimeResult,
+                GetTrainedActionsResult,
+                TrainingThresholdResult
+            };
+            foreach (EventBufferBase b in buffers) host.AddComponent<EventBufferInstance>().buffer = b;
         }
 
         /// <summary>
@@ -129,7 +163,6 @@ namespace EmotivUnityPlugin
         {
             try
             {
-                UnityEngine.Debug.Log("GetDetectionInfoOK: " + data);
                 DetectionInfo detectioninfo = new DetectionInfo("mentalCommand");
 
                 JArray actions = (JArray)data["actions"];
@@ -168,7 +201,6 @@ namespace EmotivUnityPlugin
         {
             try
             {
-                UnityEngine.Debug.Log("QueryProfileOK" + profiles);
                 List<string> profileLists = new List<string>();
                 foreach (JObject ele in profiles)
                 {
@@ -204,12 +236,11 @@ namespace EmotivUnityPlugin
         }
 
         /// <summary>
-        /// Wraps the training completetion event callback
+        /// Wraps the training request response event callback
         /// </summary>
         void OnTrainingOK(object sender, JObject data)
         {
-            Debug.Log("Training was completed! results: " + data);
-            TrainingCompleted.OnParentEvent(sender, data);
+            TrainingRequestResult.OnParentEvent(sender, data);
         }
     }
 }

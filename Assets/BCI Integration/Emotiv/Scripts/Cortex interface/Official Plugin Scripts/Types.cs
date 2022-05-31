@@ -615,4 +615,42 @@ namespace EmotivUnityPlugin
         public List<string> Events { get; set; }
         public List<string> Signature { get; set; }
     }
+
+    // Trained Signature Actions info
+    public class TrainedActions
+    {
+        public TrainedActions(JObject data)
+        {
+            totalTimesTraining = (int)data["totalTimesTraining"];
+            JArray actions = (JArray)data["trainedActions"];
+            trainedActions = new List<TrainedAction>();
+            foreach (var action in actions)
+                trainedActions.Add(new TrainedAction((string)action["action"], (int)action["times"]));
+        }
+        public List<TrainedAction> trainedActions;
+        public int totalTimesTraining;
+
+        public struct TrainedAction
+        {
+            public TrainedAction(string name, int count)
+            {
+                action = name;
+                timesTrained = count;
+            }
+            public string action;
+            public int timesTrained;
+        }
+    }
+
+    // Training Threshold Info
+    public class TrainingThreshold
+    {
+        public TrainingThreshold(JObject data)
+        {
+            currentThreshold = (double)data["currentThreshold"];
+            lastTrainingScore = (double)data["lastTrainingScore"];
+        }
+        public double currentThreshold;
+        public double lastTrainingScore;
+    }
 }
