@@ -112,8 +112,11 @@ public class GridManager : MonoBehaviour
                 int currentColumn = gc.GetSelectedColumn(i);
                 selectors[i * 3 + 0].GetComponent<RectTransform>().localPosition = new Vector3((gc.columns - 1) * spacing / 2, -currentRow * spacing, 0);
                 selectors[i * 3 + 1].GetComponent<RectTransform>().localPosition = new Vector3(currentColumn * spacing, (1 - gc.rows) * spacing / 2, 0);
-                if (currentRow > 0) selectors[i * 3 + 0].SetActive(true);
-                if (currentColumn > 0) selectors[i * 3 + 1].SetActive(true);
+                if (currentRow >= 0) selectors[i * 3 + 0].SetActive(true);
+                else selectors[i * 3 + 0].SetActive(false);
+                if (currentColumn >= 0) selectors[i * 3 + 1].SetActive(true);
+                else selectors[i * 3 + 1].SetActive(false);
+                selectors[i * 3 + 2].SetActive(false);
             }
             else
             {

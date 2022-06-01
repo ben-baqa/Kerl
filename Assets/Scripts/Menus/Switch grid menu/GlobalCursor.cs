@@ -159,7 +159,10 @@ public class GlobalCursor : MonoBehaviour
 
         if (selectedColumn[color] >= 0 && selectedRow[color] >= 0)
         {
-            selectedNode[color] = GetNode(selectedColumn[color], selectedRow[color]);
+            selectedNode[color] = GetNode(selectedRow[color], selectedColumn[color]);
+            if (nodes[selectedNode[color]]) {
+                ResetSelection(color);
+            }
         }
 
         if (selectedNode.All(i => i >= 0))
