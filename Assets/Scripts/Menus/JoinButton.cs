@@ -8,24 +8,33 @@ using UnityEngine.UI;
 /// </summary>
 public class JoinButton : MonoBehaviour
 {
-    public Sprite joined, ready;
+    public Sprite joinedSprite, readySprite;
+    public AudioSource joinSound, readySound;
 
     public float effectSize = 2, bumpSize = 1.2f, sizeLerp = .1f;
+    
+    public bool ready => _ready || index < 0;
+    bool _ready = false;
 
-    private Image rend;
-    private AudioSource[] sfx;
-    private float size = 1;
+    Image sprite;
+    float size = 1;
+    int index = -1;
 
     // Start is called before the first frame update
     void Start()
     {
-        rend = GetComponent<Image>();
-        sfx = GetComponentsInChildren<AudioSource>();
+        sprite = GetComponent<Image>();
+    }
+
+    private void Update()
+    {
+        if (!_ready && index >= 0 && InputProxy.GetToggledInput(index))
+            Ready();
     }
 
     private void FixedUpdate()
     {
-        rend.transform.localScale = Vector3.one * size;
+        sprite.transform.localScale = Vector3.one * size;
         size = Mathf.Lerp(size, .99f, sizeLerp);
 
         if(size < 1)
@@ -34,17 +43,19 @@ public class JoinButton : MonoBehaviour
         }
     }
 
-    public void Join()
+    public void Join(int playerIndex)
     {
-        rend.sprite = joined;
+        index = playerIndex;
+        sprite.sprite = joinedSprite;
         size = effectSize;
-        sfx[0].Play();
+        joinSound.Play();
     }
 
     public void Ready()
     {
-        rend.sprite = ready;
+        sprite.sprite = readySprite;
         size = effectSize;
-        sfx[1].Play();
+        readySound.Play();
+        _ready = true;
     }
 }

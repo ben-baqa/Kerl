@@ -20,23 +20,57 @@ public class HeadsetProxy
 public class EmotivHeadsetProxy : HeadsetProxy
 {
     public override bool value => ResolveInput();
-    public Headset headset;
+    public string headsetID;
 
-    private MentalCommand lastCommand;
+    MentalCommandBuffer commandBuffer;
+    MentalCommand lastCommand;
 
-    EmotivHeadsetProxy(Headset h)
+    float commandValue;
+    int consecutiveComands;
+    const int RAMP_COUNT = 10;
+    const float INPUT_THRESHOLD = 0.5f;
+
+    public EmotivHeadsetProxy(string id)
     {
-        headset = h;
-    }
-
-    public override void Process()
-    {
-        // update dev stream; contact quality, battery, etc.
-        
+        headsetID = id;
+        //Cortex.SubscribeMentalCommands(headsetID, OnMentalCommandReceived);
+        commandBuffer = new MentalCommandBuffer();
+        Cortex.SubscribeMentalCommands(headsetID, commandBuffer.OnDataRecieved);
     }
 
     private bool ResolveInput()
     {
-        return lastCommand.action != "neutral";
+        return commandValue > INPUT_THRESHOLD;
+        //return lastCommand.action != "neutral";
+    }
+
+    //void OnMentalCommandReceived(MentalCommand command)
+    //{
+    //    lastCommand = command;
+    //}
+
+    public override void Process()
+    {
+        foreach (MentalCommand m in commandBuffer.GetData())
+        {
+            float targetVal = (float)m.power;
+            if (m.action == "neutral")
+                targetVal = 0;
+            commandValue = Mathf.Lerp(commandValue, targetVal, GetRamp(consecutiveComands / RAMP_COUNT));
+
+            if (lastCommand.action == m.action)
+                consecutiveComands++;
+            else
+                consecutiveComands = 0;
+            lastCommand = m;
+        }
+    }
+
+    // returns a sloped value that increases exponentially with n
+    // as more of the same command comes in, intended to filter spikes of
+    // false positives and negatives
+    float GetRamp(float n)
+    {
+        return Mathf.Clamp01(Mathf.Pow(n, 3));
     }
 }

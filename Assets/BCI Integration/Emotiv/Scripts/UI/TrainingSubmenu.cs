@@ -18,7 +18,7 @@ using EmotivUnityPlugin;
  * If not enough rounds have been completed to warrant the display of training quality,
  * and acceptance of the stage, a simple continue button will be shown, which advances to the next stage.
  */
-public class TrainingSubmenu : MonoBehaviour
+public class TrainingSubmenu : MonoBehaviour, IRequiresInit
 {
     enum TrainingState { NEUTRAL, BRUSHING, VALIDATION }
     TrainingState trainingState = TrainingState.NEUTRAL;
@@ -51,7 +51,7 @@ public class TrainingSubmenu : MonoBehaviour
         }
     }
     
-    void Start()
+    public void Init()
     {
         trainingCompletionOptions.SetActive(false);
         earlyCompletionOption.SetActive(false);
@@ -234,7 +234,6 @@ public class TrainingSubmenu : MonoBehaviour
     // called by overseer script
     public void ResetTraining(int rounds = 0)
     {
-        print("YEET");
         gameObject.SetActive(true);
         trainingCount = rounds > 0? minTrainingRounds - rounds: 0;
         trainingState = TrainingState.NEUTRAL;

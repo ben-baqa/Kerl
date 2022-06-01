@@ -16,15 +16,15 @@ namespace EmotivUnityPlugin
         public event EventHandler<DeviceInfo> DevDataReceived;
 
         DeviceInfo devData;
-        public MentalCommandBuffer mentalCommands;
+        //public MentalCommandBuffer mentalCommands;
 
         string sessionID;
         bool debugPrint;
 
         public DataStream(string id, bool debug = false)
         {
-            mentalCommands = new MentalCommandBuffer();
-            MentalCommandReceived += mentalCommands.OnDataRecieved;
+            //mentalCommands = new MentalCommandBuffer();
+            //MentalCommandReceived += mentalCommands.OnDataRecieved;
 
             sessionID = id;
             debugPrint = debug;
