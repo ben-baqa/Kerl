@@ -20,6 +20,7 @@ public class ConnectToCortex : MonoBehaviour
         logger.Init();
 
         Cortex.Start(printDebugForDataStreams);
+        DontDestroyOnLoad(gameObject);
     }
 
     private void OnApplicationQuit()

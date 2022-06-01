@@ -6,10 +6,12 @@ using EmotivUnityPlugin;
 /* handles the flow between different training submenus including those for returning players
  * new players, active training, and validation of extant training
  */
-public class TrainingMenu : MonoBehaviour
+public class TrainingMenu : MonoBehaviour, IRequiresInit
 {
     public int minTrainingRounds = 16, trainingCountdownTime = 4;
-    public GameObject returningView, trainingExplanation, validationView;
+    public GameObject returningView;
+    public GameObject trainingExplanation;
+    public GameObject validationView;
 
     public Transform feedback, trainingLocation, validationLocation;
 
@@ -21,7 +23,7 @@ public class TrainingMenu : MonoBehaviour
     string headsetID;
     bool validating = false;
 
-    private void Start()
+    public void Init()
     {
         Cortex.HeadsetConnected += OnHeadsetConnected;
         Cortex.training.GetTrainedActionsResult += Init;
@@ -38,6 +40,7 @@ public class TrainingMenu : MonoBehaviour
         feedback.gameObject.SetActive(false);
 
         training = GetComponentInChildren<TrainingSubmenu>(true);
+        training.Init();
         training.OnTrainingComplete = OnTrainingSequenceComplete;
     }
 
@@ -48,6 +51,7 @@ public class TrainingMenu : MonoBehaviour
     public void OnDisable()
     {
         Cortex.UnsubscribeMentalCommands(headsetID, OnMentalCommandRecieved);
+        feedback.gameObject.SetActive(false);
     }
 
     public void Init(TrainedActions trainedActions)
@@ -79,8 +83,10 @@ public class TrainingMenu : MonoBehaviour
         }
     }
 
-    void OnHeadsetConnected(string id)
+    public void OnHeadsetConnected(string id)
     {
+        print("Headset ID received successfully!");
+        print($"training: {training}");
         headsetID = id;
         training.headsetID = id;
     }
@@ -94,6 +100,7 @@ public class TrainingMenu : MonoBehaviour
     public void FinishTraining()
     {
         // add new bci input to input handler
+        InputProxy.AddInput(new BCIInput(new EmotivHeadsetProxy(headsetID)));
     }
 
     public void ContinueTraining()

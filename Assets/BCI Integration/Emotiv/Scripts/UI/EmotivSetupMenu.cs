@@ -24,6 +24,8 @@ public class EmotivSetupMenu : MonoBehaviour
     ProfileMenu profileMenu;
     TrainingMenu trainingMenu;
 
+    public GameObject returnMenu, baseObject;
+    Canvas canvas;
     
     void Start()
     {
@@ -32,10 +34,15 @@ public class EmotivSetupMenu : MonoBehaviour
         contactQualityDisplay = GetComponentInChildren<ContactQualityDisplay>(true);
         profileMenu = GetComponentInChildren<ProfileMenu>(true);
         trainingMenu = GetComponentInChildren<TrainingMenu>(true);
+        trainingMenu.Init();
+
+        canvas = GetComponent<Canvas>();
 
         profileMenu.trainingMenu = trainingMenu;
 
         ApplyState();
+        //baseObject.SetActive(false);
+        canvas.enabled = false;
     }
     void OnEnable()
     {
@@ -54,6 +61,9 @@ public class EmotivSetupMenu : MonoBehaviour
         state += 1;
         if(state > SetupMenuState.TRAINING)
         {
+            returnMenu.SetActive(true);
+            //baseObject.SetActive(false);
+            canvas.enabled = false;
             // probably trigger return to whatever menu you came from
         }
         ApplyState();
@@ -79,6 +89,7 @@ public class EmotivSetupMenu : MonoBehaviour
     {
         contactQualityDisplay.Activate(headsetID);
         profileMenu.headsetID = headsetID;
+        //trainingMenu.OnHeadsetConnected(headsetID);
         Continue();
     }
 
@@ -88,4 +99,17 @@ public class EmotivSetupMenu : MonoBehaviour
         Cortex.profiles.GetTrainedActions(profileName);
         Continue();
     }
+
+    public void ActivateFrom(GameObject menu)
+    {
+        canvas.enabled = true;
+        //baseObject.SetActive(true);
+        returnMenu = menu;
+        returnMenu.SetActive(false);
+    }
+}
+
+public interface IRequiresInit
+{
+    public void Init();
 }

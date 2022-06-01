@@ -15,7 +15,7 @@ public class ContactQualityDisplay : MonoBehaviour
     CQNodeSet activeDisplay = null;
     string headsetID;
 
-    private void Start()
+    private void Awake()
     {
         foreach(var display in displays)
         {

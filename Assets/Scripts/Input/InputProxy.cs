@@ -43,12 +43,19 @@ public class InputProxy : MonoBehaviour
                 || Keyboard.current[$"digit{n}Key"].IsPressed()))
                 return true;
 
-            if (n >= playerCount)
+            if (n >= playerCount || n < 0)
                 return false;
             return inputs[n];
         }
     }
     public static bool P(int n) => instance[n];
+    public static bool GetInput(int n) => instance[n];
+    public static bool GetToggledInput(int n)
+    {
+        if (n >= playerCount || n < 0)
+            return false;
+        return inputs[n].toggledValue;
+    }
 
     private void Start()
     {
@@ -60,6 +67,7 @@ public class InputProxy : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         instance = this;
         playerCountOverride = playerCountDebugOverride;
+        inputs = new List<InputBase>();
     }
 
     private void Update()

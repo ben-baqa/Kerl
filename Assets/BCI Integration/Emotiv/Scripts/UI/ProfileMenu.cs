@@ -23,7 +23,7 @@ public class ProfileMenu : MonoBehaviour
     [HideInInspector]
     public TrainingMenu trainingMenu;
 
-    void Start()
+    void Awake()
     {
         splitEditField = newProfileInput.GetComponentInChildren<TMP_InputField>(true);
         singleEditField = singleView.GetComponentInChildren<TMP_InputField>(true);

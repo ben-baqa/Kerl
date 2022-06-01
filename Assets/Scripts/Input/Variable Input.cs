@@ -17,24 +17,24 @@ public abstract class InputBase
     {
         get
         {
-            toggle = false;
-            if (heldValue)
+            if(_toggledValue)
             {
-                heldValue = false;
+                wasReleasedSinceLastUse = false;
+                _toggledValue = false;
                 return true;
             }
             return false;
         }
     }
 
-    protected bool toggle, heldValue;
+    protected bool wasReleasedSinceLastUse = false, _toggledValue;
 
     public virtual void Process()
     {
-        if (toggle)
-            heldValue = value;
+        if (wasReleasedSinceLastUse)
+            _toggledValue = value;
         else
-            toggle |= value;
+            wasReleasedSinceLastUse = !value;
     }
 
     public static implicit operator bool(InputBase i) => i.value;
@@ -42,10 +42,10 @@ public abstract class InputBase
 
 public class KeyInput : InputBase
 {
-    public override bool value => keyboard[key].isPressed;
+    public override bool value => keyboard[key].IsPressed();
     private Keyboard keyboard;
-    private Key key;
-    public KeyInput(Keyboard board, Key keyCode)
+    private string key;
+    public KeyInput(Keyboard board, string keyCode)
     {
         keyboard = board;
         key = keyCode;
@@ -54,9 +54,24 @@ public class KeyInput : InputBase
 
 public class GamepadInput : InputBase
 {
-    public override bool value => gamepad.IsPressed();
+    public override bool value => IsPressed();
     private Gamepad gamepad;
     public GamepadInput(Gamepad g) => gamepad = g;
+
+    bool IsPressed()
+    {
+        return gamepad.buttonNorth.isPressed ||
+            gamepad.buttonSouth.isPressed ||
+            gamepad.buttonEast.isPressed ||
+            gamepad.buttonWest.isPressed ||
+            gamepad.leftTrigger.isPressed ||
+            gamepad.rightTrigger.isPressed ||
+            gamepad.leftShoulder.isPressed ||
+            gamepad.rightShoulder.isPressed ||
+            gamepad.leftStickButton.isPressed ||
+            gamepad.rightStickButton.isPressed ||
+            gamepad.dpad.IsActuated();
+    }
 }
 
 public class NetworkInput : InputBase
@@ -76,6 +91,11 @@ public class BCIInput : InputBase
     public override bool value => headset.value;
 
     HeadsetProxy headset;
+
+    public BCIInput(HeadsetProxy headsetProxy)
+    {
+        headset = headsetProxy;
+    }
 
     public override void Process()
     {

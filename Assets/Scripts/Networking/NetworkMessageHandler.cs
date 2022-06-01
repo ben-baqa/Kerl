@@ -59,11 +59,11 @@ public class NetworkMessageHandler : MonoBehaviour
         switch (ar[0])
         {
             case "join":
-                joinMenu.SetState(int.Parse(ar[1]));
+                //joinMenu.SetState(int.Parse(ar[1]));
                 break;
 
             case "ready":
-                joinMenu.SetState(int.Parse(ar[1]), true);
+                //joinMenu.SetState(int.Parse(ar[1]), true);
                 break;
 
             default:
@@ -84,7 +84,7 @@ public class NetworkMessageHandler : MonoBehaviour
         switch (ar[0])
         {
             case "throw":
-                skipper.Throw(float.Parse(ar[1]));
+                //skipper.Throw(float.Parse(ar[1]));
                 break;
 
             case "sweep":
