@@ -19,28 +19,29 @@ public class QualityHUD : MonoBehaviour
 
     private void Start()
     {
+        Cortex.DataStreamStarted += Init;
         gameObject.SetActive(false);
-        Cortex.HeadsetConnected += Init;
     }
 
     void OnEnable()
     {
         if (!string.IsNullOrEmpty(headsetID))
-            Cortex.SubscribeDeviceInfo(headsetID, OnCQUpdate);
+            Cortex.SubscribeDeviceInfo(headsetID, OnDeviceInfoReceived);
     }
     private void OnDestroy()
     {
-        Cortex.UnsubscribeDeviceInfo(headsetID, OnCQUpdate);
+        Cortex.UnsubscribeDeviceInfo(headsetID, OnDeviceInfoReceived);
     }
 
     public void Init(string headset)
     {
+        print("YEET");
         headsetID = headset;
-        Cortex.SubscribeDeviceInfo(headset, OnCQUpdate);
+        Cortex.SubscribeDeviceInfo(headset, OnDeviceInfoReceived);
         gameObject.SetActive(true);
     }
 
-    void OnCQUpdate(DeviceInfo data)
+    void OnDeviceInfoReceived(DeviceInfo data)
     {
         double quality = data.cqOverall;
         contactQualityText.text = $"{quality}";

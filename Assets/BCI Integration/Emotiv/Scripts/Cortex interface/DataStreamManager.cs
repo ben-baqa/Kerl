@@ -58,10 +58,12 @@ namespace EmotivUnityPlugin
             ctxClient.StreamDataReceived += OnStreamDataRecieved;
             ctxClient.CreateSessionOK += OnCreateSessionOk;
             ctxClient.SubscribeDataDone += OnSubscribeDataDone;
+            // Automatically refreshes headset list when a headset is paired over bluetooth
             ctxClient.HeadsetConnectNotify +=
                 (object sender, HeadsetConnectEventArgs e) =>
                 {
-                    Debug.Log($"Headset paired: {e.HeadsetId}");
+                    if (Cortex.debugPrint)
+                        Debug.Log($"Headset paired: {e.HeadsetId}");
                     ctxClient.QueryHeadsets("");
                 };
 
@@ -179,6 +181,11 @@ namespace EmotivUnityPlugin
             dataSubscriber.RemoveStreamBySessionID(sessionID);
             foreach (var item in headsetToSessionID.Where(kvp => kvp.Value == sessionID))
                 headsetToSessionID.Remove(item.Key);
+        }
+
+        public bool HeadsetIsAlreadyInUse(string headsetID)
+        {
+            return headsetToSessionID.ContainsKey(headsetID);
         }
     }
 }

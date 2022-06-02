@@ -25,7 +25,7 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
 
     public void Init()
     {
-        Cortex.HeadsetConnected += OnHeadsetConnected;
+        Cortex.DataStreamStarted += OnDataStreamStarted;
         Cortex.training.GetTrainedActionsResult += Init;
         //Cortex.training.ProfileLoaded += (string s) => profileName = s;
         feedbackAnim = feedback.GetComponentInChildren<Animator>(true);
@@ -44,6 +44,16 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
         training.OnTrainingComplete = OnTrainingSequenceComplete;
     }
 
+    public void ResetMenu()
+    {
+        returningView.SetActive(false);
+        trainingExplanation.SetActive(false);
+        validationView.SetActive(false);
+        feedback.gameObject.SetActive(false);
+
+        training.Init();
+    }
+
     public void OnEnable()
     {
         Cortex.SubscribeMentalCommands(headsetID, OnMentalCommandRecieved);
@@ -56,9 +66,9 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
 
     public void Init(TrainedActions trainedActions)
     {
-        print($"training menu intiated! {trainedActions.totalTimesTraining}");
+        //print($"training menu intiated! {trainedActions.totalTimesTraining}");
 
-        if (trainedActions.totalTimesTraining < minTrainingRounds)
+        if (trainedActions.trainingCount < minTrainingRounds * 2)
         {
             trainingExplanation.SetActive(true);
         }
@@ -83,10 +93,8 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
         }
     }
 
-    public void OnHeadsetConnected(string id)
+    public void OnDataStreamStarted(string id)
     {
-        print("Headset ID received successfully!");
-        print($"training: {training}");
         headsetID = id;
         training.headsetID = id;
     }

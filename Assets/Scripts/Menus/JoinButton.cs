@@ -8,7 +8,7 @@ using UnityEngine.UI;
 /// </summary>
 public class JoinButton : MonoBehaviour
 {
-    public Sprite joinedSprite, readySprite;
+    public Sprite inactiveSprite, joinedSprite, readySprite;
     public AudioSource joinSound, readySound;
 
     public float effectSize = 2, bumpSize = 1.2f, sizeLerp = .1f;
@@ -16,15 +16,9 @@ public class JoinButton : MonoBehaviour
     public bool ready => _ready || index < 0;
     bool _ready = false;
 
-    Image sprite;
+    Image image;
     float size = 1;
     int index = -1;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        sprite = GetComponent<Image>();
-    }
 
     private void Update()
     {
@@ -34,7 +28,7 @@ public class JoinButton : MonoBehaviour
 
     private void FixedUpdate()
     {
-        sprite.transform.localScale = Vector3.one * size;
+        image.transform.localScale = Vector3.one * size;
         size = Mathf.Lerp(size, .99f, sizeLerp);
 
         if(size < 1)
@@ -46,16 +40,25 @@ public class JoinButton : MonoBehaviour
     public void Join(int playerIndex)
     {
         index = playerIndex;
-        sprite.sprite = joinedSprite;
+        image.sprite = joinedSprite;
         size = effectSize;
         joinSound.Play();
     }
 
     public void Ready()
     {
-        sprite.sprite = readySprite;
+        image.sprite = readySprite;
         size = effectSize;
         readySound.Play();
         _ready = true;
+    }
+
+    public void Reset()
+    {
+        image = GetComponent<Image>();
+        image.sprite = inactiveSprite;
+        size = 1;
+        index = -1;
+        _ready = false;
     }
 }

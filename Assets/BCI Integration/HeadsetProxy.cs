@@ -22,7 +22,6 @@ public class EmotivHeadsetProxy : HeadsetProxy
     public override bool value => ResolveInput();
     public string headsetID;
 
-    MentalCommandBuffer commandBuffer;
     MentalCommand lastCommand;
 
     float commandValue;
@@ -33,9 +32,7 @@ public class EmotivHeadsetProxy : HeadsetProxy
     public EmotivHeadsetProxy(string id)
     {
         headsetID = id;
-        //Cortex.SubscribeMentalCommands(headsetID, OnMentalCommandReceived);
-        commandBuffer = new MentalCommandBuffer();
-        Cortex.SubscribeMentalCommands(headsetID, commandBuffer.OnDataRecieved);
+        Cortex.SubscribeMentalCommands(headsetID, OnMentalCommandReceived);
     }
 
     private bool ResolveInput()
@@ -44,26 +41,18 @@ public class EmotivHeadsetProxy : HeadsetProxy
         //return lastCommand.action != "neutral";
     }
 
-    //void OnMentalCommandReceived(MentalCommand command)
-    //{
-    //    lastCommand = command;
-    //}
-
-    public override void Process()
+    public void OnMentalCommandReceived(MentalCommand command)
     {
-        foreach (MentalCommand m in commandBuffer.GetData())
-        {
-            float targetVal = (float)m.power;
-            if (m.action == "neutral")
-                targetVal = 0;
-            commandValue = Mathf.Lerp(commandValue, targetVal, GetRamp(consecutiveComands / RAMP_COUNT));
+        float targetVal = (float)command.power;
+        if (command.action == "neutral")
+            targetVal = 0;
+        commandValue = Mathf.Lerp(commandValue, targetVal, GetRamp(consecutiveComands / RAMP_COUNT));
 
-            if (lastCommand.action == m.action)
-                consecutiveComands++;
-            else
-                consecutiveComands = 0;
-            lastCommand = m;
-        }
+        if (lastCommand && lastCommand.action == command.action)
+            consecutiveComands++;
+        else
+            consecutiveComands = 0;
+        lastCommand = command;
     }
 
     // returns a sloped value that increases exponentially with n

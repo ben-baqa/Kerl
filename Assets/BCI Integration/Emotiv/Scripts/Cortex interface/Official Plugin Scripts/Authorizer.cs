@@ -144,7 +144,8 @@ namespace EmotivUnityPlugin
         {
             if (isConnected)
             {
-                UnityEngine.Debug.Log("Websocket is opened.");
+                if (Cortex.debugPrint)
+                    UnityEngine.Debug.Log("Websocket is opened.");
                 // get user login
                 _ctxClient.GetUserLogin();
                 ConnectServiceStateChanged(this, ConnectToCortexStates.Login_waiting);
