@@ -18,7 +18,7 @@ public class InputProxy : MonoBehaviour
         }
     }
     public static int playerCountOverride;
-    private static List<InputBase> inputs;
+    private static List<InputBase> inputs = new List<InputBase>();
 
     public static InputProxy instance;
 
@@ -67,7 +67,6 @@ public class InputProxy : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         instance = this;
         playerCountOverride = playerCountDebugOverride;
-        inputs = new List<InputBase>();
     }
 
     private void Update()

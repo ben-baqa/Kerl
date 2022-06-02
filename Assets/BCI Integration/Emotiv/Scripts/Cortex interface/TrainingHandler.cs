@@ -10,31 +10,6 @@ namespace EmotivUnityPlugin
         CortexClient ctxClient = CortexClient.Instance;
         Authorizer auth = Authorizer.Instance;
 
-        /* training:
-        *      query profile list
-        *      get current profile
-        *      create profile
-        *      load profile with headset
-        *      unload profile
-        *      save profile
-        *      
-        *      satrt training
-        *      accept training
-        *      reject training
-        *      erase training
-        *      reset training
-        *      
-        *      sub/unsub to:
-        *           query profile ok
-        *           create profile ok
-        *           profile saved ok
-        *           training ok
-        *           get detection info ok
-        *           profile loaded
-        *           profile unloaded
-        *           get current profile done
-        **/
-
         // event buffers to enable engine synchronous callbacks
         public EventBuffer<DetectionInfo> GetDetectionInfoResult;
         public EventBuffer<List<string>> ProfileQueryResult;

@@ -30,6 +30,8 @@ public class HeadsetPairingMenu : MonoBehaviour
     // called by the event system when there is a change in the list of available headsets
     private void OnHeadsetChanged(List<Headset> headsets)
     {
+        headsets = headsets.Where((Headset h) => !Cortex.HeadsetIsAlreadyInUse(h.headsetID)).ToList();
+
         // Only update display if incoming data is new
         if (!IsNewHeadsets(headsets))
             return;

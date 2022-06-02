@@ -21,49 +21,12 @@ namespace EmotivUnityPlugin
 
         // Event buffers, enable event calls within Unity from other threads
         public static EventBuffer<List<Headset>> HeadsetQueryResult;
-        public static EventBuffer<string> HeadsetConnected;
+        public static EventBuffer<string> DataStreamStarted;
+        public static EventBuffer<HeadsetConnectEventArgs> HeadsetConnected;
         public static EventBuffer<ConnectToCortexStates> ConnectionStateChanged;
 
         public static TrainingHandler training;
         public static TrainingHandler profiles => training;
-
-        /*
-         * Initiate
-         * Stop
-         * 
-         * start session
-         * close session
-         * query headsets
-         * 
-         * 
-         * sub/unsub to:
-         *      data streams, including mental commands, devInfo, and system events by headset session
-         *      headset list
-         *      profile list
-         *      
-         * training:
-         *      query profile list
-         *      create profile
-         *      load profile with headset
-         *      unload profile
-         *      get current profile
-         *      save profile
-         *      satrt training
-         *      accept training
-         *      reject training
-         *      erase training
-         *      reset training
-         *      
-         *      sub/unsub to:
-         *          query profile ok
-         *          create profile ok
-         *          profile saved ok
-         *          training ok
-         *          get detection info ok
-         *          profile loaded
-         *          profile unloaded
-         *          get current profile done
-         * */
 
         /// <summary>
         /// Initiates the authorizer and cortex client,
@@ -90,9 +53,14 @@ namespace EmotivUnityPlugin
             headsetFinder.QueryHeadsetOK += HeadsetQueryResult.OnParentEvent;
             eventBufferObject.AddComponent<EventBufferInstance>().buffer = HeadsetQueryResult;
 
-            // add buffer for headset connection
-            HeadsetConnected = new EventBuffer<string>();
-            dataStreamManager.HeadsetConnected += HeadsetConnected.OnParentEvent;
+            // add buffer for successful start of data stream (initating session with headset)
+            DataStreamStarted = new EventBuffer<string>();
+            dataStreamManager.HeadsetConnected += DataStreamStarted.OnParentEvent;
+            eventBufferObject.AddComponent<EventBufferInstance>().buffer = DataStreamStarted;
+
+            // add buffer for headset connectoin (pairing with computer)
+            HeadsetConnected = new EventBuffer<HeadsetConnectEventArgs>();
+            ctxClient.HeadsetConnectNotify += HeadsetConnected.OnParentEvent;
             eventBufferObject.AddComponent<EventBufferInstance>().buffer = HeadsetConnected;
 
             // add buffer for connection state changing
@@ -137,6 +105,16 @@ namespace EmotivUnityPlugin
         public static void QueryHeadsets()
         {
             headsetFinder.TriggerQuery();
+        }
+
+        /// <summary>
+        /// Checks if a given headset is already in use
+        /// </summary>
+        /// <param name="headsetID">headset to check</param>
+        /// <returns>true if there is already an extant session for the headset</returns>
+        public static bool HeadsetIsAlreadyInUse(string headsetID)
+        {
+            return dataStreamManager.HeadsetIsAlreadyInUse(headsetID);
         }
 
         /// <summary>

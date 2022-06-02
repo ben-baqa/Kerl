@@ -12,7 +12,6 @@ public class ConnectableHeadset : MonoBehaviour
     public Transform connectingText;
 
     string headsetID;
-    Headset headsetInfo;
 
     void Start()
     {
@@ -22,9 +21,18 @@ public class ConnectableHeadset : MonoBehaviour
         pairButton.onClick.AddListener(Pair);
     }
 
+    private void OnEnable()
+    {
+        Cortex.HeadsetConnected += OnHeadsetConnected;
+    }
+
+    private void OnDisable()
+    {
+        Cortex.HeadsetConnected -= OnHeadsetConnected;
+    }
+
     public void Init(Headset info)
     {
-        headsetInfo = info;
         headsetID = info.headsetID;
         deviceName.text = headsetID;
 
@@ -39,6 +47,15 @@ public class ConnectableHeadset : MonoBehaviour
     void Pair()
     {
         Cortex.ConnectDevice(headsetID);
+
+        pairButton.gameObject.SetActive(false);
+        connectingText.gameObject.SetActive(true);
+    }
+
+    void OnHeadsetConnected(HeadsetConnectEventArgs args)
+    {
+        if (args.HeadsetId == headsetID)
+            InitiateConnection();
     }
 
     void InitiateConnection()
@@ -50,16 +67,5 @@ public class ConnectableHeadset : MonoBehaviour
         connectingText.gameObject.SetActive(true);
 
         Cortex.StartSession(headsetID);
-    }
-
-    void OnConnection(object sender, string headsetId)
-    {
-        print("====== HEADSET CONNECTION SUCCESS");
-        connectingText.gameObject.SetActive(false);
-    }
-
-    void OnConnectionFailed(object sender, string headsetId)
-    {
-        print("====== HEADSET CONNECTION FAILURE");
     }
 }

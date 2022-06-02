@@ -617,7 +617,7 @@ namespace EmotivUnityPlugin
             {
                 string headsetId = messageData["headsetId"].ToString();
                 string message = messageData["behavior"].ToString();
-                UnityEngine.Debug.Log("handleWarning:" + message);
+                //UnityEngine.Debug.Log("handleWarning:" + message);
                 HeadsetConnectNotify(this, new HeadsetConnectEventArgs(true, message, headsetId));
             }
             else if (code == WarningCode.HeadsetWrongInformation ||

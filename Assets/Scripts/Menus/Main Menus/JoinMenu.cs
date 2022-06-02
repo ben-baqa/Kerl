@@ -31,6 +31,16 @@ public class JoinMenu : MonoBehaviour
         sfx = GetComponent<AudioSource>();
     }
 
+    private void OnEnable()
+    {
+        foreach (var b in player_buttons)
+            b.Reset();
+        for(int i = 0; i < player_count; i++)
+        {
+            player_buttons[i].Join(i);
+        }
+    }
+
     void Update()
     {
         CheckForNewInput();

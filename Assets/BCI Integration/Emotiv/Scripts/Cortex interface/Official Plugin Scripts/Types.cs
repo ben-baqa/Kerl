@@ -558,10 +558,16 @@ namespace EmotivUnityPlugin
         }
 
         public override bool Equals(object obj) => obj is MentalCommand other && Equals(other);
-        public bool Equals(MentalCommand m) => action == m.action && power == m.power;
+        public bool Equals(MentalCommand m)
+        {
+            if (this == null || m == null)
+                return false;
+            return action == m.action && power == m.power;
+        }
         public override int GetHashCode() => (action, power, action).GetHashCode();
-        public static bool operator ==(MentalCommand lhs, MentalCommand rhs) => lhs.Equals(rhs);
-        public static bool operator !=(MentalCommand lhs, MentalCommand rhs) => !lhs.Equals(rhs);
+        //public static bool operator ==(MentalCommand lhs, MentalCommand rhs) => lhs.Equals(rhs);
+        //public static bool operator !=(MentalCommand lhs, MentalCommand rhs) => !lhs.Equals(rhs);
+        public static implicit operator bool(MentalCommand mc) => mc != null;
     }
     // Facial expression data object
     public class FacEventArgs
@@ -624,11 +630,15 @@ namespace EmotivUnityPlugin
             totalTimesTraining = (int)data["totalTimesTraining"];
             JArray actions = (JArray)data["trainedActions"];
             trainedActions = new List<TrainedAction>();
+            trainingCount = 0;
             foreach (var action in actions)
+            {
                 trainedActions.Add(new TrainedAction((string)action["action"], (int)action["times"]));
+                trainingCount += (int)action["times"];
+            }
         }
         public List<TrainedAction> trainedActions;
-        public int totalTimesTraining;
+        public int trainingCount, totalTimesTraining;
 
         public struct TrainedAction
         {

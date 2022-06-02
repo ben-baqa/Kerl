@@ -26,6 +26,7 @@ public class EmotivSetupMenu : MonoBehaviour
 
     public GameObject returnMenu, baseObject;
     Canvas canvas;
+    bool connectedToCortex = false;
     
     void Start()
     {
@@ -47,13 +48,13 @@ public class EmotivSetupMenu : MonoBehaviour
     void OnEnable()
     {
         Cortex.ConnectionStateChanged += OnConnectionStateChanged;
-        Cortex.HeadsetConnected += OnHeadsetConnected;
+        Cortex.DataStreamStarted += OnDataStreamStarted;
         Cortex.training.ProfileLoaded += OnProfileLoaded;
     }
     void OnDisable()
     {
         Cortex.ConnectionStateChanged -= OnConnectionStateChanged;
-        Cortex.HeadsetConnected -= OnHeadsetConnected;
+        Cortex.DataStreamStarted -= OnDataStreamStarted;
     }
 
     public void Continue()
@@ -61,10 +62,9 @@ public class EmotivSetupMenu : MonoBehaviour
         state += 1;
         if(state > SetupMenuState.TRAINING)
         {
+            // trigger return to whatever menu you came from
             returnMenu.SetActive(true);
-            //baseObject.SetActive(false);
             canvas.enabled = false;
-            // probably trigger return to whatever menu you came from
         }
         ApplyState();
     }
@@ -81,21 +81,22 @@ public class EmotivSetupMenu : MonoBehaviour
     void OnConnectionStateChanged(ConnectToCortexStates connectionState)
     {
         if (connectionState == ConnectToCortexStates.Authorized)
+        {
             Continue();
+            connectedToCortex = true;
+        }
         connectionStateDisplay.OnConnectionStateChanged(connectionState);
     }
 
-    void OnHeadsetConnected(string headsetID)
+    void OnDataStreamStarted(string headsetID)
     {
         contactQualityDisplay.Activate(headsetID);
         profileMenu.headsetID = headsetID;
-        //trainingMenu.OnHeadsetConnected(headsetID);
         Continue();
     }
 
     void OnProfileLoaded(string profileName)
     {
-        print("profile loaded, getting trained actions");
         Cortex.profiles.GetTrainedActions(profileName);
         Continue();
     }
@@ -103,9 +104,16 @@ public class EmotivSetupMenu : MonoBehaviour
     public void ActivateFrom(GameObject menu)
     {
         canvas.enabled = true;
-        //baseObject.SetActive(true);
         returnMenu = menu;
         returnMenu.SetActive(false);
+
+        state = SetupMenuState.CONNECTING;
+        if (connectedToCortex)
+            Continue();
+        else
+            ApplyState();
+
+        trainingMenu.ResetMenu();
     }
 }
 
