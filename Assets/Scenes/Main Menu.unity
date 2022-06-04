@@ -134,6 +134,18 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5862190558964083465, guid: 53776da570572514daebe09adc4702be, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5862190558964083465, guid: 53776da570572514daebe09adc4702be, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5862190558964083465, guid: 53776da570572514daebe09adc4702be, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5862190559092470688, guid: 53776da570572514daebe09adc4702be, type: 3}
       propertyPath: m_Name
       value: Emotiv BCI Setup
@@ -181,6 +193,10 @@ PrefabInstance:
     - target: {fileID: 5862190559092470695, guid: 53776da570572514daebe09adc4702be, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5862190559273043815, guid: 53776da570572514daebe09adc4702be, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5862190559517536730, guid: 53776da570572514daebe09adc4702be, type: 3}
       propertyPath: m_AnchorMax.x
@@ -1141,8 +1157,20 @@ MonoBehaviour:
         m_MethodName: ActivateFrom
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 689796852}
+          m_ObjectArgument: {fileID: 1232265327}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 689796852}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
