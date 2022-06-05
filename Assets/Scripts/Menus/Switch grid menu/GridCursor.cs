@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class GlobalCursor : MonoBehaviour
+public class GridCursor : MonoBehaviour
 {
     private enum State
     {
@@ -19,16 +19,16 @@ public class GlobalCursor : MonoBehaviour
         Both
     }
 
-    public int rows;
     public int columns;
+    public int rows;
     public bool[] nodes;
 
     public float delayTime;
 
     [HideInInspector]
-    public UnityEvent cursorUpdate;
+    public UnityEvent cursorUpdate = new UnityEvent();
     [HideInInspector]
-    public UnityEvent selectionUpdate;
+    public UnityEvent selectionUpdate = new UnityEvent();
 
     private int colors;
 
@@ -133,7 +133,7 @@ public class GlobalCursor : MonoBehaviour
 
         for (int i = 0; i < colors; i++)
         {
-            if (InputProxy.instance[i])
+            if (InputProxy.GetToggledInput(i))
             {
                 if (state == State.Select) SelectCursor(i);
                 else if (state == State.Confirm) ConfirmCursor(i);
@@ -160,9 +160,7 @@ public class GlobalCursor : MonoBehaviour
         if (selectedColumn[color] >= 0 && selectedRow[color] >= 0)
         {
             selectedNode[color] = GetNode(selectedRow[color], selectedColumn[color]);
-            if (nodes[selectedNode[color]]) {
-                ResetSelection(color);
-            }
+            if (nodes.Length > selectedNode[color]) if (nodes[selectedNode[color]]) ResetSelection(color);
         }
 
         if (selectedNode.All(i => i >= 0))
@@ -183,7 +181,8 @@ public class GlobalCursor : MonoBehaviour
             return;
         }
         confirmed[color] = true;
-        if (confirmed.All(c =>  c)) {
+        if (confirmed.All(c => c))
+        {
             state = State.Done;
         }
     }
