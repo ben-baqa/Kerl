@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="195mm"
+   height="107.5mm"
+   viewBox="0 0 195 107.5"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2 (dc2aedaf03, 2022-05-15)"
+   sodipodi:docname="team selection background quarter.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="mm"
+     showgrid="true"
+     inkscape:zoom="1.829812"
+     inkscape:cx="377.36117"
+     inkscape:cy="208.76462"
+     inkscape:window-width="1918"
+     inkscape:window-height="2054"
+     inkscape:window-x="5750"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid63"
+       units="mm"
+       spacingx="0.99999999"
+       spacingy="0.99999999"
+       originx="0"
+       originy="0" />
+  </sodipodi:namedview>
+  <defs
+     id="defs2">
+    <inkscape:path-effect
+       effect="powerclip"
+       id="path-effect293"
+       is_visible="true"
+       lpeversion="1"
+       inverse="true"
+       flatten="false"
+       hide_clip="false"
+       message="Use fill-rule evenodd on &lt;b&gt;fill and stroke&lt;/b&gt; dialog if no flatten result after convert clip to paths." />
+    <inkscape:path-effect
+       effect="powerclip"
+       id="path-effect268"
+       is_visible="true"
+       lpeversion="1"
+       inverse="true"
+       flatten="false"
+       hide_clip="false"
+       message="Use fill-rule evenodd on &lt;b&gt;fill and stroke&lt;/b&gt; dialog if no flatten result after convert clip to paths." />
+    <inkscape:path-effect
+       effect="powerclip"
+       id="path-effect259"
+       is_visible="true"
+       lpeversion="1"
+       inverse="true"
+       flatten="false"
+       hide_clip="false"
+       message="Use fill-rule evenodd on &lt;b&gt;fill and stroke&lt;/b&gt; dialog if no flatten result after convert clip to paths." />
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath289">
+      <rect
+         style="display:none;fill:#ffffff;stroke-width:0.264583"
+         id="rect291"
+         width="185"
+         height="97.5"
+         x="5"
+         y="5"
+         d="m 5,5 h 185 v 97.5 H 5 Z" />
+      <path
+         id="lpe_path-effect293"
+         style="display:block;fill:#ffffff;stroke-width:0.264583"
+         class="powerclip"
+         d="M -5,-5 H 200 V 112.5 H -5 Z M 5,5 v 97.5 H 190 V 5 Z" />
+    </clipPath>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="fill:#ffffff;stroke-width:0.264583"
+       id="rect61"
+       width="195"
+       height="107.5"
+       x="0"
+       y="0"
+       clip-path="url(#clipPath289)"
+       sodipodi:type="rect"
+       inkscape:path-effect="#path-effect293"
+       d="M 0,0 H 195 V 107.5 H 0 Z" />
+    <rect
+       style="opacity:0.5;fill:#ffffff;stroke-width:0.264583"
+       id="rect65-1"
+       width="185"
+       height="97.5"
+       x="5"
+       y="5" />
+  </g>
+</svg>

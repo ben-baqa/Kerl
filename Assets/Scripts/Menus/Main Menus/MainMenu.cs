@@ -11,6 +11,7 @@ public class MainMenu : MonoBehaviour
         //CUSTOMIZATION,
         JOIN_MENU,
         //GAMEMODE_SELECT,
+        TEAM_MENU,
         CHARACTER_SELECT,
         ROCK_SELECT,
         //MAP_SELECT
@@ -23,6 +24,7 @@ public class MainMenu : MonoBehaviour
     public GameObject customization;
     public JoinMenu joinMenu;
     public GameObject gamemodeSelect;
+    public GameObject teamMenu;
     public GameObject characterSelect;
     public GameObject rockSelect;
     public GameObject mapSelect;
@@ -50,6 +52,12 @@ public class MainMenu : MonoBehaviour
         ApplyState();
     }
 
+    public void Back()
+    {
+        state -= 1;
+        ApplyState();
+    }
+
     void ApplyState()
     {
         titleScreen.SetActive(state == MenuState.TITLE);
@@ -57,6 +65,7 @@ public class MainMenu : MonoBehaviour
         //customization.SetActive(state == MenuState.CUSTOMIZATION);
         joinMenu.gameObject.SetActive(state == MenuState.JOIN_MENU);
         //gamemodeSelect.SetActive(state == MenuState.GAMEMODE_SELECT);
+        teamMenu.gameObject.SetActive(state == MenuState.TEAM_MENU);
         characterSelect.SetActive(state == MenuState.CHARACTER_SELECT);
         rockSelect.SetActive(state == MenuState.ROCK_SELECT);
         //mapSelect.SetActive(state == MenuState.MAP_SELECT);

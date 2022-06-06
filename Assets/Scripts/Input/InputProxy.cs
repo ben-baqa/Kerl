@@ -82,6 +82,7 @@ public class InputProxy : MonoBehaviour
     public static void AddInput(InputBase input)
     {
         inputs.Add(input);
+
     }
     public static void RemoveInput(InputBase input)
     {
@@ -96,5 +97,14 @@ public class InputProxy : MonoBehaviour
     {
         inputs.Add(new NetworkInput(id));
         //NetworkMessageHandler.Instance.InputRecieved += NetworkInput.NetworkUpdate;
+    }
+
+    public static InputType GetType(int index)
+    {
+        if(index < inputs.Count && index >= 0)
+            return inputs[index].GetInputType();
+
+        Debug.LogWarning("Attempting to access the type of an input that doesn't exist");
+        return InputType.unknown;
     }
 }

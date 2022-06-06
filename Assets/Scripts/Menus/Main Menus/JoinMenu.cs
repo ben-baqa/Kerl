@@ -17,11 +17,20 @@ public class JoinMenu : MonoBehaviour
     public TextMeshProUGUI timerText;
 
     public int maxPlayerCount = 4;
-    public float max_timer;
+    public float maxTimer;
+
+    [Header("Sprites")]
+    public Sprite inactiveSprite;
+    public Sprite keySprite;
+    public Sprite gamepadSprite;
+    public Sprite bciSprite;
+    public Sprite networkSprite;
 
     AudioSource sfx;
     List<InputControl> activeKeyInputs = new List<InputControl>();
     List<Gamepad> activeGamepadInputs = new List<Gamepad>();
+
+    Dictionary<InputType, Sprite> inputSprites;
 
     float timer;
 
@@ -29,16 +38,30 @@ public class JoinMenu : MonoBehaviour
     void Start()
     {
         sfx = GetComponent<AudioSource>();
+
+        inputSprites = new Dictionary<InputType, Sprite>();
+        inputSprites[InputType.key] = keySprite;
+        inputSprites[InputType.gamepad] = gamepadSprite;
+        inputSprites[InputType.bci] = bciSprite;
+        inputSprites[InputType.network] = networkSprite;
     }
 
     private void OnEnable()
     {
         foreach (var b in player_buttons)
-            b.Reset();
+            b.Reset(inactiveSprite);
+
+        int keyIndex = 0;
         for(int i = 0; i < player_count; i++)
         {
-            player_buttons[i].Join(i);
+            InputType type = InputProxy.GetType(i);
+            if (type == InputType.key)
+                player_buttons[i].Join(i, inputSprites[type], activeKeyInputs[keyIndex++].name);
+            else
+                player_buttons[i].Join(i, inputSprites[type]);
         }
+
+        timer = 0;
     }
 
     void Update()
@@ -56,9 +79,9 @@ public class JoinMenu : MonoBehaviour
             else if (timer <= 3.9f && !sfx.isPlaying)
                 sfx.Play();
         }
-        else if (timer != max_timer)
+        else if (timer != maxTimer)
         {
-            timer = max_timer;
+            timer = maxTimer;
             timerText.text = "";
         }
     }
@@ -96,7 +119,8 @@ public class JoinMenu : MonoBehaviour
 
         activeGamepadInputs.Add(gamepad);
 
-        AddPlayerInput(new GamepadInput(gamepad));
+        player_buttons[player_count].Join(player_count, gamepadSprite);
+        InputProxy.AddInput(new GamepadInput(gamepad));
     }
 
     void AddKeyboardInput(InputControl control)
@@ -108,15 +132,10 @@ public class JoinMenu : MonoBehaviour
         if (control.name == "anyKey")
             return;
 
-        AddPlayerInput(new KeyInput(control.device as Keyboard, control.name));
-    }
+        player_buttons[player_count].Join(player_count, keySprite, control.name);
+        InputProxy.AddInput(new KeyInput(control.device as Keyboard, control.name));
 
-    void AddPlayerInput(InputBase newInput)
-    {
-        player_buttons[player_count].Join(player_count);
-        InputProxy.AddInput(newInput);
     }
-
 
     bool AllPlayersReady()
     {

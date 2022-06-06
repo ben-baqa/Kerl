@@ -25,8 +25,8 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="1.829812"
-     inkscape:cx="490.21429"
-     inkscape:cy="338.28612"
+     inkscape:cx="490.48755"
+     inkscape:cy="338.83262"
      inkscape:window-width="3840"
      inkscape:window-height="2066"
      inkscape:window-x="3829"
@@ -39,32 +39,37 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
-    <path
-       style="fill:#ffffff;stroke-width:0.264583"
-       d="m 5,200 20,-25 h 150 l 20,25 z"
-       id="path115"
-       sodipodi:nodetypes="ccccc" />
-    <path
-       style="fill:#ffffff;stroke-width:0.264583"
-       d="M 0,195 20,170 V 15 L 0,5 Z"
-       id="path323"
-       sodipodi:nodetypes="ccccc" />
-    <path
-       style="fill:#ffffff;stroke-width:0.264583"
-       d="M 200,195 180,170 V 15 L 200,5 Z"
-       id="path323-0"
-       sodipodi:nodetypes="ccccc" />
-    <path
-       style="fill:#ffffff;stroke-width:0.264583"
-       d="M 5,0 25,10 H 175 L 195,0 Z"
-       id="path424"
-       sodipodi:nodetypes="ccccc" />
-    <rect
-       style="fill:#ffffff;stroke-width:0.264336"
-       id="rect478"
-       width="145"
-       height="150"
-       x="27.5"
-       y="17.5" />
+    <g
+       id="g120"
+       inkscape:label="key"
+       transform="matrix(0.9,0,0,0.9,10,10)">
+      <path
+         style="fill:#ffffff;stroke-width:0.264583"
+         d="m 5,200 20,-25 h 150 l 20,25 z"
+         id="path115"
+         sodipodi:nodetypes="ccccc" />
+      <path
+         style="fill:#ffffff;stroke-width:0.264583"
+         d="M 0,195 20,170 V 15 L 0,5 Z"
+         id="path323"
+         sodipodi:nodetypes="ccccc" />
+      <path
+         style="fill:#ffffff;stroke-width:0.264583"
+         d="M 200,195 180,170 V 15 L 200,5 Z"
+         id="path323-0"
+         sodipodi:nodetypes="ccccc" />
+      <path
+         style="fill:#ffffff;stroke-width:0.264583"
+         d="M 5,0 25,10 H 175 L 195,0 Z"
+         id="path424"
+         sodipodi:nodetypes="ccccc" />
+      <rect
+         style="fill:#ffffff;stroke-width:0.264336"
+         id="rect478"
+         width="145"
+         height="150"
+         x="27.5"
+         y="17.5" />
+    </g>
   </g>
 </svg>
