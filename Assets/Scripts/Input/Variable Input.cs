@@ -38,6 +38,20 @@ public abstract class InputBase
     }
 
     public static implicit operator bool(InputBase i) => i.value;
+
+    public InputType GetInputType()
+    {
+        if (this is KeyInput)
+            return InputType.key;
+        if (this is GamepadInput)
+            return InputType.gamepad;
+        if (this is BCIInput)
+            return InputType.bci;
+        if (this is NetworkInput)
+            return InputType.network;
+        Debug.LogWarning("Unexpected input type: " + this.GetInputType());
+        return InputType.unknown;
+    }
 }
 
 public class KeyInput : InputBase
@@ -102,4 +116,9 @@ public class BCIInput : InputBase
         base.Process();
         headset.Process();
     }
+}
+
+public enum InputType
+{
+    key, gamepad, bci, network, unknown
 }
