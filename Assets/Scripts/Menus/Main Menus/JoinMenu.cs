@@ -19,18 +19,9 @@ public class JoinMenu : MonoBehaviour
     public int maxPlayerCount = 4;
     public float maxTimer;
 
-    [Header("Sprites")]
-    public Sprite inactiveSprite;
-    public Sprite keySprite;
-    public Sprite gamepadSprite;
-    public Sprite bciSprite;
-    public Sprite networkSprite;
-
     AudioSource sfx;
     List<InputControl> activeKeyInputs = new List<InputControl>();
     List<Gamepad> activeGamepadInputs = new List<Gamepad>();
-
-    Dictionary<InputType, Sprite> inputSprites;
 
     float timer;
 
@@ -38,28 +29,15 @@ public class JoinMenu : MonoBehaviour
     void Start()
     {
         sfx = GetComponent<AudioSource>();
-
-        inputSprites = new Dictionary<InputType, Sprite>();
-        inputSprites[InputType.key] = keySprite;
-        inputSprites[InputType.gamepad] = gamepadSprite;
-        inputSprites[InputType.bci] = bciSprite;
-        inputSprites[InputType.network] = networkSprite;
     }
 
     private void OnEnable()
     {
         foreach (var b in player_buttons)
-            b.Reset(inactiveSprite);
+            b.Reset(MainMenu.inputSprites[InputType.invalid]);
 
-        int keyIndex = 0;
         for(int i = 0; i < player_count; i++)
-        {
-            InputType type = InputProxy.GetType(i);
-            if (type == InputType.key)
-                player_buttons[i].Join(i, inputSprites[type], activeKeyInputs[keyIndex++].name);
-            else
-                player_buttons[i].Join(i, inputSprites[type]);
-        }
+            player_buttons[i].Join(i);
 
         timer = 0;
     }
@@ -119,8 +97,8 @@ public class JoinMenu : MonoBehaviour
 
         activeGamepadInputs.Add(gamepad);
 
-        player_buttons[player_count].Join(player_count, gamepadSprite);
         InputProxy.AddInput(new GamepadInput(gamepad));
+        player_buttons[player_count - 1].Join(player_count - 1);
     }
 
     void AddKeyboardInput(InputControl control)
@@ -132,9 +110,8 @@ public class JoinMenu : MonoBehaviour
         if (control.name == "anyKey")
             return;
 
-        player_buttons[player_count].Join(player_count, keySprite, control.name);
         InputProxy.AddInput(new KeyInput(control.device as Keyboard, control.name));
-
+        player_buttons[player_count - 1].Join(player_count - 1);
     }
 
     bool AllPlayersReady()

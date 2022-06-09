@@ -19,6 +19,7 @@ public class MainMenu : MonoBehaviour
 
     MenuState state = MenuState.TITLE;
 
+    [Header("Submenus")]
     public GameObject titleScreen;
     public GameObject playOrCustomize;
     public GameObject customization;
@@ -29,17 +30,27 @@ public class MainMenu : MonoBehaviour
     public GameObject rockSelect;
     public GameObject mapSelect;
 
-    // Start is called before the first frame update
+    [Header("Input Sprites")]
+    public Sprite joinSprite;
+    public Sprite keySprite;
+    public Sprite gamepadSprite;
+    public Sprite bciSprite;
+    public Sprite networkSprite;
+
+    public static Dictionary<InputType, Sprite> inputSprites = new Dictionary<InputType, Sprite>();
+
+    
     void Start()
     {
         ApplyState();
+
+        inputSprites[InputType.invalid] = joinSprite;
+        inputSprites[InputType.key] = keySprite;
+        inputSprites[InputType.gamepad] = gamepadSprite;
+        inputSprites[InputType.bci] = bciSprite;
+        inputSprites[InputType.network] = networkSprite;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public void Continue()
     {

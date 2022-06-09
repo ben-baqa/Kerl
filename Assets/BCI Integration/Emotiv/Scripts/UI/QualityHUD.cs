@@ -28,14 +28,13 @@ public class QualityHUD : MonoBehaviour
         if (!string.IsNullOrEmpty(headsetID))
             Cortex.SubscribeDeviceInfo(headsetID, OnDeviceInfoReceived);
     }
-    private void OnDestroy()
+    private void OnDisable()
     {
         Cortex.UnsubscribeDeviceInfo(headsetID, OnDeviceInfoReceived);
     }
 
     public void Init(string headset)
     {
-        print("YEET");
         headsetID = headset;
         Cortex.SubscribeDeviceInfo(headset, OnDeviceInfoReceived);
         gameObject.SetActive(true);

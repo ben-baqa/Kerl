@@ -9,6 +9,7 @@ using EmotivUnityPlugin;
 public class HeadsetProxy
 {
     public virtual bool value => false;
+    public string identifier;
 
     // called by Update through input proxy
     public virtual void Process()
@@ -29,9 +30,10 @@ public class EmotivHeadsetProxy : HeadsetProxy
     const int RAMP_COUNT = 10;
     const float INPUT_THRESHOLD = 0.5f;
 
-    public EmotivHeadsetProxy(string id)
+    public EmotivHeadsetProxy(string id, string profilename)
     {
         headsetID = id;
+        identifier = profilename;
         Cortex.SubscribeMentalCommands(headsetID, OnMentalCommandReceived);
     }
 

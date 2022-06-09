@@ -66,7 +66,7 @@ namespace EmotivUnityPlugin
         public event EventHandler<StreamDataEventArgs> StreamDataReceived;
         public event EventHandler<List<Headset>> QueryHeadsetOK;
         public event EventHandler<HeadsetConnectEventArgs> HeadsetConnectNotify;
-        public event EventHandler HeadsetDisconnected;
+        //public event EventHandler HeadsetDisconnected;
         public event EventHandler<bool> HeadsetDisConnectedOK;
         public event EventHandler<bool> HasAccessRightOK;
         public event EventHandler<bool> ORequestAccessDone;

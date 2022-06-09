@@ -20,14 +20,15 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
     TrainingSubmenu training;
 
 
-    string headsetID;
+    string headsetID, profileName;
     bool validating = false;
 
     public void Init()
     {
         Cortex.DataStreamStarted += OnDataStreamStarted;
         Cortex.training.GetTrainedActionsResult += Init;
-        //Cortex.training.ProfileLoaded += (string s) => profileName = s;
+        Cortex.training.ProfileLoaded += (string s) => profileName = s;
+
         feedbackAnim = feedback.GetComponentInChildren<Animator>(true);
         trainPos = trainingLocation.localPosition;
         trainRot = trainingLocation.localEulerAngles;
@@ -108,7 +109,7 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
     public void FinishTraining()
     {
         // add new bci input to input handler
-        InputProxy.AddInput(new BCIInput(new EmotivHeadsetProxy(headsetID)));
+        InputProxy.AddInput(new BCIInput(new EmotivHeadsetProxy(headsetID, profileName)));
     }
 
     public void ContinueTraining()

@@ -50,15 +50,50 @@ public abstract class InputBase
         if (this is NetworkInput)
             return InputType.network;
         Debug.LogWarning("Unexpected input type: " + this.GetInputType());
-        return InputType.unknown;
+        return InputType.invalid;
+    }
+}
+public struct InputInfo
+{
+    public string name;
+    public InputType type;
+
+    public InputInfo(InputBase input)
+    {
+        type = input.GetInputType();
+
+        switch (type)
+        {
+            case InputType.key:
+                name = (input as KeyInput).key;
+                break;
+            case InputType.gamepad:
+                name = "";
+                break;
+            case InputType.bci:
+                name = (input as BCIInput).identifier;
+                break;
+            case InputType.network:
+                name = "network player name";
+                break;
+            default:
+                name = "invalid";
+                break;
+        }
+    }
+
+    public InputInfo(string message)
+    {
+        name = message;
+        type = InputType.invalid;
     }
 }
 
 public class KeyInput : InputBase
 {
     public override bool value => keyboard[key].IsPressed();
+    public string key;
     private Keyboard keyboard;
-    private string key;
     public KeyInput(Keyboard board, string keyCode)
     {
         keyboard = board;
@@ -103,6 +138,7 @@ public class NetworkInput : InputBase
 public class BCIInput : InputBase
 {
     public override bool value => headset.value;
+    public string identifier => headset.identifier;
 
     HeadsetProxy headset;
 
@@ -120,5 +156,5 @@ public class BCIInput : InputBase
 
 public enum InputType
 {
-    key, gamepad, bci, network, unknown
+    key, gamepad, bci, network, invalid
 }

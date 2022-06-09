@@ -8,17 +8,15 @@ using EmotivUnityPlugin;
 public class ConnectableHeadset : MonoBehaviour
 {
     public TextMeshProUGUI deviceName;
-    public Button bluetoothButton, dongleButton, cableButton, pairButton;
-    public Transform connectingText;
+    public Button connectButton;
+    public GameObject connectingText;
 
     string headsetID;
+    bool connected;
 
     void Start()
     {
-        bluetoothButton.onClick.AddListener(InitiateConnection);
-        dongleButton.onClick.AddListener(InitiateConnection);
-        cableButton.onClick.AddListener(InitiateConnection);
-        pairButton.onClick.AddListener(Pair);
+        connectButton.onClick.AddListener(Pair);
     }
 
     private void OnEnable()
@@ -36,20 +34,20 @@ public class ConnectableHeadset : MonoBehaviour
         headsetID = info.headsetID;
         deviceName.text = headsetID;
 
-        bool connected = info.status == "connected";
-
-        pairButton.gameObject.SetActive(!connected);
-        dongleButton.gameObject.SetActive(connected && info.connectedBy == ConnectionType.CONN_TYPE_DONGLE);
-        bluetoothButton.gameObject.SetActive(connected && info.connectedBy == ConnectionType.CONN_TYPE_BTLE);
-        cableButton.gameObject.SetActive(connected && info.connectedBy == ConnectionType.CONN_TYPE_USB_CABLE);
+        connected = info.status == "connected";
     }
 
     void Pair()
     {
-        Cortex.ConnectDevice(headsetID);
-
-        pairButton.gameObject.SetActive(false);
-        connectingText.gameObject.SetActive(true);
+        if (!connected)
+        {
+            Cortex.ConnectDevice(headsetID);
+            connectButton.gameObject.SetActive(false);
+            connectingText.SetActive(true);
+            HeadsetPairingMenu.connectingHeadset = headsetID;
+        }
+        else
+            InitiateConnection();
     }
 
     void OnHeadsetConnected(HeadsetConnectEventArgs args)
@@ -60,12 +58,16 @@ public class ConnectableHeadset : MonoBehaviour
 
     void InitiateConnection()
     {
-        bluetoothButton.gameObject.SetActive(false);
-        dongleButton.gameObject.SetActive(false);
-        cableButton.gameObject.SetActive(false);
-
-        connectingText.gameObject.SetActive(true);
+        connectButton.gameObject.SetActive(false);
+        connectingText.SetActive(true);
 
         Cortex.StartSession(headsetID);
+    }
+
+    public void SetAsConnecting()
+    {
+        connected = true;
+        connectButton.gameObject.SetActive(false);
+        connectingText.SetActive(true);
     }
 }
