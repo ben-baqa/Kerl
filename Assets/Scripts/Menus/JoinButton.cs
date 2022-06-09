@@ -46,19 +46,15 @@ public class JoinButton : MonoBehaviour
             size = bumpFactor * targetSize;
     }
 
-    public void Join(int playerIndex, Sprite sprite)
+    public void Join(int playerIndex)
     {
         index = playerIndex;
-        image.sprite = sprite;
+        image.sprite = MenuSelections.GetInputSprite(playerIndex);
         image.color = joinedColour;
+        text.text = InputProxy.GetInputInfo(playerIndex).name;
         size = effectSize;
         targetSize = joinedSize;
         joinSound.Play();
-    }
-    public void Join(int playerIndex, Sprite sprite, string keyCode)
-    {
-        Join(playerIndex, sprite);
-        text.text = keyCode;
     }
 
     public void Ready()

@@ -14,6 +14,8 @@ public class HeadsetPairingMenu : MonoBehaviour
 
     public ContactQualityDisplay contactQualityDisplay;
 
+    public static string connectingHeadset = "";
+
     List<Headset> previousData = new List<Headset>();
 
     void OnEnable()
@@ -59,6 +61,8 @@ public class HeadsetPairingMenu : MonoBehaviour
 
             ConnectableHeadset newHeadset = Instantiate(headsetEntryPrefab, headsetList).GetComponent<ConnectableHeadset>();
             newHeadset.Init(item);
+            if (item.headsetID == connectingHeadset)
+                newHeadset.SetAsConnecting();
         }
     }
 

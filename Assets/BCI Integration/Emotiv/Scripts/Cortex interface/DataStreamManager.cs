@@ -36,9 +36,14 @@ namespace EmotivUnityPlugin
         public ConnectToCortexStates connectionState = ConnectToCortexStates.Service_connecting;
 
         /// <summary>
-        /// Sent out when a new headset has been connected
+        /// Sent out when a new headset has been connected and stream data has been recieved
         /// </summary>
-        public event EventHandler<string> HeadsetConnected;
+        public event EventHandler<string> DataStreamStarted;
+        /// <summary>
+        /// Sends our when a data stream has been automatically stopped,
+        /// normally due to a headset being disconnected
+        /// </summary>
+        public event EventHandler<string> HeadsetDisconnected;
         /// <summary>
         /// Sent out when a new list of available headsets has been found
         /// </summary>
@@ -66,6 +71,7 @@ namespace EmotivUnityPlugin
                         Debug.Log($"Headset paired: {e.HeadsetId}");
                     ctxClient.QueryHeadsets("");
                 };
+            ctxClient.StreamStopNotify += OnStreamStop;
 
             authorizer.GetLicenseInfoDone += OnGetLicenseInfoDone;
         }
@@ -82,7 +88,7 @@ namespace EmotivUnityPlugin
                 foreach (var kvp in headsetToSessionID)
                     if (kvp.Key == connectingHeadset && kvp.Value == e.Sid)
                     {
-                        HeadsetConnected(this, connectingHeadset);
+                        DataStreamStarted(this, connectingHeadset);
                         connectingHeadset = null;
                     }
             }
@@ -145,6 +151,24 @@ namespace EmotivUnityPlugin
         private void OnGetLicenseInfoDone(object sender, License l)
         {
             HeadsetFinder.Instance.FinderInit();
+        }
+
+        /// <summary>
+        /// Called by CortexClient when a data stream is automatically close, internally remove session
+        /// and notify externals through event
+        /// </summary>
+        private void OnStreamStop(object sender, string sessionID)
+        {
+            string headsetID = "";
+            foreach (var item in headsetToSessionID)
+                if (item.Value == sessionID)
+                    headsetID = item.Key;
+
+            sessions.Remove(sessionID);
+            dataSubscriber.RemoveStreamBySessionID(sessionID);
+            headsetToSessionID.Remove(headsetID);
+
+            HeadsetDisconnected(this, headsetID);
         }
 
         /// <summary>

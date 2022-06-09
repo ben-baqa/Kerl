@@ -90,8 +90,8 @@ public class EmotivSetupMenu : MonoBehaviour
 
     void OnDataStreamStarted(string headsetID)
     {
-        contactQualityDisplay.Activate(headsetID);
         profileMenu.headsetID = headsetID;
+        contactQualityDisplay.Activate(headsetID);
         Continue();
     }
 

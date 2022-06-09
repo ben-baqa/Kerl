@@ -23,6 +23,7 @@ namespace EmotivUnityPlugin
         public static EventBuffer<List<Headset>> HeadsetQueryResult;
         public static EventBuffer<string> DataStreamStarted;
         public static EventBuffer<HeadsetConnectEventArgs> HeadsetConnected;
+        public static EventBuffer<string> HeadsetDisconnected;
         public static EventBuffer<ConnectToCortexStates> ConnectionStateChanged;
 
         public static TrainingHandler training;
@@ -55,13 +56,18 @@ namespace EmotivUnityPlugin
 
             // add buffer for successful start of data stream (initating session with headset)
             DataStreamStarted = new EventBuffer<string>();
-            dataStreamManager.HeadsetConnected += DataStreamStarted.OnParentEvent;
+            dataStreamManager.DataStreamStarted += DataStreamStarted.OnParentEvent;
             eventBufferObject.AddComponent<EventBufferInstance>().buffer = DataStreamStarted;
 
-            // add buffer for headset connectoin (pairing with computer)
+            // add buffer for headset connection (pairing with computer)
             HeadsetConnected = new EventBuffer<HeadsetConnectEventArgs>();
             ctxClient.HeadsetConnectNotify += HeadsetConnected.OnParentEvent;
             eventBufferObject.AddComponent<EventBufferInstance>().buffer = HeadsetConnected;
+
+            // add buffer for when a headset is unexpectedly disconnected (sends session ID)
+            HeadsetDisconnected = new EventBuffer<string>();
+            dataStreamManager.HeadsetDisconnected += HeadsetDisconnected.OnParentEvent;
+            eventBufferObject.AddComponent<EventBufferInstance>().buffer = HeadsetDisconnected;
 
             // add buffer for connection state changing
             ConnectionStateChanged = new EventBuffer<ConnectToCortexStates>();

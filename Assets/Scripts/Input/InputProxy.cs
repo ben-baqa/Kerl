@@ -19,6 +19,7 @@ public class InputProxy : MonoBehaviour
     }
     public static int playerCountOverride;
     private static List<InputBase> inputs = new List<InputBase>();
+    public static List<InputInfo> inputInfo = new List<InputInfo>();
 
     public static InputProxy instance;
 
@@ -82,7 +83,6 @@ public class InputProxy : MonoBehaviour
     public static void AddInput(InputBase input)
     {
         inputs.Add(input);
-
     }
     public static void RemoveInput(InputBase input)
     {
@@ -99,12 +99,12 @@ public class InputProxy : MonoBehaviour
         //NetworkMessageHandler.Instance.InputRecieved += NetworkInput.NetworkUpdate;
     }
 
-    public static InputType GetType(int index)
+    public static InputInfo GetInputInfo(int index)
     {
-        if(index < inputs.Count && index >= 0)
-            return inputs[index].GetInputType();
+        if (index >= 0 && index < inputs.Count)
+            return new InputInfo(inputs[index]);
 
-        Debug.LogWarning("Attempting to access the type of an input that doesn't exist");
-        return InputType.unknown;
+        Debug.LogWarning("Attempting to access info on an input that doesn't exist");
+        return new InputInfo("Invalid input index");
     }
 }
