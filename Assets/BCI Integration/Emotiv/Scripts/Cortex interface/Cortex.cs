@@ -17,7 +17,9 @@ namespace EmotivUnityPlugin
         static DataSubscriber dataSubscriber;
 
         // verbose logs
-        public static bool debugPrint;
+        public static bool printLogs;
+        public static bool printStreamData;
+        public static bool isQuitting;
 
         // Event buffers, enable event calls within Unity from other threads
         public static EventBuffer<List<Headset>> HeadsetQueryResult;
@@ -34,12 +36,14 @@ namespace EmotivUnityPlugin
         /// called externally at the beginning of the program.
         /// It is best to call this in Awake() from a script with execution priority
         /// </summary>
-        /// <param name="debug">enable verbose logs</param>
+        /// <param name="logs">enable verbose logs</param>
+        /// <param name="streamPrint">enable continous prints of incoming stream data</param>
         /// <param name="license">uneccessary in most cases,
         /// if you need this you probably know what you are doing and will be changing this code anyways</param>
-        public static void Start(bool debug = false, string license = "")
+        public static void Start(bool logs = false, bool streamPrint = false, string license = "")
         {
-            debugPrint = debug;
+            printLogs = logs;
+            printStreamData = streamPrint;
 
             // create Event Buffer GameObject to drive in engine events
             GameObject eventBufferObject = new GameObject();
@@ -87,6 +91,7 @@ namespace EmotivUnityPlugin
         }
         public static void Stop()
         {
+            isQuitting = true;
             dataStreamManager.Stop();
             HeadsetFinder.Instance.StopQueryHeadset();
             ctxClient.ForceCloseWSC();

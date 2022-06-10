@@ -137,8 +137,12 @@ public class TeamMenu : MonoBehaviour
     void Select(int playerIndex)
     {
         if (tokens[playerIndex].ChangeSelection(selectionGrids[selectionIndex], selectionIndex))
+        {
             // reset timer if selection has changed
             readyTimer = interval * (int)teamCount;
+            timerText.text = "";
+        }
+        
     }
 
     bool IsValidConfiguration()

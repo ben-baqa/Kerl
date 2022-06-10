@@ -928,7 +928,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &221921451
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3184,8 +3184,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   joinSound: {fileID: 811441714}
   readySound: {fileID: 114559840}
-  joinedColour: {r: 1, g: 1, b: 1, a: 0.5882353}
-  readyColour: {r: 1, g: 1, b: 1, a: 1}
   joinedSize: 0.75
   effectSize: 2
   bumpFactor: 1.2
@@ -3284,8 +3282,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   joinSound: {fileID: 1772862684}
   readySound: {fileID: 1524449878}
-  joinedColour: {r: 1, g: 1, b: 1, a: 0.5882353}
-  readyColour: {r: 1, g: 1, b: 1, a: 1}
   joinedSize: 0.75
   effectSize: 2
   bumpFactor: 1.2
@@ -3986,8 +3982,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   joinSound: {fileID: 1303927608}
   readySound: {fileID: 1751898784}
-  joinedColour: {r: 1, g: 1, b: 1, a: 0.5882353}
-  readyColour: {r: 1, g: 1, b: 1, a: 1}
   joinedSize: 0.75
   effectSize: 2
   bumpFactor: 1.2
@@ -4882,7 +4876,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a649f28541bdf414d9896a3cbc2814aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugInput: 1
+  debugInput: 0
   playerCountDebugOverride: 0
 --- !u!4 &1417552395
 Transform:
@@ -5525,6 +5519,16 @@ MonoBehaviour:
     gamepadSprite: {fileID: 3286163911610860551, guid: faf516ab572d43449862ee8200411449, type: 3}
     bciSprite: {fileID: 3286163911610860551, guid: c2604cdf65120b745bfd01adab5b271a, type: 3}
     networkSprite: {fileID: 3286163911610860551, guid: 72d9258a58af9f6458d5aa62cf160666, type: 3}
+  playerColours:
+    colours:
+    - {r: 1, g: 0, b: 0, a: 1}
+    - {r: 0, g: 0, b: 1, a: 1}
+    - {r: 0, g: 1, b: 0.30980393, a: 1}
+    - {r: 1, g: 0.99646395, b: 0.006289184, a: 1}
+    - {r: 0.67465764, g: 0, b: 0.8867924, a: 1}
+    - {r: 1, g: 0.6265514, b: 0, a: 1}
+    - {r: 0.044025064, g: 0.90290654, b: 1, a: 1}
+    - {r: 0.7294118, g: 0, b: 0.251497, a: 1}
   gameMode: party
 --- !u!4 &1703263124
 Transform:
@@ -5570,7 +5574,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56574212806b90446b12c4435fe152ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  printDebugForDataStreams: 0
+  printLogs: 0
+  printDataStreamsLogs: 0
 --- !u!4 &1729325280
 Transform:
   m_ObjectHideFlags: 0
@@ -6858,8 +6863,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   joinSound: {fileID: 565112114}
   readySound: {fileID: 126261351}
-  joinedColour: {r: 1, g: 1, b: 1, a: 0.5882353}
-  readyColour: {r: 1, g: 1, b: 1, a: 1}
   joinedSize: 0.75
   effectSize: 2
   bumpFactor: 1.2
@@ -6918,7 +6921,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2115085806
 RectTransform:
   m_ObjectHideFlags: 0

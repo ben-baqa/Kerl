@@ -55,7 +55,7 @@ namespace EmotivUnityPlugin
         {
             if (_aTimer != null && _aTimer.Enabled)
             {
-                if (Cortex.debugPrint)
+                if (Cortex.printLogs)
                     UnityEngine.Debug.Log("Stop query headset");
                 _aTimer.Stop();
             }

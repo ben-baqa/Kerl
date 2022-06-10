@@ -12,14 +12,15 @@ public class ConnectToCortex : MonoBehaviour
     // logs debug prints to an external file
     Logger logger = Logger.Instance;
 
-    public bool printDebugForDataStreams;
+    public bool printLogs;
+    public bool printDataStreamsLogs;
 
     // using awake so that this is the first thing called (could also use execution order)
     private void Awake()
     {
         logger.Init();
 
-        Cortex.Start(printDebugForDataStreams);
+        Cortex.Start(printLogs, printDataStreamsLogs);
         DontDestroyOnLoad(gameObject);
     }
 

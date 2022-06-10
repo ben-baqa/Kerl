@@ -21,6 +21,7 @@ public class TeamMenuToken : MonoBehaviour
         playerIndex = index;
         image = GetComponent<Image>();
         image.sprite = MenuSelections.GetInputSprite(index);
+        image.color = MenuSelections.GetColor(index);
 
         GetComponentInChildren<TextMeshProUGUI>().text = InputProxy.GetInputInfo(index).name;
 

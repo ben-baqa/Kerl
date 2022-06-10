@@ -17,6 +17,16 @@ public class InputProxy : MonoBehaviour
             return inputs.Count;
         }
     }
+    public static bool any
+    {
+        get
+        {
+            for (int i = 0; i < playerCount; i++)
+                if (P(i))
+                    return true;
+            return false;
+        }
+    }
     public static int playerCountOverride;
     private static List<InputBase> inputs = new List<InputBase>();
     public static List<InputInfo> inputInfo = new List<InputInfo>();
@@ -65,7 +75,7 @@ public class InputProxy : MonoBehaviour
     {
         if (instance)
         {
-            Destroy(gameObject);
+            Destroy(this);
             return;
         }
         DontDestroyOnLoad(gameObject);
