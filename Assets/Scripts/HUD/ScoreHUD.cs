@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-using Turn = TurnManager.Turn;
-
 /// <summary>
 /// Displays the current score of a game and whose turn it is
 /// </summary>
@@ -55,31 +53,11 @@ public class ScoreHUD : MonoBehaviour
         rScoreOutline.gameObject.SetActive(false);
     }
 
-    public void UpdateTurn(Turn turn)
+    public void UpdateTurn(int turn)
     {
-        string s = "";
-        Color c = blue;
-        switch (turn)
-        {
-            case Turn.p1:
-                s = "P1";
-                break;
-            case Turn.p2:
-                s = "P2";
-                break;
-            case Turn.p3:
-                s = "P3";
-                c = red;
-                break;
-            case Turn.p4:
-                s = "P4";
-                c = red;
-                break;
-            case Turn.com:
-                s = "AI";
-                c = red;
-                break;
-        }
+        string s = turn < 0? "AI": $"P{turn + 1}";
+        Color c = MenuSelections.GetColor(turn);
+
         playerOutline.text = player.text = s;
         player.color = c;
         playerOutline.rectTransform.localPosition = startPos;

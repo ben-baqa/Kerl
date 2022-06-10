@@ -1,23 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
     public enum MenuState
     {
-        TITLE,
-        //PLAY_OR_CUSTOMIZE,
-        //CUSTOMIZATION,
-        JOIN_MENU,
-        //GAMEMODE_SELECT,
-        TEAM_MENU,
-        CHARACTER_SELECT,
-        ROCK_SELECT,
-        //MAP_SELECT
+        Title,
+        //PlayOrCustomize,
+        //Customization,
+        JoinMenu,
+        //GamemodeSelection,
+        TeamMenu,
+        //CharacterSelect,
+        //RockSelect,
+        //MapSelect
     }
 
-    MenuState state = MenuState.TITLE;
+    MenuState state = MenuState.Title;
 
     [Header("Submenus")]
     public GameObject titleScreen;
@@ -55,10 +56,11 @@ public class MainMenu : MonoBehaviour
     public void Continue()
     {
         state += 1;
-        if (state > MenuState.ROCK_SELECT)
+        if (state > MenuState.TeamMenu)
         {
             // load into game
-            Debug.LogWarning("You need to implement this LMAO");
+            //Debug.LogWarning("You need to implement this LMAO");
+            SceneManager.LoadScene("game");
         }
         ApplyState();
     }
@@ -71,15 +73,15 @@ public class MainMenu : MonoBehaviour
 
     void ApplyState()
     {
-        titleScreen.SetActive(state == MenuState.TITLE);
-        //playOrCustomize.SetActive(state == MenuState.PLAY_OR_CUSTOMIZE);
-        //customization.SetActive(state == MenuState.CUSTOMIZATION);
-        joinMenu.gameObject.SetActive(state == MenuState.JOIN_MENU);
-        //gamemodeSelect.SetActive(state == MenuState.GAMEMODE_SELECT);
-        teamMenu.gameObject.SetActive(state == MenuState.TEAM_MENU);
-        characterSelect.SetActive(state == MenuState.CHARACTER_SELECT);
-        rockSelect.SetActive(state == MenuState.ROCK_SELECT);
-        //mapSelect.SetActive(state == MenuState.MAP_SELECT);
+        titleScreen.SetActive(state == MenuState.Title);
+        //playOrCustomize.SetActive(state == MenuState.PlayOrCustomize);
+        //customization.SetActive(state == MenuState.Customization);
+        joinMenu.gameObject.SetActive(state == MenuState.JoinMenu);
+        //gamemodeSelect.SetActive(state == MenuState.GamemodeSelection);
+        teamMenu.gameObject.SetActive(state == MenuState.TeamMenu);
+        //characterSelect.SetActive(state == MenuState.CharacterSelect);
+        //rockSelect.SetActive(state == MenuState.RockSelect);
+        //mapSelect.SetActive(state == MenuState.MapSelect);
     }
 
     public void SetState(MenuState newState)

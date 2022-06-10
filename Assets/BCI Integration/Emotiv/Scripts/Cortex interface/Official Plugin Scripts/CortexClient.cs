@@ -127,7 +127,7 @@ namespace EmotivUnityPlugin
 
         public void ForceCloseWSC()
         {
-            if (Cortex.debugPrint)
+            if (Cortex.printLogs)
                 UnityEngine.Debug.Log("Force close websocket client.");
             if (_wscTimer != null)
             {
@@ -340,7 +340,7 @@ namespace EmotivUnityPlugin
                 }
             }catch(Exception ex)
             {
-                if (Cortex.debugPrint)
+                if (Cortex.printLogs)
                     UnityEngine.Debug.LogWarning($"An Exception occured while handling websocket response," +
                         $"likely just an unused event attempting to fire: {ex}");
             }
@@ -568,7 +568,8 @@ namespace EmotivUnityPlugin
         /// </summary>
         private void HandleWarning(int code, JToken messageData)
         {
-            UnityEngine.Debug.Log("handleWarning: " + code);
+            if (Cortex.printLogs)
+                UnityEngine.Debug.Log("handleWarning: " + code);
             if (code == WarningCode.StreamStop)
             {
                 string sessionId = messageData["sessionId"].ToString();
@@ -635,7 +636,7 @@ namespace EmotivUnityPlugin
         /// </summary>
         private void WebSocketClient_Closed(object sender, EventArgs e)
         {
-            if (Cortex.debugPrint)
+            if (Cortex.printLogs)
                 UnityEngine.Debug.Log("Websocket closed");
             WSConnectDone(this, false);
             // start connecting cortex service again

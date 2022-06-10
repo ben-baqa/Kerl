@@ -67,7 +67,7 @@ namespace EmotivUnityPlugin
             ctxClient.HeadsetConnectNotify +=
                 (object sender, HeadsetConnectEventArgs e) =>
                 {
-                    if (Cortex.debugPrint)
+                    if (Cortex.printLogs)
                         Debug.Log($"Headset paired: {e.HeadsetId}");
                     ctxClient.QueryHeadsets("");
                 };
@@ -110,12 +110,12 @@ namespace EmotivUnityPlugin
                 ctxClient.Subscribe(authorizer.CortexToken, id, Config.dataStreams);
                 lock (locker)
                 {
-                    sessions[id] = new DataStream(id, Cortex.debugPrint);
+                    sessions[id] = new DataStream(id);
                     headsetToSessionID[e.HeadsetId] = id;
                     dataSubscriber.AddStream(sessions[id], id, e.HeadsetId);
                 }
 
-                if (Cortex.debugPrint)
+                if (Cortex.printLogs)
                     Debug.Log($"Session created successfuly, new session id: {id}");
             }catch (System.Exception ex)
             {
@@ -129,7 +129,7 @@ namespace EmotivUnityPlugin
         /// </summary>
         private void OnSubscribeDataDone(object sender, MultipleResultEventArgs e)
         {
-            if (Cortex.debugPrint)
+            if (Cortex.printLogs)
                 Debug.Log("DataStreamManager: SubscribeDataOK");
             foreach (JObject i in e.FailList)
                 Debug.LogWarning($"ERROR: Failed to subscribe to {i["streamName"]} stream");
@@ -189,7 +189,7 @@ namespace EmotivUnityPlugin
         /// </summary>
         public void StartSession(string headsetID)
         {
-            if (Cortex.debugPrint)
+            if (Cortex.printLogs)
                 Debug.Log($"Attempting to start session with headset: {headsetID}");
             ctxClient.CreateSession(authorizer.CortexToken, headsetID, "open");
             connectingHeadset = headsetID;

@@ -13,9 +13,9 @@ public class JoinButton : MonoBehaviour
     public AudioSource joinSound;
     public AudioSource readySound;
 
-    [Header("Colours")]
-    public Color joinedColour;
-    public Color readyColour;
+    //[Header("Colours")]
+    Color joinedColour;
+    Color readyColour;
 
     [Space(30)]
     public float joinedSize = 0.75f;
@@ -50,7 +50,10 @@ public class JoinButton : MonoBehaviour
     {
         index = playerIndex;
         image.sprite = MenuSelections.GetInputSprite(playerIndex);
+        joinedColour = readyColour = MenuSelections.GetColor(index);
+        joinedColour.a = .75f;
         image.color = joinedColour;
+
         text.text = InputProxy.GetInputInfo(playerIndex).name;
         size = effectSize;
         targetSize = joinedSize;

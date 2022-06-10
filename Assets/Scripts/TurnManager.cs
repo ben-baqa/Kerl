@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 /// <summary>
 /// Keeps track of which player has active input, and the flow of game state
@@ -9,100 +10,95 @@ public class TurnManager : MonoBehaviour
 {
     // Identifies this instance as the authoritative Network Host
     public static bool isHost = true;
-    public int playerCount;
-    public bool on;
 
-    public enum Turn { p1, p2, p3, p4, com}
-    private Turn turn = Turn.p1;
-
-    private InputProxy proxy;
     private ScoreHUD score;
     private AIScript ai;
+    Team blueTeam, redTeam;
 
     private bool blueTurn = true, skipper = true;
 
     // Start is called before the first frame update
     void Start()
     {
-        proxy = GetComponent<InputProxy>();
         score = FindObjectOfType<ScoreHUD>();
         ai = GetComponent<AIScript>();
-        //playerCount = Mathf.Clamp(playerCount, 1, 4);
-        playerCount = Mathf.Clamp(JoinMenu.player_count, 1, 4);
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        on = GetInput();
+        blueTeam = new Team(MenuSelections.teams[0], ai);
+        redTeam = new Team(MenuSelections.teams[1], ai);
+        print(blueTeam);
+        print(redTeam);
     }
 
     public void OnTurn()
     {
         blueTurn = !blueTurn;
-        if (blueTurn)
-            skipper = !skipper;
 
-        if(playerCount == 1)
-        {
-            turn = blueTurn ? Turn.p1 : Turn.com;
-        }
-        else if(playerCount == 2)
-        {
-            if (blueTurn)
-                turn = skipper ? Turn.p1 : Turn.p2;
-            else
-                turn = Turn.com;
-        }
-        else if(playerCount == 3)
-        {
-            if (blueTurn)
-                turn = skipper ? Turn.p1 : Turn.p2;
-            else
-                turn = Turn.p3;
-        }
-        else if(playerCount == 4)
-        {
-            if (blueTurn)
-                turn = skipper ? Turn.p1 : Turn.p2;
-            else
-                turn = skipper ? Turn.p3 : Turn.p4;
-        }
-        score.UpdateTurn(turn);
+        if (blueTurn)
+            blueTeam.Next(2);
+        else
+            redTeam.Next(2);
+
+        score.UpdateTurn((blueTurn ? blueTeam : redTeam).currentPlayer);
         ai.StartTimer();
     }
 
     public void OnThrow()
     {
-        if (playerCount > 1)
-        {
-            if (blueTurn)
-                turn = skipper ? Turn.p2 : Turn.p1;
-        }
-        if (playerCount == 4 && !blueTurn)
-        {
-            turn = skipper ? Turn.p4 : Turn.p3;
-        }
-        score.UpdateTurn(turn);
+        if (blueTurn)
+            blueTeam.Next();
+        else
+            redTeam.Next();
+        score.UpdateTurn((blueTurn ? blueTeam : redTeam).currentPlayer);
     }
 
     public bool GetInput()
     {
         if (!isHost)
             return false;
-        switch (turn)
+
+        if (blueTurn)
+            return blueTeam.input;
+        else
+            return redTeam.input;
+    }
+
+    public class Team
+    {
+        public bool input => aiTeam? ai.brushing : InputProxy.P(members[currentIndex]);
+        public int currentPlayer => aiTeam ? -1 : members[currentIndex];
+
+        AIScript ai;
+
+        int[] members;
+        int count;
+        int currentIndex;
+        bool aiTeam;
+
+        public Team(List<int> players, AIScript aiScript = null)
         {
-            case Turn.p1:
-                return proxy.p1;
-            case Turn.p2:
-                return proxy.p2;
-            case Turn.p3:
-                return proxy.p3;
-            case Turn.p4:
-                return proxy.p4;
-            case Turn.com:
-                return ai.brushing;
+            ai = aiScript;
+            count = players.Count;
+            members = players.ToArray();
+
+            currentIndex = 0;
+            if (count == 0)
+                aiTeam = true;
         }
-        return false;
+
+        public void Next(int increase = 1)
+        {
+            if (aiTeam)
+                return;
+            currentIndex = (currentIndex + increase) % count;
+        }
+
+        public override string ToString()
+        {
+            string res = "Team: [";
+            for (int i = 0; i < count; i++)
+                res += members[i] + ",";
+            res += $"], active player: {currentPlayer}, aiTeam? {aiTeam}";
+            return res;
+        }
     }
 }

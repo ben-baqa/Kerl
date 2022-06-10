@@ -39,7 +39,7 @@ namespace EmotivUnityPlugin
             try
             {
                 dataStreamSubscribers[headsetID] = new DataStreamEventBuffer(newStream, sessionID, headsetID);
-                if (Cortex.debugPrint)
+                if (Cortex.printLogs)
                     print("New stream added");
             }catch(Exception e)
             {
@@ -114,7 +114,8 @@ namespace EmotivUnityPlugin
         {
             if (string.IsNullOrEmpty(headsetID) || !dataStreamSubscribers.ContainsKey(headsetID))
             {
-                Debug.LogWarning("DataSubscriber: attempted to Unsubscribe from a headset stream that doesn't exist");
+                if(!Cortex.isQuitting)
+                    Debug.LogWarning("DataSubscriber: attempted to Unsubscribe from a headset stream that doesn't exist");
                 return false;
             }
 

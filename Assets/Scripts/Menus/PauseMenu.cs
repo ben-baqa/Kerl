@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// Runs the pause menu logic
@@ -23,7 +24,8 @@ public class PauseMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
+        if (Keyboard.current.escapeKey.wasPressedThisFrame ||
+            Keyboard.current.pKey.wasPressedThisFrame)
         {
             menu.enabled = !menu.enabled;
             if (menu.enabled)

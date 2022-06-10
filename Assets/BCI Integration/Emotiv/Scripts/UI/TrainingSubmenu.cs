@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using TMPro;
-using Newtonsoft.Json.Linq;
 using EmotivUnityPlugin;
 
 /* Handles the logic of actively training a profile, giving live feedback after the first few rounds.
@@ -25,14 +24,23 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
 
     string action => trainingState == TrainingState.BRUSHING ? "push" : "neutral";
 
-    public int minTrainingRounds = 16, assistRounds = 6,
-        feedbackThreshold = 4, countdownTime = 4;
-    public GameObject trainingCompletionOptions, earlyCompletionOption, brushPopup, relaxPopup;
+    [Header("settings")]
+    public int minTrainingRounds = 16;
+    public int assistRounds = 6;
+    public int feedbackThreshold = 4;
+    public int countdownTime = 4;
+    [Header("References")]
+    public GameObject trainingCompletionOptions;
+    public GameObject earlyCompletionOption;
 
-    public TextMeshProUGUI trainingQualityText, countDownText;
+    public TextMeshProUGUI trainingQualityText;
+    public TextMeshProUGUI countDownText;
+    public TextMeshProUGUI commandText;
     public Animator feedbackAnim;
 
     public Action OnTrainingComplete;
+
+    ProgressBar progressBar;
 
     [HideInInspector]
     public string headsetID;
@@ -55,8 +63,11 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
     {
         trainingCompletionOptions.SetActive(false);
         earlyCompletionOption.SetActive(false);
-        brushPopup.SetActive(false);
-        relaxPopup.SetActive(false);
+
+        progressBar = GetComponentInChildren<ProgressBar>(true);
+        progressBar.Init();
+        commandText.text = "";
+
         gameObject.SetActive(false);
     }
 
@@ -85,9 +96,12 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
             {
                 Cortex.training.StartTraining(action);
                 trainingCountdown = false;
+                progressBar.Activate();
+                progressBar.SetProgress(0);
             }
         }
-        countDownText.text = $"{(int)timer}";
+        countDownText.text = trainingCountdown ? $"{(int)timer}" : "";
+        progressBar.SetProgress((8 - timer) / 8f);
     }
 
     void OnMentalCommandRecieved(MentalCommand command)
@@ -115,7 +129,6 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
 
     void OnSysEventReceived(SysEventArgs args)
     {
-        print($"System event received: {args.eventMessage}");
         switch (args.eventMessage)
         {
             case "MC_Started":
@@ -142,8 +155,8 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
     // when training has been successfully initiated
     void OnTrainingStart()
     {
-        brushPopup.SetActive(trainingState == TrainingState.BRUSHING);
-        relaxPopup.SetActive(trainingState == TrainingState.NEUTRAL);
+        commandText.text = trainingState == TrainingState.NEUTRAL ? "relax" : "brush!";
+        progressBar.Activate();
         timer = 8;
     }
 
@@ -153,29 +166,30 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
         Cortex.training.GetTrainingThreshold();
         countDownText.enabled = false;
         timer = Mathf.Infinity;
-        brushPopup.SetActive(false);
-        relaxPopup.SetActive(false);
+        commandText.text = "";
+        progressBar.Deactivate();
     }
 
     // when training stage completed with a failure
     void OnTrainingFail()
     {
-        Cortex.training.GetTrainingThreshold();
+        //trainingCompletionOptions.SetActive(false);
+        //earlyCompletionOption.SetActive(false);
+
         countDownText.enabled = false;
         timer = Mathf.Infinity;
-        brushPopup.SetActive(false);
-        relaxPopup.SetActive(false);
+        StartTrainingCountdown();
+        ApplyState();
     }
 
     // when training was successfully rejected
     void OnTrainingRejected()
     {
-        brushPopup.SetActive(trainingState == TrainingState.BRUSHING);
-        relaxPopup.SetActive(trainingState == TrainingState.NEUTRAL);
+        commandText.text = trainingState == TrainingState.NEUTRAL ? "relax" : "brush!";
         StartTrainingCountdown();
     }
 
-    // when training has been started, succeeded, and accepted/rejected
+    // when training has been started, succeeded, and accepted
     void OnTrainingCompleted()
     {
         switch (trainingState)
@@ -213,6 +227,7 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
         timer = countdownTime;
         countDownText.enabled = true;
         countDownText.text = $"{(int)timer}";
+        progressBar.Deactivate();
     }
 
     // called by in engine UI

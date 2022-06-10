@@ -16,18 +16,12 @@ namespace EmotivUnityPlugin
         public event EventHandler<DeviceInfo> DevDataReceived;
 
         DeviceInfo devData;
-        //public MentalCommandBuffer mentalCommands;
 
         string sessionID;
-        bool debugPrint;
 
-        public DataStream(string id, bool debug = false)
+        public DataStream(string id)
         {
-            //mentalCommands = new MentalCommandBuffer();
-            //MentalCommandReceived += mentalCommands.OnDataRecieved;
-
             sessionID = id;
-            debugPrint = debug;
         }
         public void Close()
         {
@@ -56,7 +50,7 @@ namespace EmotivUnityPlugin
 
                         MentalCommandReceived(this, comEvent);
 
-                        if (debugPrint)
+                        if (Cortex.printStreamData)
                             Debug.Log($"Mental Command Recieved | {comEvent}");
                         break;
 
@@ -67,7 +61,7 @@ namespace EmotivUnityPlugin
 
                         SysEventReceived(this, sysEvent);
 
-                        if (debugPrint)
+                        if (Cortex.printStreamData)
                             Debug.Log($"System Event Recieved | {detection} | {eventMsg}");
                         break;
 
@@ -75,7 +69,7 @@ namespace EmotivUnityPlugin
                         devData.UpdateInfo(data);
                         if(DevDataReceived != null) DevDataReceived(this, devData);
 
-                        if (debugPrint)
+                        if (Cortex.printStreamData)
                             Debug.Log($"Dev Info Received | Battery: {devData.battery}" +
                                 $", Overall CQ: {devData.cqOverall}, Signal: {devData.signalStrength}");
                         break;
