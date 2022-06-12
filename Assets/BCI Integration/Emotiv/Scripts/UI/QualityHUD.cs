@@ -30,7 +30,8 @@ public class QualityHUD : MonoBehaviour
     }
     private void OnDisable()
     {
-        Cortex.UnsubscribeDeviceInfo(headsetID, OnDeviceInfoReceived);
+        if (!string.IsNullOrEmpty(headsetID))
+            Cortex.UnsubscribeDeviceInfo(headsetID, OnDeviceInfoReceived);
     }
 
     public void Init(string headset)

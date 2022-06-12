@@ -34,12 +34,18 @@ public class JoinMenu : MonoBehaviour
     private void OnEnable()
     {
         foreach (var b in player_buttons)
-            b.Reset(MainMenu.inputSprites[InputType.invalid]);
+            b.Reset(MenuSelections.GetInputSprite(-1));
 
         for(int i = 0; i < player_count; i++)
             player_buttons[i].Join(i);
 
         timer = 0;
+
+        InputProxy.InputRemoved += OnInputRemoved;
+    }
+    private void OnDisable()
+    {
+        InputProxy.InputRemoved -= OnInputRemoved;
     }
 
     void Update()
@@ -49,7 +55,7 @@ public class JoinMenu : MonoBehaviour
         if (AllPlayersReady())
         {
             timer -= Time.deltaTime;
-            timerText.text = "" + (int)timer;
+            timerText.text = "" + ((int)timer + 1);
 
             if (timer <= 0)
                 // continue to next menu
@@ -120,5 +126,30 @@ public class JoinMenu : MonoBehaviour
             if (!j.ready)
                 return false;
         return player_count > 0;
+    }
+
+    void OnInputRemoved(InputInfo info)
+    {
+        InputControl keyToRemove = null;
+        Gamepad gamepadToRemove = null;
+        if (info.type == InputType.key)
+        {
+            foreach (InputControl i in activeKeyInputs)
+                if (i.name == info.name)
+                    keyToRemove = i;
+        }
+        else if (info.type == InputType.gamepad)
+        {
+            foreach (Gamepad g in activeGamepadInputs)
+                if (g == info.device)
+                    gamepadToRemove = g;
+        }
+
+        if (keyToRemove != null)
+            activeKeyInputs.Remove(keyToRemove);
+        if (gamepadToRemove != null)
+            activeGamepadInputs.Remove(gamepadToRemove);
+
+        OnEnable();
     }
 }

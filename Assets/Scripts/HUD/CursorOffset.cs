@@ -5,6 +5,29 @@ using UnityEngine.InputSystem;
 
 public class CursorOffset : MonoBehaviour
 {
+    public static bool active
+    {
+        get
+        {
+            return _active;
+        }
+        set
+        {
+            if (value)
+            {
+                if (--disableCount == 0)
+                    _active = true;
+            }
+            else
+            {
+                disableCount++;
+                _active = false;
+            }
+        }
+    }
+    static bool _active = true;
+    static int disableCount = 0;
+
     public float scale;
 
     Material material;
@@ -17,6 +40,9 @@ public class CursorOffset : MonoBehaviour
 
     void Update()
     {
+        if (!active)
+            return;
+
         position += Mouse.current.delta.ReadValue() * scale;
 
         material.SetVector("_offset", position);

@@ -38,18 +38,10 @@ public class MainMenu : MonoBehaviour
     public Sprite bciSprite;
     public Sprite networkSprite;
 
-    public static Dictionary<InputType, Sprite> inputSprites = new Dictionary<InputType, Sprite>();
-
     
     void Start()
     {
         ApplyState();
-
-        inputSprites[InputType.invalid] = joinSprite;
-        inputSprites[InputType.key] = keySprite;
-        inputSprites[InputType.gamepad] = gamepadSprite;
-        inputSprites[InputType.bci] = bciSprite;
-        inputSprites[InputType.network] = networkSprite;
     }
 
 

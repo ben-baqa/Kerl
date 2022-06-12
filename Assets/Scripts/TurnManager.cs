@@ -15,7 +15,7 @@ public class TurnManager : MonoBehaviour
     private AIScript ai;
     Team blueTeam, redTeam;
 
-    private bool blueTurn = true, skipper = true;
+    private bool blueTurn = true;
 
     // Start is called before the first frame update
     void Start()
@@ -25,8 +25,8 @@ public class TurnManager : MonoBehaviour
 
         blueTeam = new Team(MenuSelections.teams[0], ai);
         redTeam = new Team(MenuSelections.teams[1], ai);
-        print(blueTeam);
-        print(redTeam);
+
+        //score.UpdateTurn((blueTurn ? blueTeam : redTeam).currentPlayer);
     }
 
     public void OnTurn()
