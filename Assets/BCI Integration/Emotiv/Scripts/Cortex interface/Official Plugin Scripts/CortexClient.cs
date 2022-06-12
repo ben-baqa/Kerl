@@ -252,7 +252,7 @@ namespace EmotivUnityPlugin
                         //}
 
                         string messageError = (string)error["message"];
-                        UnityEngine.Debug.Log("An error received: " + messageError + " on method " + method);
+                        UnityEngine.Debug.LogError("An error received: " + messageError + " on method " + method);
                         //Send Error message event
                         ErrorMsgReceived(this, new ErrorMsgEventArgs(code, messageError, method));
 

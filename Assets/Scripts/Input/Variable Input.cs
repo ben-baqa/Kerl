@@ -37,6 +37,8 @@ public abstract class InputBase
             wasReleasedSinceLastUse = !value;
     }
 
+    public virtual void OnDelete() { }
+
     public static implicit operator bool(InputBase i) => i.value;
 
     public InputType GetInputType()
@@ -159,6 +161,11 @@ public class BCIInput : InputBase
     {
         base.Process();
         headset.Process();
+    }
+
+    public override void OnDelete()
+    {
+        headset.OnDelete();
     }
 }
 

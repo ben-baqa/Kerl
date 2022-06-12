@@ -108,6 +108,14 @@ namespace EmotivUnityPlugin
         /// Ends the sessions specified by the given ID
         /// </summary>
         public static void EndSession(string sessionID) => dataStreamManager.CloseSession(sessionID);
+        /// <summary>
+        /// Edns the session specified by the given headsetID
+        /// </summary>
+        public static void EndSessionByHeadset(string headsetID) => dataStreamManager.CloseSessionByHeadset(headsetID);
+        /// <summary>
+        /// Ends the session created most recently
+        /// </summary>
+        public static void EndMostRecentSession() => dataStreamManager.CloseMostRecentSession();
 
         /// <summary>
         /// Trigger a query into the availaale headsets,

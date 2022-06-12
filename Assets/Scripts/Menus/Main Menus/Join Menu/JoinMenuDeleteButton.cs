@@ -8,7 +8,6 @@ using System;
 
 public class JoinMenuDeleteButton : MonoBehaviour
 {
-    Button button;
     int playerIndex = -1;
 
     public void Init(int n, UnityAction callBack)
@@ -19,11 +18,13 @@ public class JoinMenuDeleteButton : MonoBehaviour
         button.onClick.AddListener(OnClick);
         button.onClick.AddListener(callBack);
 
-        Image image = GetComponent<Image>();
-        image.sprite = MenuSelections.GetInputSprite(n);
+        GetComponent<InputIcon>().Index = n;
 
-        var text = GetComponentInChildren<TextMeshProUGUI>();
-        text.text = InputProxy.GetInputInfo(n).name;
+        //Image image = GetComponent<Image>();
+        //image.sprite = MenuSelections.GetInputSprite(n);
+
+        //var text = GetComponentInChildren<TextMeshProUGUI>();
+        //text.text = InputProxy.GetInputInfo(n).name;
     }
 
     void OnClick()

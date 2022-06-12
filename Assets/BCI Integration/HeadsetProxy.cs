@@ -16,6 +16,8 @@ public class HeadsetProxy
     {
 
     }
+
+    public virtual void OnDelete() { }
 }
 
 public class EmotivHeadsetProxy : HeadsetProxy
@@ -27,8 +29,8 @@ public class EmotivHeadsetProxy : HeadsetProxy
 
     float commandValue;
     int consecutiveComands;
-    const int RAMP_COUNT = 10;
-    const float INPUT_THRESHOLD = 0.5f;
+    const int RampCount = 10;
+    const float InputThreshold = 0.5f;
 
     public EmotivHeadsetProxy(string id, string profilename)
     {
@@ -37,9 +39,15 @@ public class EmotivHeadsetProxy : HeadsetProxy
         Cortex.SubscribeMentalCommands(headsetID, OnMentalCommandReceived);
     }
 
+    public override void OnDelete()
+    {
+        Cortex.profiles.UnloadProfile(identifier, headsetID);
+        Cortex.EndSessionByHeadset(headsetID);
+    }
+
     private bool ResolveInput()
     {
-        return commandValue > INPUT_THRESHOLD;
+        return commandValue > InputThreshold;
         //return lastCommand.action != "neutral";
     }
 
@@ -48,7 +56,7 @@ public class EmotivHeadsetProxy : HeadsetProxy
         float targetVal = (float)command.power;
         if (command.action == "neutral")
             targetVal = 0;
-        commandValue = Mathf.Lerp(commandValue, targetVal, GetRamp(consecutiveComands / RAMP_COUNT));
+        commandValue = Mathf.Lerp(commandValue, targetVal, GetRamp(consecutiveComands / RampCount));
 
         if (lastCommand && lastCommand.action == command.action)
             consecutiveComands++;

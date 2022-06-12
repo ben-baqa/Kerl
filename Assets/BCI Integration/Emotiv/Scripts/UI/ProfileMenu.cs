@@ -19,7 +19,7 @@ public class ProfileMenu : MonoBehaviour
     TMP_InputField splitEditField, singleEditField;
 
     [HideInInspector]
-    public string headsetID;
+    public string headsetID, profile;
     [HideInInspector]
     public TrainingMenu trainingMenu;
 
@@ -77,5 +77,12 @@ public class ProfileMenu : MonoBehaviour
     {
         Cortex.profiles.LoadProfile(profileName, headsetID);
         //trainingMenu.Init(true);
+
+        profile = profileName;
+    }
+
+    public void UnloadProfile()
+    {
+        Cortex.profiles.UnloadProfile(profile, headsetID);
     }
 }

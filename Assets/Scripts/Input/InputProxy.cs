@@ -105,6 +105,7 @@ public class InputProxy : MonoBehaviour
     }
     public static void RemoveInput(InputBase input)
     {
+        input.OnDelete();
         InputInfo eventInfo = new InputInfo("null");
         for (int i = 0; i < inputs.Count; i++)
             if (inputs[i] == input)
@@ -114,7 +115,8 @@ public class InputProxy : MonoBehaviour
         
     }
     public static void RemoveInput(int index)
-    {;
+    {
+        inputs[index].OnDelete();
         InputInfo eventInfo = new InputInfo(inputs[index], index);
         inputs.RemoveAt(index);
         InputRemoved.OnParentEvent(null, eventInfo);
