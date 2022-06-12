@@ -43,6 +43,13 @@ public class TeamMenu : MonoBehaviour
         ConstructMenu();
     }
 
+    private void OnDisable()
+    {
+        // destroy all previous tokens
+        foreach (Transform child in tokenParent)
+            Destroy(child.gameObject);
+    }
+
     void Update()
     {
         if (!activeGridObject.activeSelf)
@@ -51,7 +58,7 @@ public class TeamMenu : MonoBehaviour
         if (IsValidConfiguration())
         {
             readyTimer -= Time.deltaTime;
-            timerText.text = "" + (int)readyTimer;
+            timerText.text = "" + ((int)readyTimer + 1);
 
             if (readyTimer <= 0)
             {
@@ -84,35 +91,40 @@ public class TeamMenu : MonoBehaviour
 
     void ConstructMenu()
     {
-        foreach (Transform child in tokenParent)
-            Destroy(child.gameObject);
-
+        // select which grid set will be used
         Transform active = twoTeamObject;
         if (teamCount == TeamCount.four)
             active = fourTeamObject;
         active.gameObject.SetActive(true);
+        // grey out all grids
         foreach (Transform child in active)
             child.GetComponent<Image>().color = inactiveColor;
         activeGridObject = active.gameObject;
 
+        // initiate starting grid
         bool verticalGrids = teamCount == TeamCount.two;
         centreGrid = new PlacementGrid(transform.position, gridOffset, verticalGrids);
 
+        // initiate team grids
         selectionGrids = new List<PlacementGrid>();
         for (int i = 0; i < (int)teamCount; i++)
             selectionGrids.Add(new PlacementGrid(
                 active.GetChild(i).localPosition, gridOffset, verticalGrids));
 
+        // create and initialize tokens
         tokens = new List<TeamMenuToken>();
         for (int i = 0; i < InputProxy.playerCount; i++)
         {
             TeamMenuToken item = Instantiate(tokenPrefab, tokenParent).GetComponent<TeamMenuToken>();
-            item.Init(i, transform.position, MainMenu.inputSprites[InputProxy.GetInputInfo(i).type], itemLerp);
+            item.Init(i, transform.position, MenuSelections.GetInputSprite(i), itemLerp);
             tokens.Add(item);
             item.ChangeSelection(centreGrid, -1);
         }
 
-        UpdateSelection();
+        if (teamCount == TeamCount.two)
+            SetOption(twoTeamObject, 0);
+        else if (teamCount == TeamCount.four)
+            SetOption(fourTeamObject, 0);
     }
 
     void UpdateSelection()

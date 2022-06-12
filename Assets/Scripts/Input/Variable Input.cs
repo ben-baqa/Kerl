@@ -55,20 +55,26 @@ public abstract class InputBase
 }
 public struct InputInfo
 {
+    public int index;
     public string name;
     public InputType type;
+    public InputDevice device;
 
-    public InputInfo(InputBase input)
+    public InputInfo(InputBase input, int n = 0)
     {
         type = input.GetInputType();
+        device = null;
+        index = n;
 
         switch (type)
         {
             case InputType.key:
                 name = (input as KeyInput).key;
+                device = (input as KeyInput).keyboard;
                 break;
             case InputType.gamepad:
                 name = "";
+                device = (input as GamepadInput).gamepad;
                 break;
             case InputType.bci:
                 name = (input as BCIInput).identifier;
@@ -86,6 +92,8 @@ public struct InputInfo
     {
         name = message;
         type = InputType.invalid;
+        device = null;
+        index = -1;
     }
 }
 
@@ -93,7 +101,7 @@ public class KeyInput : InputBase
 {
     public override bool value => keyboard[key].IsPressed();
     public string key;
-    private Keyboard keyboard;
+    public Keyboard keyboard;
     public KeyInput(Keyboard board, string keyCode)
     {
         keyboard = board;
@@ -104,7 +112,7 @@ public class KeyInput : InputBase
 public class GamepadInput : InputBase
 {
     public override bool value => IsPressed();
-    private Gamepad gamepad;
+    public Gamepad gamepad;
     public GamepadInput(Gamepad g) => gamepad = g;
 
     bool IsPressed()

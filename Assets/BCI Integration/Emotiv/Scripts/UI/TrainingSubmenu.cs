@@ -76,12 +76,16 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
         Cortex.training.TrainingThresholdResult += OnTrainingThresholdResult;
         Cortex.SubscribeMentalCommands(headsetID, OnMentalCommandRecieved);
         Cortex.SubscribeSysEvents(headsetID, OnSysEventReceived);
+
+        CursorOffset.active = false;
     }
     public void OnDisable()
     {
         Cortex.training.TrainingThresholdResult -= OnTrainingThresholdResult;
         Cortex.UnsubscribeMentalCommands(headsetID, OnMentalCommandRecieved);
         Cortex.UnsubscribeSysEvents(headsetID, OnSysEventReceived);
+
+        CursorOffset.active = true;
     }
 
     void Update()
@@ -100,7 +104,7 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
                 progressBar.SetProgress(0);
             }
         }
-        countDownText.text = trainingCountdown ? $"{(int)timer}" : "";
+        countDownText.text = trainingCountdown ? $"{(int)timer + 1}" : "";
         progressBar.SetProgress((8 - timer) / 8f);
     }
 

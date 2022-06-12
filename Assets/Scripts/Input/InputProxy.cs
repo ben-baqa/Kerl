@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System;
+using EmotivUnityPlugin;
 
 /// <summary>
 /// Provides a simple interface intended to obscure a more complex input system
@@ -32,6 +34,9 @@ public class InputProxy : MonoBehaviour
     public static List<InputInfo> inputInfo = new List<InputInfo>();
 
     public static InputProxy instance;
+
+    public static EventBuffer<InputInfo> InputAdded = new EventBuffer<InputInfo>();
+    public static EventBuffer<InputInfo> InputRemoved = new EventBuffer<InputInfo>();
 
     public static bool enableDebugInput;
     public bool debugInput = true;
@@ -88,33 +93,45 @@ public class InputProxy : MonoBehaviour
     {
         foreach (var i in inputs)
             i.Process();
+
+        InputAdded.Process();
+        InputRemoved.Process();
     }
 
     public static void AddInput(InputBase input)
     {
         inputs.Add(input);
+        InputAdded.OnParentEvent(null, new InputInfo(input, inputs.Count));
     }
     public static void RemoveInput(InputBase input)
     {
+        InputInfo eventInfo = new InputInfo("null");
+        for (int i = 0; i < inputs.Count; i++)
+            if (inputs[i] == input)
+                eventInfo = GetInputInfo(i);
         inputs.Remove(input);
+        InputRemoved.OnParentEvent(null, eventInfo);
+        
     }
     public static void RemoveInput(int index)
-    {
+    {;
+        InputInfo eventInfo = new InputInfo(inputs[index], index);
         inputs.RemoveAt(index);
+        InputRemoved.OnParentEvent(null, eventInfo);
     }
 
     public static void AddNetworkInput(string id)
     {
-        inputs.Add(new NetworkInput(id));
+        AddInput(new NetworkInput(id));
         //NetworkMessageHandler.Instance.InputRecieved += NetworkInput.NetworkUpdate;
     }
 
     public static InputInfo GetInputInfo(int index)
     {
         if (index >= 0 && index < inputs.Count)
-            return new InputInfo(inputs[index]);
+            return new InputInfo(inputs[index], index);
 
-        Debug.LogWarning("Attempting to access info on an input that doesn't exist");
+        //Debug.LogWarning("Attempting to access info on an input that doesn't exist");
         return new InputInfo("Invalid input index");
     }
 }

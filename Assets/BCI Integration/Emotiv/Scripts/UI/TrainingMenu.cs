@@ -8,17 +8,26 @@ using EmotivUnityPlugin;
  */
 public class TrainingMenu : MonoBehaviour, IRequiresInit
 {
+    [Header("settings")]
     public int minTrainingRounds = 16, trainingCountdownTime = 4;
+    [Header("References")]
     public GameObject returningView;
     public GameObject trainingExplanation;
     public GameObject validationView;
 
-    public Transform feedback, trainingLocation, validationLocation;
+    public Transform feedback;
+    public Transform trainingLocation;
+    public Transform validationLocation;
+    [Header("ice settings")]
+    public MeshRenderer iceMesh;
+    public float iceScrollSpeed;
 
     Animator feedbackAnim;
     Vector3 trainPos, valPos, trainRot, valRot;
     TrainingSubmenu training;
 
+    Material iceMat;
+    Vector3 iceOffset = Vector3.zero;
 
     string headsetID, profileName;
     bool validating = false;
@@ -34,6 +43,8 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
         trainRot = trainingLocation.localEulerAngles;
         valPos = validationLocation.localPosition;
         valRot = validationLocation.localEulerAngles;
+
+        iceMat = iceMesh.material;
 
         returningView.SetActive(false);
         trainingExplanation.SetActive(false);
@@ -92,6 +103,10 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
             feedback.localPosition = Vector3.Lerp(feedback.localPosition, trainPos, 0.1f);
             feedback.localEulerAngles = Vector3.Lerp(feedback.localEulerAngles, trainRot, 0.1f);
         }
+
+        if (feedbackAnim.GetCurrentAnimatorStateInfo(0).IsName("brush"))
+            iceOffset += Vector3.right * iceScrollSpeed * feedbackAnim.GetFloat("brush speed");
+        iceMat.SetVector("_offset", iceOffset);
     }
 
     public void OnDataStreamStarted(string id)
@@ -135,6 +150,8 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
     {
         validating = true;
         returningView.SetActive(false);
+        trainingExplanation.SetActive(false);
+        training.gameObject.SetActive(false);
         validationView.SetActive(true);
 
         feedback.gameObject.SetActive(true);

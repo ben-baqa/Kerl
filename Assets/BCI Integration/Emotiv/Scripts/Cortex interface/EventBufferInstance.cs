@@ -26,16 +26,18 @@ namespace EmotivUnityPlugin
 
         T data;
         bool trigger;
+        object locker = new object();
 
         public override void Process()
         {
             try {
-                if (trigger)
-                {
-                    trigger = false;
-                    foreach (Action<T> action in callbacks)
-                        action(data);
-                }
+                lock (locker)
+                    if (trigger)
+                    {
+                        trigger = false;
+                        foreach (Action<T> action in callbacks)
+                            action(data);
+                    }
             }
             catch (Exception e)
             {
@@ -45,12 +47,14 @@ namespace EmotivUnityPlugin
 
         public void Subscribe(Action<T> action)
         {
-            callbacks.Add(action);
+            lock (locker)
+                callbacks.Add(action);
         }
 
         public void Unsubscribe(Action<T> action)
         {
-            callbacks.Remove(action);
+            lock (locker)
+                callbacks.Remove(action);
         }
 
         public static EventBuffer<T> operator +(EventBuffer<T> lhs, Action<T> rhs)
@@ -68,8 +72,11 @@ namespace EmotivUnityPlugin
         {
             try
             {
-                trigger = true;
-                data = args;
+                lock (locker)
+                {
+                    trigger = true;
+                    data = args;
+                }
             }catch(Exception e)
             {
                 Debug.LogWarning("Exception in event Buffer parent event: " + e);
