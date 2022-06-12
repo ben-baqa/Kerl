@@ -11,6 +11,7 @@ public class DropDownMenu : MonoBehaviour, IPointerEnterHandler
     public GameObject elementPrefab;
     public Transform elementParent;
     public Vector2 spacing = Vector2.right * 100;
+    public Color highlightColour;
 
     List<JoinMenuDeleteButton> elements = new List<JoinMenuDeleteButton>();
     Image image;
@@ -65,7 +66,7 @@ public class DropDownMenu : MonoBehaviour, IPointerEnterHandler
         foreach (JoinMenuDeleteButton b in elements)
             b.gameObject.SetActive(open);
 
-        image.color = open ? Color.grey : Color.white;
+        image.color = open ? highlightColour : Color.white;
     }
 
     void OnInputAdded(InputInfo info) => ReconstructMenu();

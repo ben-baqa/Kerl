@@ -33,13 +33,7 @@ public class JoinMenu : MonoBehaviour
 
     private void OnEnable()
     {
-        foreach (var b in player_buttons)
-            b.Reset(MenuSelections.GetInputSprite(-1));
-
-        for(int i = 0; i < player_count; i++)
-            player_buttons[i].Join(i);
-
-        timer = 0;
+        ResetMenu();
 
         InputProxy.InputRemoved += OnInputRemoved;
     }
@@ -68,6 +62,17 @@ public class JoinMenu : MonoBehaviour
             timer = maxTimer;
             timerText.text = "";
         }
+    }
+
+    void ResetMenu()
+    {
+        foreach (var b in player_buttons)
+            b.Reset(MenuSelections.GetInputSprite(-1));
+
+        for (int i = 0; i < player_count; i++)
+            player_buttons[i].Join(i);
+
+        timer = 0;
     }
 
     void CheckForNewInput()
@@ -150,6 +155,6 @@ public class JoinMenu : MonoBehaviour
         if (gamepadToRemove != null)
             activeGamepadInputs.Remove(gamepadToRemove);
 
-        OnEnable();
+        ResetMenu();
     }
 }

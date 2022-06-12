@@ -35,6 +35,7 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
 
     public TextMeshProUGUI trainingQualityText;
     public TextMeshProUGUI countDownText;
+    public TextMeshProUGUI upNextText;
     public TextMeshProUGUI commandText;
     public Animator feedbackAnim;
 
@@ -100,8 +101,6 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
             {
                 Cortex.training.StartTraining(action);
                 trainingCountdown = false;
-                progressBar.Activate();
-                progressBar.SetProgress(0);
             }
         }
         countDownText.text = trainingCountdown ? $"{(int)timer + 1}" : "";
@@ -177,20 +176,17 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
     // when training stage completed with a failure
     void OnTrainingFail()
     {
-        //trainingCompletionOptions.SetActive(false);
-        //earlyCompletionOption.SetActive(false);
-
+        commandText.text = "";
         countDownText.enabled = false;
         timer = Mathf.Infinity;
-        StartTrainingCountdown();
+        ActivateUpNext();
         ApplyState();
     }
 
     // when training was successfully rejected
     void OnTrainingRejected()
     {
-        commandText.text = trainingState == TrainingState.NEUTRAL ? "relax" : "brush!";
-        StartTrainingCountdown();
+        ActivateUpNext();
     }
 
     // when training has been started, succeeded, and accepted
@@ -214,7 +210,7 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
             OnTrainingComplete();
         }
         else
-            StartTrainingCountdown();
+            ActivateUpNext();
 
         ApplyState();
     }
@@ -225,13 +221,20 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
         feedbackAnim.SetBool("brushing", trainingState != TrainingState.NEUTRAL);
     }
 
+    void ActivateUpNext()
+    {
+        progressBar.Deactivate();
+        upNextText.gameObject.SetActive(true);
+        upNextText.text = "Up Next\n" +  (trainingState == TrainingState.NEUTRAL ? "relax" : "brush!");
+    }
+
     public void StartTrainingCountdown()
     {
         trainingCountdown = true;
         timer = countdownTime;
         countDownText.enabled = true;
         countDownText.text = $"{(int)timer}";
-        progressBar.Deactivate();
+        upNextText.gameObject.SetActive(false);
     }
 
     // called by in engine UI
@@ -247,7 +250,7 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
         Cortex.training.RejectTraining(action);
         trainingCompletionOptions.SetActive(false);
         earlyCompletionOption.SetActive(false);
-        StartTrainingCountdown();
+        ActivateUpNext();
     }
 
     // called by overseer script
@@ -257,6 +260,6 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
         trainingCount = rounds > 0? minTrainingRounds - rounds: 0;
         trainingState = TrainingState.NEUTRAL;
         ApplyState();
-        StartTrainingCountdown();
+        ActivateUpNext();
     }
 }

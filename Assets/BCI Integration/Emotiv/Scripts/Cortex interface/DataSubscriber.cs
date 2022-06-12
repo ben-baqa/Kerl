@@ -15,6 +15,7 @@ namespace EmotivUnityPlugin
         public static DataSubscriber Instance;
 
         Dictionary<string, DataStreamEventBuffer> dataStreamSubscribers = new Dictionary<string, DataStreamEventBuffer>();
+        object mux = new object();
 
         DataSubscriber()
         {
@@ -24,8 +25,9 @@ namespace EmotivUnityPlugin
 
         void Update()
         {
-            foreach (var subscriber in dataStreamSubscribers.Values)
-                subscriber.Process();
+            lock (mux)
+                foreach (var subscriber in dataStreamSubscribers.Values)
+                    subscriber.Process();
         }
 
         /// <summary>
@@ -38,7 +40,8 @@ namespace EmotivUnityPlugin
         {
             try
             {
-                dataStreamSubscribers[headsetID] = new DataStreamEventBuffer(newStream, sessionID, headsetID);
+                lock (mux)
+                    dataStreamSubscribers[headsetID] = new DataStreamEventBuffer(newStream, sessionID, headsetID);
                 if (Cortex.printLogs)
                     print("New stream added");
             }catch(Exception e)
@@ -48,14 +51,18 @@ namespace EmotivUnityPlugin
         }
         public void RemoveStreamByHeadsetID(string id)
         {
-            dataStreamSubscribers.Remove(id);
+            lock (mux)
+                dataStreamSubscribers.Remove(id);
         }
         public void RemoveStreamBySessionID(string id)
         {
-            foreach (var item in dataStreamSubscribers.Where(kvp => kvp.Value.sessionID == id))
-            {
-                dataStreamSubscribers.Remove(item.Key);
-            }
+            string toRemove = null;
+            foreach (var item in dataStreamSubscribers)
+                if (item.Value.sessionID == id)
+                    toRemove = item.Key;
+
+            if (!string.IsNullOrEmpty(toRemove))
+                lock (mux) dataStreamSubscribers.Remove(toRemove);
         }
 
         /// <summary>
@@ -114,7 +121,7 @@ namespace EmotivUnityPlugin
         {
             if (string.IsNullOrEmpty(headsetID) || !dataStreamSubscribers.ContainsKey(headsetID))
             {
-                if(!Cortex.isQuitting)
+                if(Cortex.printLogs)
                     Debug.LogWarning("DataSubscriber: attempted to Unsubscribe from a headset stream that doesn't exist");
                 return false;
             }
@@ -160,22 +167,6 @@ namespace EmotivUnityPlugin
         public EventBuffer<MentalCommand> MentalCommandReceived = new EventBuffer<MentalCommand>();
         public EventBuffer<DeviceInfo> DevDataReceived = new EventBuffer<DeviceInfo>();
         public EventBuffer<SysEventArgs> SysEventReceived = new EventBuffer<SysEventArgs>();
-
-        //public event EventHandler<MentalCommand> MentalCommandReceived
-        //{
-        //    add { mentalCommandEventHandler.Event += value; }
-        //    remove { mentalCommandEventHandler.Event -= value; }
-        //}
-        //public event EventHandler<DeviceInfo> DevDataReceived
-        //{
-        //    add { devDataEventHandler.Event += value; }
-        //    remove { devDataEventHandler.Event -= value; }
-        //}
-        //public event EventHandler<SysEventArgs> SysEventReceived
-        //{
-        //    add { sysEventHandler.Event += value; }
-        //    remove { sysEventHandler.Event -= value; }
-        //}
 
         public DataStreamEventBuffer(DataStream stream, string sessionID, string headsetID)
         {

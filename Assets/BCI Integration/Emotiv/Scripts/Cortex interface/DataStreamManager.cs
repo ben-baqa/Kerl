@@ -85,12 +85,11 @@ namespace EmotivUnityPlugin
         {
             if (connectingHeadset != null)
             {
-                foreach (var kvp in headsetToSessionID)
-                    if (kvp.Key == connectingHeadset && kvp.Value == e.Sid)
-                    {
-                        DataStreamStarted(this, connectingHeadset);
-                        connectingHeadset = null;
-                    }
+                if (headsetToSessionID[connectingHeadset] == e.Sid)
+                {
+                    DataStreamStarted(this, connectingHeadset);
+                    connectingHeadset = null;
+                }
             }
             lock (locker) if (sessions.ContainsKey(e.Sid))
                     sessions[e.Sid].OnStreamDataRecieved(e);
@@ -203,8 +202,34 @@ namespace EmotivUnityPlugin
             ctxClient.UpdateSession(authorizer.CortexToken, sessionID, "close");
             sessions.Remove(sessionID);
             dataSubscriber.RemoveStreamBySessionID(sessionID);
-            foreach (var item in headsetToSessionID.Where(kvp => kvp.Value == sessionID))
-                headsetToSessionID.Remove(item.Key);
+
+            string toRemove = null;
+            foreach (var item in headsetToSessionID)
+                if (item.Value == sessionID)
+                    toRemove = item.Key;
+
+            if (!string.IsNullOrEmpty(toRemove))
+                headsetToSessionID.Remove(toRemove);
+        }
+        /// <summary>
+        /// Closes an individual session by the associated headsetID
+        /// </summary>
+        /// <param name="headsetID">the id of the headset associated with the session</param>
+        public void CloseSessionByHeadset(string headsetID)
+        {
+            string sessionID = headsetToSessionID[headsetID];
+            ctxClient.UpdateSession(authorizer.CortexToken, sessionID, "close");
+            sessions.Remove(sessionID);
+            dataSubscriber.RemoveStreamByHeadsetID(headsetID);
+            headsetToSessionID.Remove(headsetID);
+        }
+        /// <summary>
+        /// Closes the session that was created most recently
+        /// </summary>
+        public void CloseMostRecentSession()
+        {
+            string sessionID = headsetToSessionID.Last().Value;
+            CloseSession(sessionID);
         }
 
         public bool HeadsetIsAlreadyInUse(string headsetID)

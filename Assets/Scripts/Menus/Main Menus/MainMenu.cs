@@ -63,6 +63,11 @@ public class MainMenu : MonoBehaviour
         ApplyState();
     }
 
+    public void Quit()
+    {
+        Application.Quit();
+    }
+
     void ApplyState()
     {
         titleScreen.SetActive(state == MenuState.Title);
@@ -79,6 +84,11 @@ public class MainMenu : MonoBehaviour
     public void SetState(MenuState newState)
     {
         state = newState;
+        ApplyState();
+    }
+    public void SetState(int newState)
+    {
+        state = (MenuState)newState;
         ApplyState();
     }
 }

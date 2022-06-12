@@ -49,24 +49,47 @@ public class EmotivSetupMenu : MonoBehaviour
     {
         Cortex.ConnectionStateChanged += OnConnectionStateChanged;
         Cortex.DataStreamStarted += OnDataStreamStarted;
-        Cortex.training.ProfileLoaded += OnProfileLoaded;
+        Cortex.profiles.ProfileLoaded += OnProfileLoaded;
     }
     void OnDisable()
     {
         Cortex.ConnectionStateChanged -= OnConnectionStateChanged;
         Cortex.DataStreamStarted -= OnDataStreamStarted;
+        Cortex.profiles.ProfileLoaded -= OnProfileLoaded;
     }
 
     public void Continue()
     {
         state += 1;
-        if(state > SetupMenuState.TRAINING)
-        {
-            // trigger return to whatever menu you came from
-            returnMenu.SetActive(true);
-            canvas.enabled = false;
-        }
+        if (state > SetupMenuState.TRAINING)
+            Return();
         ApplyState();
+    }
+
+    public void Back()
+    {
+        switch (state)
+        {
+            case SetupMenuState.CONTACT_QUALITY:
+                // unpair headset
+                Cortex.EndMostRecentSession();
+                break;
+            case SetupMenuState.TRAINING:
+                // unload profile
+                profileMenu.UnloadProfile();
+
+                trainingMenu.ResetMenu();
+                break;
+        }
+        state -= 1;
+        ApplyState();
+    }
+
+    public void Return()
+    {
+        // trigger return to whatever menu you came from
+        returnMenu.SetActive(true);
+        canvas.enabled = false;
     }
 
     void ApplyState()
@@ -108,10 +131,9 @@ public class EmotivSetupMenu : MonoBehaviour
         returnMenu.SetActive(false);
 
         state = SetupMenuState.CONNECTING;
+        ApplyState();
         if (connectedToCortex)
             Continue();
-        else
-            ApplyState();
 
         trainingMenu.ResetMenu();
     }

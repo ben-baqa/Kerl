@@ -27,6 +27,12 @@ public class HeadsetPairingMenu : MonoBehaviour
     private void OnDisable()
     {
         Cortex.HeadsetQueryResult -= OnHeadsetChanged;
+
+        // destroy all headsets in list
+        foreach (Transform child in headsetList)
+            Destroy(child.gameObject);
+
+        previousData = new List<Headset>();
     }
 
     // called by the event system when there is a change in the list of available headsets
