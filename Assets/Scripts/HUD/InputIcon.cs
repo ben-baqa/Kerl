@@ -6,8 +6,12 @@ using TMPro;
 
 public class InputIcon : MonoBehaviour
 {
-    protected Image image;
-    protected TextMeshProUGUI text;
+    [HideInInspector]
+    public Image image;
+    [HideInInspector]
+    public TextMeshProUGUI text;
+
+    public RectTransform rectTransform => transform as RectTransform;
 
     public int Index
     {
@@ -20,7 +24,7 @@ public class InputIcon : MonoBehaviour
             _index = value;
 
             if (!image)
-                image = GetComponent<Image>();
+                image = GetComponentInChildren<Image>(true);
             if (!text)
                 text = GetComponentInChildren<TextMeshProUGUI>(true);
 
