@@ -29,7 +29,12 @@ public class MenuSelections : MonoBehaviour
         inputSprites.Init();
     }
 
-    public static Sprite GetInputSprite(int index) => instance.inputSprites.GetSpriteForInput(index);
+    public static Sprite GetInputSprite(int index)
+    {
+        if (instance == null)
+            return null;
+        return instance.inputSprites.GetSpriteForInput(index);
+    }
     public static Color GetColor(int index) => instance.playerColours[index];
 
     public static void SetCharacterSelections(GridManager grid)

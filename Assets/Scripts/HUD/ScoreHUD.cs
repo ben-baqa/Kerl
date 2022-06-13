@@ -8,7 +8,7 @@ using UnityEngine.UI;
 /// </summary>
 public class ScoreHUD : MonoBehaviour
 {
-    public Text playerOutline, bScoreOutline, rScoreOutline, endText;
+    public Text bScoreOutline, rScoreOutline, endText;
     public Vector3 startPos, throwPos, endScorePos;
     public Color blue, red;
     public Canvas endCanvas;
@@ -17,7 +17,8 @@ public class ScoreHUD : MonoBehaviour
 
     public AudioSource blueWinNoise, redWinNoise, tieNoise, appluase, mainMusic;
 
-    private Text player, bScore, rScore;
+    private Text bScore, rScore;
+    InputIcon inputIcon;
 
     private float size = 1;
     private bool ended = false;
@@ -25,9 +26,9 @@ public class ScoreHUD : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        player = playerOutline.GetComponentsInChildren<Text>()[1];
         bScore = bScoreOutline.GetComponentsInChildren<Text>()[1];
         rScore = rScoreOutline.GetComponentsInChildren<Text>()[1];
+        inputIcon = GetComponentInChildren<InputIcon>(true);
         endCanvas.enabled = false;
     }
 
@@ -35,7 +36,7 @@ public class ScoreHUD : MonoBehaviour
     {
         size = 1 + Mathf.Sin(Time.time * sizeFreq) * sizeDelta;
 
-        playerOutline.transform.localScale = Vector3.one * size;
+        inputIcon.transform.localScale = Vector3.one * size;
     }
 
     public void OnThrow()
@@ -43,12 +44,15 @@ public class ScoreHUD : MonoBehaviour
         //playerOutline.gameObject.SetActive(false);
         bScoreOutline.gameObject.SetActive(false);
         rScoreOutline.gameObject.SetActive(false);
-        playerOutline.rectTransform.localPosition = throwPos;
+        //playerOutline.rectTransform.localPosition = throwPos;
+
+        inputIcon.rectTransform.localPosition = throwPos;
     }
 
     public void OnResult()
     {
-        playerOutline.gameObject.SetActive(false);
+        //playerOutline.gameObject.SetActive(false);
+        inputIcon.gameObject.SetActive(false);
         bScoreOutline.gameObject.SetActive(false);
         rScoreOutline.gameObject.SetActive(false);
     }
@@ -58,11 +62,20 @@ public class ScoreHUD : MonoBehaviour
         string s = turn < 0? "AI": $"P{turn + 1}";
         Color c = MenuSelections.GetColor(turn);
 
-        playerOutline.text = player.text = s;
-        player.color = c;
-        playerOutline.rectTransform.localPosition = startPos;
+        if (turn >= 0)
+            inputIcon.Index = turn;
+        else
+            inputIcon.text.text = "AI";
+        inputIcon.image.enabled = turn >= 0;
 
-        playerOutline.gameObject.SetActive(true);
+        inputIcon.rectTransform.localPosition = startPos;
+
+        //playerOutline.text = player.text = s;
+        //player.color = c;
+        //playerOutline.rectTransform.localPosition = startPos;
+
+        //playerOutline.gameObject.SetActive(true);
+        inputIcon.gameObject.SetActive(true);
         bScoreOutline.gameObject.SetActive(true);
         rScoreOutline.gameObject.SetActive(true);
     }
