@@ -269,7 +269,51 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugInput: 1
-  playerCountDebugOverride: 5
+  playerCountDebugOverride: 8
+--- !u!1 &761313078
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 761313079}
+  - component: {fileID: 761313080}
+  m_Layer: 0
+  m_Name: test
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &761313079
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 761313078}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1185, y: 90, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &761313080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 761313078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53d9e959c13f1f4458388bdd995097d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &805816364
 GameObject:
   m_ObjectHideFlags: 0
@@ -567,6 +611,16 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 68d7826ebc3f13f44aab58f5de4b9f16, type: 2}
   - {fileID: 11400000, guid: 93a38fa5489ef3541a959fd0df7cc75c, type: 2}
   - {fileID: 11400000, guid: 0c700bcb6f186574f918f0beae6ab63f, type: 2}
+  colors:
+  - {r: 1, g: 0, b: 0, a: 1}
+  - {r: 1, g: 0.90592486, b: 0, a: 1}
+  - {r: 0.16981125, g: 1, b: 0, a: 1}
+  - {r: 0, g: 0.21518993, b: 1, a: 1}
+  - {r: 0.98188305, g: 0, b: 1, a: 1}
+  - {r: 0, g: 0.98099947, b: 1, a: 1}
+  - {r: 0.708546, g: 0.5235849, b: 1, a: 1}
+  - {r: 0.29521182, g: 0.48834112, b: 0.5849056, a: 1}
+  - {r: 0.2878615, g: 0.1759968, b: 0.3301887, a: 1}
   borderSprite: {fileID: 21300000, guid: e8c49f0e94d6a474ba7f12b587a364d8, type: 3}
   nodeSize: 100
   nodeImageSize: 80
@@ -574,3 +628,18 @@ MonoBehaviour:
   selectorSize: 120
   spacing: 150
   delayTime: 0.8
+  OnNodeSelected:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 761313080}
+        m_TargetAssemblyTypeName: TestGrid, Assembly-CSharp
+        m_MethodName: OnNodeSelected
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2

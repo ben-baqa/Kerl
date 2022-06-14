@@ -10,10 +10,10 @@ public class NodeElement : ScriptableObject
         String
     }
 
-    public string itemName;
-    public Sprite image;
-    public PayloadType type;
+    public string ItemName;
+    public Sprite Image;
+    public PayloadType Type;
 
-    public GameObject prefabPayload;
-    public string stringPayload;
+    public GameObject PrefabPayload;
+    public string StringPayload;
 }

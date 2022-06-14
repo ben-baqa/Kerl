@@ -15,7 +15,7 @@ public class Selector : MonoBehaviour
 
     private List<GameObject> pieces;
 
-    void CreateNode(Color[] colors)
+    public void DrawSelector(Color[] colors)
     {
         pieces = new List<GameObject>();
         for (int i = 0; i < colors.Length; i++)
@@ -40,5 +40,9 @@ public class Selector : MonoBehaviour
             piece.GetComponent<Image>().fillAmount = (float)(colors.Length - i) / (float)(colors.Length);
             pieces.Add(piece);
         }
+    }
+
+    public void EraseSelector() {
+        Destroy(gameObject);
     }
 }
