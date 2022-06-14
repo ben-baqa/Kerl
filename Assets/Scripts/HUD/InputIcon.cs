@@ -13,6 +13,12 @@ public class InputIcon : MonoBehaviour
 
     public RectTransform rectTransform => transform as RectTransform;
 
+    private void Start()
+    {
+        image = GetComponentInChildren<Image>(true);
+        text = GetComponentInChildren<TextMeshProUGUI>(true);
+    }
+
     public int Index
     {
         get

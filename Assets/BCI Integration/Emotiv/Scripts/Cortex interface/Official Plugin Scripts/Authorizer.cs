@@ -158,7 +158,19 @@ namespace EmotivUnityPlugin
                     _emotivId = "";
                     _cortexToken = "";
                 }
-                if(ConnectServiceStateChanged != null) ConnectServiceStateChanged(this, ConnectToCortexStates.Service_connecting);
+                //if(ConnectServiceStateChanged != null) ConnectServiceStateChanged(this, ConnectToCortexStates.Service_connecting);
+
+                if (Utils.CheckEmotivAppInstalled(Config.EmotivAppsPath, true))
+                {
+                    ConnectServiceStateChanged(this, ConnectToCortexStates.Service_connecting);
+                }
+                else
+                {
+                    // EMOTIVApp not found
+                    ConnectServiceStateChanged(this, ConnectToCortexStates.EmotivApp_NotFound);
+                }
+
+                UnityEngine.Debug.Log("You must login via EMOTIV Launcher before working with Cortex");
             }
         }
 
@@ -441,9 +453,9 @@ namespace EmotivUnityPlugin
 
 
                 bool checkEmotivAppRequire = true; // require to check emotiv apps installed or not
-#if UNITY_EDITOR
-                checkEmotivAppRequire = false;
-#endif
+//#if UNITY_EDITOR
+//                checkEmotivAppRequire = false;
+//#endif
                 // check EmotivApp has installed
                 if (Utils.CheckEmotivAppInstalled(Config.EmotivAppsPath, checkEmotivAppRequire))
                 {

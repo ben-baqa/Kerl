@@ -31,6 +31,7 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
 
     string headsetID, profileName;
     bool validating = false;
+    bool saveProfile = true;
 
     public void Init()
     {
@@ -123,6 +124,9 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
 
     public void FinishTraining()
     {
+        // save profile if training was not skipped by debug
+        if (saveProfile)
+            Cortex.training.SaveProfile(profileName, headsetID);
         // add new bci input to input handler
         InputProxy.AddInput(new BCIInput(new EmotivHeadsetProxy(headsetID, profileName)));
     }
@@ -156,6 +160,11 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
 
         feedback.gameObject.SetActive(true);
         feedbackAnim.SetBool("brushing", true);
+    }
+    public void DebugSkipToValidation()
+    {
+        saveProfile = false;
+        SkipToValidation();
     }
 
     void OnTrainingSequenceComplete()
