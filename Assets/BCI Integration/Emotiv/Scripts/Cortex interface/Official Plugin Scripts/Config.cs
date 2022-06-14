@@ -20,7 +20,7 @@ namespace EmotivUnityPlugin
         /// Name of directory where contain tmp data and logs file.
         /// </summary>
         public static string TmpAppDataDir = "Curl!";
-        public static string EmotivAppsPath = ""; // location of emotiv Apps . Eg: C:\Program Files\EmotivApps
+        public static string EmotivAppsPath = "C:\\Program Files\\EmotivApps";
         public static string TmpVersionFileName = "version.ini";
         public static string TmpDataFileName = "data.dat";
         public static string ProfilesDir = "Profiles";
