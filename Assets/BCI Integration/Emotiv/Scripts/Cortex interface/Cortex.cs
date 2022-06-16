@@ -27,6 +27,7 @@ namespace EmotivUnityPlugin
         public static EventBuffer<HeadsetConnectEventArgs> HeadsetConnected;
         public static EventBuffer<string> HeadsetDisconnected;
         public static EventBuffer<ConnectToCortexStates> ConnectionStateChanged;
+        public static EventBuffer<ErrorMsgEventArgs> ErrorRecieved;
 
         public static TrainingHandler training;
         public static TrainingHandler profiles => training;
@@ -77,6 +78,11 @@ namespace EmotivUnityPlugin
             ConnectionStateChanged = new EventBuffer<ConnectToCortexStates>();
             authorizer.ConnectServiceStateChanged += ConnectionStateChanged.OnParentEvent;
             eventBufferObject.AddComponent<EventBufferInstance>().buffer = ConnectionStateChanged;
+
+            // add buffer for error recieved
+            ErrorRecieved = new EventBuffer<ErrorMsgEventArgs>();
+            ctxClient.ErrorMsgReceived += ErrorRecieved.OnParentEvent;
+            eventBufferObject.AddComponent<EventBufferInstance>().buffer = ErrorRecieved;
 
             // initialize Training handler
             training = new TrainingHandler();

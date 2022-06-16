@@ -77,7 +77,9 @@ namespace EmotivUnityPlugin
         /// <returns>true if successful</returns>
         public bool SubscribeDataStream<T>(string headsetID, Action<T> callBack) where T : DataStreamEventArgs
         {
-            if (string.IsNullOrEmpty(headsetID) || !dataStreamSubscribers.ContainsKey(headsetID))
+            if (string.IsNullOrEmpty(headsetID))
+                return false;
+            if(!dataStreamSubscribers.ContainsKey(headsetID))
             {
                 Debug.LogWarning("DataSubscriber: attempted to Subscribe to a headset stream that doesn't exist");
                 return false;
@@ -119,9 +121,11 @@ namespace EmotivUnityPlugin
         /// <returns>true if successful</returns>
         public bool UnsubscribeDataStream<T>(string headsetID, Action<T> callBack) where T : DataStreamEventArgs
         {
-            if (string.IsNullOrEmpty(headsetID) || !dataStreamSubscribers.ContainsKey(headsetID))
+            if (string.IsNullOrEmpty(headsetID))
+                return false;
+            if(!dataStreamSubscribers.ContainsKey(headsetID))
             {
-                if(Cortex.printLogs)
+                if(!Cortex.isQuitting)
                     Debug.LogWarning("DataSubscriber: attempted to Unsubscribe from a headset stream that doesn't exist");
                 return false;
             }

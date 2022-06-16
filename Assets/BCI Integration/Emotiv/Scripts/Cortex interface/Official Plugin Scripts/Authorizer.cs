@@ -169,8 +169,6 @@ namespace EmotivUnityPlugin
                     // EMOTIVApp not found
                     ConnectServiceStateChanged(this, ConnectToCortexStates.EmotivApp_NotFound);
                 }
-
-                UnityEngine.Debug.Log("You must login via EMOTIV Launcher before working with Cortex");
             }
         }
 
