@@ -25,48 +25,63 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
     string action => trainingState == TrainingState.BRUSHING ? "push" : "neutral";
 
     [Header("settings")]
-    public int minTrainingRounds = 16;
+    public int minRounds = 11;
+    public int maxRounds = 16;
     public int assistRounds = 6;
     public int feedbackThreshold = 4;
     public int countdownTime = 4;
     [Header("References")]
     public GameObject trainingCompletionOptions;
     public GameObject earlyCompletionOption;
+    public GameObject completionButton;
 
-    public TextMeshProUGUI trainingQualityText;
+    //public TextMeshProUGUI trainingQualityText;
     public TextMeshProUGUI countDownText;
     public TextMeshProUGUI upNextText;
     public TextMeshProUGUI commandText;
+    public TextMeshProUGUI failureText;
     public Animator feedbackAnim;
+
+    public ProgressBar trainingProgressBar;
+    public ProgressBar progressBar;
 
     public Action OnTrainingComplete;
 
-    ProgressBar progressBar;
+    TrainingGradeDisplay gradeDisplay;
+    //CommandGrader gradeGenerator;
 
     [HideInInspector]
     public string headsetID;
     float timer = 0;
-    int trainingCount = 0;
-    bool feedbackEnabled = false, trainingCountdown = false;
+    int trainingRounds = 0;
+    bool feedbackEnabled = false;
+    bool completionEnabled = false;
+    bool trainingCountdown = false;
+    bool returning = false;
 
     float assistance
     {
-        get {
-            if (trainingCount < feedbackThreshold)
+        get
+        {
+            if (trainingRounds < feedbackThreshold)
                 return 1;
-            else if (trainingCount < feedbackThreshold + assistRounds)
-                return 1 - ((trainingCount - feedbackThreshold) / assistRounds);
+            else if (trainingRounds < feedbackThreshold + assistRounds)
+                return 1 - ((trainingRounds - feedbackThreshold) / assistRounds);
             return 0;
         }
     }
-    
+
     public void Init()
     {
         trainingCompletionOptions.SetActive(false);
         earlyCompletionOption.SetActive(false);
 
-        progressBar = GetComponentInChildren<ProgressBar>(true);
+        gradeDisplay = GetComponentInChildren<TrainingGradeDisplay>(true);
+        //gradeGenerator = GetComponent<CommandGrader>();
+
+        trainingProgressBar.Init();
         progressBar.Init();
+        completionButton.SetActive(false);
         commandText.text = "";
 
         gameObject.SetActive(false);
@@ -78,7 +93,9 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
         Cortex.SubscribeMentalCommands(headsetID, OnMentalCommandRecieved);
         Cortex.SubscribeSysEvents(headsetID, OnSysEventReceived);
 
+        // disables background scrolling with cursor
         CursorOffset.active = false;
+        failureText.enabled = false;
     }
     public void OnDisable()
     {
@@ -91,10 +108,11 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
 
     void Update()
     {
-        if(timer > 0)
+        if (timer > 0)
         {
             timer -= Time.deltaTime;
-        } else
+        }
+        else
         {
             timer = 0;
             if (trainingCountdown) // start training
@@ -104,7 +122,7 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
             }
         }
         countDownText.text = trainingCountdown ? $"{(int)timer + 1}" : "";
-        progressBar.SetProgress((8 - timer) / 8f);
+        trainingProgressBar.SetProgress((8 - timer) / 8f);
     }
 
     void OnMentalCommandRecieved(MentalCommand command)
@@ -120,11 +138,19 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
             feedbackAnim.SetFloat("brush speed", 1);
     }
 
+    // when a result is recieved after asking for threshold following training success
     void OnTrainingThresholdResult(TrainingThreshold args)
     {
-        trainingQualityText.text = $"{(int)(args.lastTrainingScore * 100)}%";
+        //if (trainingState == TrainingState.BRUSHING)
+        gradeDisplay.SetGrade((float)args.lastTrainingScore);
+        //else
+        //{
+        //    print(neutralGradeGenerator.grade);
+        //    gradeDisplay.SetGrade(neutralGradeGenerator.grade);
+        //}
+        //trainingQualityText.text = $"{(int)(args.lastTrainingScore * 100)}%";
 
-        if(feedbackEnabled && trainingState == TrainingState.BRUSHING)
+        if (feedbackEnabled && trainingState == TrainingState.BRUSHING)
             trainingCompletionOptions.SetActive(true);
         else
             earlyCompletionOption.SetActive(true);
@@ -158,26 +184,35 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
     // when training has been successfully initiated
     void OnTrainingStart()
     {
-        commandText.text = trainingState == TrainingState.NEUTRAL ? "relax" : "brush!";
-        progressBar.Activate();
+        failureText.enabled = false;
+        bool neutral = trainingState == TrainingState.NEUTRAL;
+        commandText.text = neutral ? "relax" : "brush!";
+
+        //gradeGenerator.StartGrading();
+        trainingProgressBar.Activate();
         timer = 8;
     }
 
     // when training stage completes with a success
     void OnTrainingSucceeded()
     {
+        //gradeGenerator.FinishGrading();
         Cortex.training.GetTrainingThreshold();
         countDownText.enabled = false;
         timer = Mathf.Infinity;
         commandText.text = "";
-        progressBar.Deactivate();
+        trainingProgressBar.Deactivate();
+        if (!returning)
+            progressBar.Activate();
     }
 
     // when training stage completed with a failure
     void OnTrainingFail()
     {
+        //gradeGenerator.FinishGrading();
         commandText.text = "";
         countDownText.enabled = false;
+        failureText.enabled = true;
         timer = Mathf.Infinity;
         ActivateUpNext();
         ApplyState();
@@ -196,36 +231,43 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
         {
             case TrainingState.NEUTRAL:
                 trainingState = TrainingState.BRUSHING;
+                progressBar.SetProgress((trainingRounds + 0.5f) / maxRounds);
                 break;
             case TrainingState.BRUSHING:
                 trainingState = TrainingState.NEUTRAL;
-                trainingCount++;
+                trainingRounds++;
+                completionEnabled = trainingRounds >= minRounds;
+                progressBar.SetProgress((float)trainingRounds / maxRounds);
                 break;
         }
-        if (trainingCount >= minTrainingRounds)
-        {
-            trainingState = TrainingState.VALIDATION;
-            Debug.Log("-------------- Training Sequence Complete");
-            // activate option to finish training
-            OnTrainingComplete();
-        }
-        else
-            ActivateUpNext();
+        //if (trainingRounds >= maxRounds)
+        //{
+        //    // automatically go to validation when the desired amount of rounds are completed
+        //    trainingState = TrainingState.VALIDATION;
+        //    OnTrainingComplete();
+        //}
+        //else
+
+        ActivateUpNext();
+
 
         ApplyState();
     }
 
     void ApplyState()
     {
-        feedbackEnabled = trainingCount >= 4;
+        feedbackEnabled = trainingRounds >= 4;
         feedbackAnim.SetBool("brushing", trainingState != TrainingState.NEUTRAL);
+        completionButton.SetActive(completionEnabled);
     }
 
     void ActivateUpNext()
     {
-        progressBar.Deactivate();
+        trainingProgressBar.Deactivate();
         upNextText.gameObject.SetActive(true);
-        upNextText.text = "Up Next\n" +  (trainingState == TrainingState.NEUTRAL ? "relax" : "brush!");
+        upNextText.text = "Ready to\n" +
+            (trainingState == TrainingState.NEUTRAL ? "relax" : "brush") +
+            "?";
     }
 
     public void StartTrainingCountdown()
@@ -235,6 +277,8 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
         countDownText.enabled = true;
         countDownText.text = $"{(int)timer}";
         upNextText.gameObject.SetActive(false);
+        completionButton.SetActive(false);
+        progressBar.Deactivate();
     }
 
     // called by in engine UI
@@ -250,15 +294,30 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
         Cortex.training.RejectTraining(action);
         trainingCompletionOptions.SetActive(false);
         earlyCompletionOption.SetActive(false);
-        ActivateUpNext();
+        //ActivateUpNext();
     }
 
     // called by overseer script
-    public void ResetTraining(int rounds = 0)
+    public void ResetTraining()
     {
         gameObject.SetActive(true);
-        trainingCount = rounds > 0? minTrainingRounds - rounds: 0;
+        progressBar.gameObject.SetActive(true);
         trainingState = TrainingState.NEUTRAL;
+        completionEnabled = false;
+        returning = false;
+        trainingRounds = 0;
+        ApplyState();
+        ActivateUpNext();
+    }
+    // called by overseer script
+    public void ResumeTraining()
+    {
+        gameObject.SetActive(true);
+        progressBar.gameObject.SetActive(false);
+        trainingState = TrainingState.NEUTRAL;
+        completionEnabled = true;
+        returning = true;
+        trainingRounds = minRounds;
         ApplyState();
         ActivateUpNext();
     }

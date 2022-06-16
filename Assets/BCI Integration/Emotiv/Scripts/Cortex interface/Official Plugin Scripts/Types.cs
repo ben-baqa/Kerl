@@ -631,14 +631,25 @@ namespace EmotivUnityPlugin
             JArray actions = (JArray)data["trainedActions"];
             trainedActions = new List<TrainedAction>();
             trainingCount = 0;
+            trainingRoundsCompleted = -1;
             foreach (var action in actions)
             {
-                trainedActions.Add(new TrainedAction((string)action["action"], (int)action["times"]));
-                trainingCount += (int)action["times"];
+                string actionName = (string)action["action"];
+                int times = (int)action["times"];
+
+                trainedActions.Add(new TrainedAction(actionName, times));
+                trainingCount += times;
+                if ((actionName == "neutral" || actionName == "push")
+                    && (times < trainingRoundsCompleted || trainingRoundsCompleted < 0))
+                    trainingRoundsCompleted = times;
+                if (trainingRoundsCompleted < 0)
+                    trainingRoundsCompleted = 0;
             }
         }
         public List<TrainedAction> trainedActions;
-        public int trainingCount, totalTimesTraining;
+        public int trainingCount;
+        public int totalTimesTraining;
+        public int trainingRoundsCompleted;
 
         public struct TrainedAction
         {

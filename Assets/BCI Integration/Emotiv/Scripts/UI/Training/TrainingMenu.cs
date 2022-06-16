@@ -9,7 +9,7 @@ using EmotivUnityPlugin;
 public class TrainingMenu : MonoBehaviour, IRequiresInit
 {
     [Header("settings")]
-    public int minTrainingRounds = 16, trainingCountdownTime = 4;
+    public int minTrainingRounds = 10;
     [Header("References")]
     public GameObject returningView;
     public GameObject trainingExplanation;
@@ -69,6 +69,7 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
 
     public void OnEnable()
     {
+        validating = false;
         Cortex.SubscribeMentalCommands(headsetID, OnMentalCommandRecieved);
     }
     public void OnDisable()
@@ -79,9 +80,12 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
 
     public void Init(TrainedActions trainedActions)
     {
-        //print($"training menu intiated! {trainedActions.totalTimesTraining}");
+        //print($"training menu intiated!" +
+        //    $"total times trained: {trainedActions.totalTimesTraining}," +
+        //    $"current training count: {trainedActions.trainingCount}," +
+        //    $"training rounds completed: {trainedActions.trainingRoundsCompleted}");
 
-        if (trainedActions.trainingCount < minTrainingRounds * 2)
+        if (trainedActions.trainingRoundsCompleted < minTrainingRounds)
         {
             trainingExplanation.SetActive(true);
         }
@@ -118,8 +122,13 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
 
     void OnMentalCommandRecieved(MentalCommand command)
     {
-        if (validating && command.action != "neutral")
-            feedbackAnim.SetFloat("brush speed", (float)command.power);
+        if (validating)
+        {
+            float power = 0;
+            if (command.action != "neutral")
+                power = (float)command.power;
+            feedbackAnim.SetFloat("brush speed", power);
+        }
     }
 
     public void FinishTraining()
@@ -135,7 +144,7 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
     {
         // return to training with button to switch to validation view
         validating = false;
-        training.ResetTraining(4);
+        training.ResumeTraining();
         validationView.SetActive(false);
     }
 

@@ -7,6 +7,8 @@ using UnityEngine.EventSystems;
 
 public class EventOnMouseOver : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+    public bool exitOnDisable = true;
+
     public UnityEvent MouseEnter;
     public UnityEvent MouseExit;
     public UnityEvent MouseOver;
@@ -29,5 +31,10 @@ public class EventOnMouseOver : MonoBehaviour, IPointerEnterHandler, IPointerExi
     {
         if (hover)
             MouseOver.Invoke();
+    }
+
+    private void OnDisable()
+    {
+        MouseExit.Invoke();
     }
 }

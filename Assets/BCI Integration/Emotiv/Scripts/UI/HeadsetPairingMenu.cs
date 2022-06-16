@@ -21,18 +21,21 @@ public class HeadsetPairingMenu : MonoBehaviour
     void OnEnable()
     {
         Cortex.HeadsetQueryResult += OnHeadsetChanged;
+        Cortex.ErrorRecieved += OnErrorMessageRecieved;
 
         TriggerHeadsetQuery();
     }
     private void OnDisable()
     {
         Cortex.HeadsetQueryResult -= OnHeadsetChanged;
+        Cortex.ErrorRecieved -= OnErrorMessageRecieved;
 
         // destroy all headsets in list
         foreach (Transform child in headsetList)
             Destroy(child.gameObject);
 
         previousData = new List<Headset>();
+        connectingHeadset = "";
     }
 
     // called by the event system when there is a change in the list of available headsets
@@ -94,5 +97,19 @@ public class HeadsetPairingMenu : MonoBehaviour
     public void TriggerHeadsetQuery()
     {
         Cortex.QueryHeadsets();
+    }
+
+    void OnErrorMessageRecieved(ErrorMsgEventArgs args)
+    {
+        if(args.MethodName == "createSession")
+        {
+            // destroy all headsets in list
+            foreach (Transform child in headsetList)
+                Destroy(child.gameObject);
+
+            previousData = new List<Headset>();
+            connectingHeadset = "";
+            TriggerHeadsetQuery();
+        }
     }
 }
