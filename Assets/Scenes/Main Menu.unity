@@ -963,24 +963,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 221921450}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd9a3196d794f064e8143f1942553573, type: 3}
+  m_Script: {fileID: 11500000, guid: ae67d4ac5b2f8df4c8f7094cc08f55af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  columns: 2
-  rows: 2
-  locked: 00000000
-  nodeInfo:
-  - {fileID: 11400000, guid: 0fdb1bdcca74b9e4c81dcfc33afdfd55, type: 2}
-  - {fileID: 11400000, guid: f0470d81e2c06904194f2ab303ee8069, type: 2}
-  - {fileID: 11400000, guid: bcc571ba9b980db458dcceb601cf6810, type: 2}
-  - {fileID: 11400000, guid: bc609df4a564a4b468becf6ebc073ddf, type: 2}
-  borderSprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  nodeSize: 50
-  nodeImageSize: 50
-  nodeSelectRatio: 1
-  selectorSize: 50
-  spacing: 50
-  delayTime: 1.5
+  columns: 0
+  rows: 0
+  locked: 
+  nodeInfo: []
+  colors: []
+  borderSprite: {fileID: 0}
+  nodeSize: 0
+  nodeImageSize: 0
+  nodeSelectRatio: 0
+  selectorSize: 0
+  spacing: 0
+  delayTime: 0
+  OnNodeSelected:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &237267594
 GameObject:
   m_ObjectHideFlags: 0
@@ -5250,7 +5250,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1417552395}
-  - component: {fileID: 1417552394}
+  - component: {fileID: 1417552396}
   m_Layer: 0
   m_Name: Input Manager
   m_TagString: Untagged
@@ -5258,20 +5258,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1417552394
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1417552392}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a649f28541bdf414d9896a3cbc2814aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  debugInput: 0
-  playerCountDebugOverride: 0
 --- !u!4 &1417552395
 Transform:
   m_ObjectHideFlags: 0
@@ -5287,6 +5273,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1417552396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1417552392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52a21ec229473674cb52eb51e81b244a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debugInput: 1
+  playerCountDebugOverride: 0
 --- !u!1 &1437565187
 GameObject:
   m_ObjectHideFlags: 0
@@ -7551,21 +7551,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 2115085805}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd9a3196d794f064e8143f1942553573, type: 3}
+  m_Script: {fileID: 11500000, guid: ae67d4ac5b2f8df4c8f7094cc08f55af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  columns: 2
-  rows: 2
-  locked: 00000000
-  nodeInfo:
-  - {fileID: 11400000, guid: eb6b511b140668f42a00c310643269af, type: 2}
-  - {fileID: 11400000, guid: a90c72c9309b5e749bd5ed50e03c1377, type: 2}
-  - {fileID: 11400000, guid: d23d822cf0c8a7541826c746d0fbb2da, type: 2}
-  - {fileID: 11400000, guid: 78a399639682c9544ae1716def728eb4, type: 2}
-  borderSprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  nodeSize: 50
-  nodeImageSize: 50
-  nodeSelectRatio: 1
-  selectorSize: 50
-  spacing: 200
-  delayTime: 1.5
+  columns: 0
+  rows: 0
+  locked: 
+  nodeInfo: []
+  colors: []
+  borderSprite: {fileID: 0}
+  nodeSize: 0
+  nodeImageSize: 0
+  nodeSelectRatio: 0
+  selectorSize: 0
+  spacing: 0
+  delayTime: 0
+  OnNodeSelected:
+    m_PersistentCalls:
+      m_Calls: []
