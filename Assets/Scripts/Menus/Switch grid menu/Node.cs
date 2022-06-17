@@ -12,7 +12,10 @@ public class Node : MonoBehaviour
     public float imageSize;
     public float selectedRatio;
 
+    public bool disabled;
+
     private GameObject image;
+    private GameObject border;
     private List<GameObject> frame;
 
     private bool selected;
@@ -31,28 +34,26 @@ public class Node : MonoBehaviour
                 piece.GetComponent<RectTransform>().localScale = selectedRatio * Vector2.one;
             }
             image.GetComponent<RectTransform>().localScale = selectedRatio * Vector2.one;
+            border.GetComponent<RectTransform>().localScale = selectedRatio * Vector2.one;
         }
-        else
-        {
+        else {
             foreach (GameObject piece in frame)
             {
                 piece.GetComponent<RectTransform>().localScale = Vector2.one;
             }
             image.GetComponent<RectTransform>().localScale = Vector2.one;
+            border.GetComponent<RectTransform>().localScale = Vector2.one;
         }
     }
 
-    void ChangeColor(Color[] colors)
-    {
+    public void ChangeColor(Color[] colors) {
         DestroyCurrent();
         CreateNode(colors);
     }
 
-    void CreateNode(Color[] colors)
-    {
+    void CreateNode(Color[] colors) {
         frame = new List<GameObject>();
-        for (int i = 0; i < colors.Length; i++)
-        {
+        for (int i = 0; i < colors.Length; i++) {
             GameObject framePiece = new GameObject("Frame Piece", typeof(Image));
             framePiece.GetComponent<RectTransform>().SetParent(transform);
             framePiece.GetComponent<RectTransform>().localPosition = Vector3.zero;
@@ -63,20 +64,31 @@ public class Node : MonoBehaviour
             framePiece.GetComponent<Image>().fillAmount = (float)(colors.Length - i) / (float)(colors.Length);
             frame.Add(framePiece);
         }
+        border = new GameObject("Border", typeof(Image));
+        border.GetComponent<RectTransform>().SetParent(transform);
+        border.GetComponent<RectTransform>().localPosition = Vector3.zero;
+        if (colors.Length > 0) border.GetComponent<RectTransform>().sizeDelta = imageSize * Vector2.one;
+        else border.GetComponent<RectTransform>().sizeDelta = size * Vector2.one;
+        border.GetComponent<Image>().sprite = borderSprite;
+        border.GetComponent<Image>().color = disabled ? Color.gray : Color.white;
+
         image = new GameObject("Image", typeof(Image));
         image.GetComponent<RectTransform>().SetParent(transform);
         image.GetComponent<RectTransform>().localPosition = Vector3.zero;
         if (colors.Length > 0) image.GetComponent<RectTransform>().sizeDelta = imageSize * Vector2.one;
         else image.GetComponent<RectTransform>().sizeDelta = size * Vector2.one;
         image.GetComponent<Image>().sprite = imageSprite;
-        image.GetComponent<Image>().color = Color.white;
+        image.GetComponent<Image>().color = disabled ? new Color(1, 1, 1, 0.3f) : Color.white;
     }
 
-    void DestroyCurrent()
-    {
+    void DestroyCurrent() {
         if (image != null)
         {
             Destroy(image);
+        }
+        if (border != null)
+        {
+            Destroy(border);
         }
         foreach (GameObject piece in frame)
         {
@@ -84,8 +96,7 @@ public class Node : MonoBehaviour
         }
     }
 
-    void SetSelected(bool isSelected)
-    {
+    public void SetSelected(bool isSelected) {
         selected = isSelected;
     }
 }

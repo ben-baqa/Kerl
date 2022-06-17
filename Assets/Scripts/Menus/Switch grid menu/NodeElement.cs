@@ -5,16 +5,15 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewNodeElement", menuName = "ScriptableObjects/NodeElement", order = 1)]
 public class NodeElement : ScriptableObject
 {
-    public enum PayloadType
-    {
+    public enum PayloadType { 
         Prefab,
         String
     }
 
-    public string itemName;
-    public Sprite image;
-    public PayloadType type;
+    public string ItemName;
+    public Sprite Image;
+    public PayloadType Type;
 
-    public GameObject prefabPayload;
-    public string stringPayload;
+    public GameObject PrefabPayload;
+    public string StringPayload;
 }

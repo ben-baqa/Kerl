@@ -34,6 +34,7 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
     public GameObject trainingCompletionOptions;
     public GameObject earlyCompletionOption;
     public GameObject completionButton;
+    public GameObject backOptions;
 
     //public TextMeshProUGUI trainingQualityText;
     public TextMeshProUGUI countDownText;
@@ -48,10 +49,13 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
     public Action OnTrainingComplete;
 
     TrainingGradeDisplay gradeDisplay;
-    //CommandGrader gradeGenerator;
 
     [HideInInspector]
     public string headsetID;
+    [HideInInspector]
+    public int roundsTrained;
+
+    private string profileName;
     float timer = 0;
     int trainingRounds = 0;
     bool feedbackEnabled = false;
@@ -77,11 +81,11 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
         earlyCompletionOption.SetActive(false);
 
         gradeDisplay = GetComponentInChildren<TrainingGradeDisplay>(true);
-        //gradeGenerator = GetComponent<CommandGrader>();
 
         trainingProgressBar.Init();
         progressBar.Init();
         completionButton.SetActive(false);
+        backOptions.SetActive(false);
         commandText.text = "";
 
         gameObject.SetActive(false);
@@ -92,6 +96,7 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
         Cortex.training.TrainingThresholdResult += OnTrainingThresholdResult;
         Cortex.SubscribeMentalCommands(headsetID, OnMentalCommandRecieved);
         Cortex.SubscribeSysEvents(headsetID, OnSysEventReceived);
+        Cortex.training.ProfileLoaded += (string s) => profileName = s;
 
         // disables background scrolling with cursor
         CursorOffset.active = false;
@@ -141,13 +146,7 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
     // when a result is recieved after asking for threshold following training success
     void OnTrainingThresholdResult(TrainingThreshold args)
     {
-        //if (trainingState == TrainingState.BRUSHING)
         gradeDisplay.SetGrade((float)args.lastTrainingScore);
-        //else
-        //{
-        //    print(neutralGradeGenerator.grade);
-        //    gradeDisplay.SetGrade(neutralGradeGenerator.grade);
-        //}
         //trainingQualityText.text = $"{(int)(args.lastTrainingScore * 100)}%";
 
         if (feedbackEnabled && trainingState == TrainingState.BRUSHING)
@@ -188,7 +187,6 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
         bool neutral = trainingState == TrainingState.NEUTRAL;
         commandText.text = neutral ? "relax" : "brush!";
 
-        //gradeGenerator.StartGrading();
         trainingProgressBar.Activate();
         timer = 8;
     }
@@ -196,7 +194,6 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
     // when training stage completes with a success
     void OnTrainingSucceeded()
     {
-        //gradeGenerator.FinishGrading();
         Cortex.training.GetTrainingThreshold();
         countDownText.enabled = false;
         timer = Mathf.Infinity;
@@ -209,7 +206,6 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
     // when training stage completed with a failure
     void OnTrainingFail()
     {
-        //gradeGenerator.FinishGrading();
         commandText.text = "";
         countDownText.enabled = false;
         failureText.enabled = true;
@@ -240,13 +236,6 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
                 progressBar.SetProgress((float)trainingRounds / maxRounds);
                 break;
         }
-        //if (trainingRounds >= maxRounds)
-        //{
-        //    // automatically go to validation when the desired amount of rounds are completed
-        //    trainingState = TrainingState.VALIDATION;
-        //    OnTrainingComplete();
-        //}
-        //else
 
         ActivateUpNext();
 
@@ -305,7 +294,10 @@ public class TrainingSubmenu : MonoBehaviour, IRequiresInit
         trainingState = TrainingState.NEUTRAL;
         completionEnabled = false;
         returning = false;
-        trainingRounds = 0;
+        
+        trainingRounds = roundsTrained;
+        progressBar.SetProgress((float)trainingRounds / maxRounds);
+
         ApplyState();
         ActivateUpNext();
     }
