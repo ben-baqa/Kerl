@@ -5,40 +5,40 @@ using UnityEngine.UI;
 
 public class Selector : MonoBehaviour
 {
-    public Sprite borderSprite;
+    public Sprite BorderSprite;
 
-    public int length;
-    public float size;
-    public float spacing;
+    public int Length;
+    public float Size;
+    public float Spacing;
 
-    public bool vertical;
+    public bool IsVertical;
 
-    private List<GameObject> pieces;
+    private List<GameObject> _pieces;
 
     public void DrawSelector(Color[] colors)
     {
-        pieces = new List<GameObject>();
+        _pieces = new List<GameObject>();
         for (int i = 0; i < colors.Length; i++)
         {
             GameObject piece = new GameObject("Selector Piece", typeof(Image));
             piece.GetComponent<RectTransform>().SetParent(transform);
             piece.GetComponent<RectTransform>().localPosition = Vector3.zero;
 
-            piece.GetComponent<Image>().sprite = borderSprite;
+            piece.GetComponent<Image>().sprite = BorderSprite;
             piece.GetComponent<Image>().color = colors[i];
             piece.GetComponent<Image>().type = Image.Type.Filled;
-            if (vertical)
+            if (IsVertical)
             {
-                piece.GetComponent<RectTransform>().sizeDelta = new Vector3(size, size + spacing * (length - 1));
+                piece.GetComponent<RectTransform>().sizeDelta = new Vector3(Size, Size + Spacing * (Length - 1));
                 piece.GetComponent<Image>().fillMethod = Image.FillMethod.Horizontal;
             }
             else
             {
-                piece.GetComponent<RectTransform>().sizeDelta = new Vector3(size + spacing * (length - 1), size);
+                piece.GetComponent<RectTransform>().sizeDelta = new Vector3(Size + Spacing * (Length - 1), Size);
                 piece.GetComponent<Image>().fillMethod = Image.FillMethod.Vertical;
             }
             piece.GetComponent<Image>().fillAmount = (float)(colors.Length - i) / (float)(colors.Length);
-            pieces.Add(piece);
+            _pieces.Add(piece);
         }
     }
 

@@ -596,38 +596,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae67d4ac5b2f8df4c8f7094cc08f55af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  columns: 4
-  rows: 3
-  locked: 0001000001000100010001
-  nodeInfo:
+  Columns: 4
+  Rows: 3
+  Locked: 0001000101000100000100
+  NodeInfo:
   - {fileID: 11400000, guid: 93a38fa5489ef3541a959fd0df7cc75c, type: 2}
-  - {fileID: 11400000, guid: 0c700bcb6f186574f918f0beae6ab63f, type: 2}
-  - {fileID: 11400000, guid: 93a38fa5489ef3541a959fd0df7cc75c, type: 2}
-  - {fileID: 11400000, guid: 0c700bcb6f186574f918f0beae6ab63f, type: 2}
-  - {fileID: 11400000, guid: 68d7826ebc3f13f44aab58f5de4b9f16, type: 2}
   - {fileID: 11400000, guid: 0c700bcb6f186574f918f0beae6ab63f, type: 2}
   - {fileID: 11400000, guid: 158ebb1d2ba61ca4ba49b560f220d8a3, type: 2}
-  - {fileID: 11400000, guid: 158ebb1d2ba61ca4ba49b560f220d8a3, type: 2}
+  - {fileID: 11400000, guid: 68d7826ebc3f13f44aab58f5de4b9f16, type: 2}
+  - {fileID: 11400000, guid: 0c700bcb6f186574f918f0beae6ab63f, type: 2}
   - {fileID: 11400000, guid: 68d7826ebc3f13f44aab58f5de4b9f16, type: 2}
   - {fileID: 11400000, guid: 93a38fa5489ef3541a959fd0df7cc75c, type: 2}
+  - {fileID: 11400000, guid: 158ebb1d2ba61ca4ba49b560f220d8a3, type: 2}
+  - {fileID: 11400000, guid: 93a38fa5489ef3541a959fd0df7cc75c, type: 2}
   - {fileID: 11400000, guid: 0c700bcb6f186574f918f0beae6ab63f, type: 2}
-  colors:
-  - {r: 1, g: 0, b: 0, a: 1}
-  - {r: 1, g: 0.90592486, b: 0, a: 1}
-  - {r: 0.16981125, g: 1, b: 0, a: 1}
-  - {r: 0, g: 0.21518993, b: 1, a: 1}
-  - {r: 0.98188305, g: 0, b: 1, a: 1}
-  - {r: 0, g: 0.98099947, b: 1, a: 1}
-  - {r: 0.708546, g: 0.5235849, b: 1, a: 1}
-  - {r: 0.29521182, g: 0.48834112, b: 0.5849056, a: 1}
-  - {r: 0.2878615, g: 0.1759968, b: 0.3301887, a: 1}
-  borderSprite: {fileID: 21300000, guid: e8c49f0e94d6a474ba7f12b587a364d8, type: 3}
-  nodeSize: 100
-  nodeImageSize: 80
-  nodeSelectRatio: 1.2
-  selectorSize: 120
-  spacing: 150
-  delayTime: 0.8
+  - {fileID: 11400000, guid: 158ebb1d2ba61ca4ba49b560f220d8a3, type: 2}
+  Colors: []
+  BorderSprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  NodeSize: 50
+  NodeImageSize: 40
+  NodeSelectRatio: 1.2
+  SelectorSize: 60
+  Spacing: 70
+  DelayTime: 5
   OnNodeSelected:
     m_PersistentCalls:
       m_Calls:

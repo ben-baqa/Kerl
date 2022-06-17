@@ -19,202 +19,202 @@ public class GridCursor : MonoBehaviour
         Both
     }
 
-    public int columns;
-    public int rows;
-    public bool[] nodes;
+    public int Columns;
+    public int Rows;
+    public bool[] Nodes;
 
-    public float delayTime;
+    public float DelayTime;
 
     [HideInInspector]
-    public UnityEvent cursorUpdate = new UnityEvent();
+    public UnityEvent CursorUpdate = new UnityEvent();
     [HideInInspector]
-    public UnityEvent selectionUpdate = new UnityEvent();
+    public UnityEvent SelectionUpdate = new UnityEvent();
 
-    private int colors;
+    private int _colors;
 
-    private int[] selectedRow;
-    private int[] selectedColumn;
-    private int[] selectedNode;
-    private int currentCursor;
+    private int[] _selectedRow;
+    private int[] _selectedColumn;
+    private int[] _selectedNode;
+    private int _currentCursor;
 
-    private bool[] confirmed;
-    private bool[] skipped;
-    private int[] singleNode;
+    private bool[] _confirmed;
+    private bool[] _skipped;
+    private int[] _singleNode;
 
-    private SelectType selectType;
-    private State state;
+    private SelectType _selectType;
+    private State _state;
 
-    private float timer;
+    private float _timer;
 
     void Start()
     {
-        colors = InputProxy.playerCount;
+        _colors = InputProxy.playerCount;
 
-        skipped = new bool[rows + columns];
-        singleNode = new int[rows + columns];
+        _skipped = new bool[Rows + Columns];
+        _singleNode = new int[Rows + Columns];
 
-        selectedRow = new int[colors];
-        Array.Fill(selectedRow, -1);
-        selectedColumn = new int[colors];
-        Array.Fill(selectedColumn, -1);
-        selectedNode = new int[colors];
-        Array.Fill(selectedNode, -1);
-        confirmed = new bool[colors];
-        Array.Fill(confirmed, false);
+        _selectedRow = new int[_colors];
+        Array.Fill(_selectedRow, -1);
+        _selectedColumn = new int[_colors];
+        Array.Fill(_selectedColumn, -1);
+        _selectedNode = new int[_colors];
+        Array.Fill(_selectedNode, -1);
+        _confirmed = new bool[_colors];
+        Array.Fill(_confirmed, false);
 
-        for (int i = 0; i < rows + columns; i++)
+        for (int i = 0; i < Rows + Columns; i++)
         {
             int disabled = 0;
             int nodeCount;
-            if (i < rows)
+            if (i < Rows)
             {
-                nodeCount = Mathf.Min(columns, nodes.Length - i * columns);
+                nodeCount = Mathf.Min(Columns, Nodes.Length - i * Columns);
             }
             else
             {
-                nodeCount = Mathf.Min(rows, nodes.Length / (i + 1 - rows));
+                nodeCount = Mathf.Min(Rows, Nodes.Length / (i + 1 - Rows));
             }
             for (int j = 0; j < nodeCount; j++)
             {
                 int currentNode;
-                if (i < rows)
+                if (i < Rows)
                 {
-                    currentNode = i * columns + j;
+                    currentNode = i * Columns + j;
                 }
                 else
                 {
-                    currentNode = j * columns + i - rows;
+                    currentNode = j * Columns + i - Rows;
                 }
-                if (nodes[currentNode])
+                if (Nodes[currentNode])
                 {
                     disabled++;
                 }
                 else
                 {
-                    singleNode[i] = currentNode;
+                    _singleNode[i] = currentNode;
                 }
             }
             if (disabled == nodeCount)
             {
-                skipped[i] = true;
+                _skipped[i] = true;
             }
             if (nodeCount - disabled != 1)
             {
-                singleNode[i] = -1;
+                _singleNode[i] = -1;
             }
         }
 
-        selectType = SelectType.Both;
-        if (rows == 1 || Enumerable.Range(rows - 1, columns).All(i => skipped[i] || singleNode[i] >= 0)) selectType = SelectType.Columns;
-        else if (columns == 1 || Enumerable.Range(0, rows).All(i => skipped[i] || singleNode[i] >= 0)) selectType = SelectType.Rows;
+        _selectType = SelectType.Both;
+        if (Rows == 1 || Enumerable.Range(Rows - 1, Columns).All(i => _skipped[i] || _singleNode[i] >= 0)) _selectType = SelectType.Columns;
+        else if (Columns == 1 || Enumerable.Range(0, Rows).All(i => _skipped[i] || _singleNode[i] >= 0)) _selectType = SelectType.Rows;
 
-        if (skipped[currentCursor] || selectType == SelectType.Columns)
+        if (_skipped[_currentCursor] || _selectType == SelectType.Columns)
         {
             UpdateCursor();
         }
-        timer = delayTime;
+        _timer = DelayTime;
     }
 
     void Update()
     {
-        if (state != State.Done)
+        if (_state != State.Done)
         {
-            if (timer <= 0)
+            if (_timer <= 0)
             {
-                timer = delayTime;
+                _timer = DelayTime;
                 UpdateCursor();
-                cursorUpdate.Invoke();
+                CursorUpdate.Invoke();
             }
             else
             {
-                timer -= Time.deltaTime;
+                _timer -= Time.deltaTime;
             }
         }
 
-        for (int i = 0; i < colors; i++)
+        for (int i = 0; i < _colors; i++)
         {
             if (InputProxy.GetToggledInput(i))
             {
-                if (state == State.Select) SelectCursor(i);
-                else if (state == State.Confirm) ConfirmCursor(i);
+                if (_state == State.Select) SelectCursor(i);
+                else if (_state == State.Confirm) ConfirmCursor(i);
             }
         }
     }
 
     void SelectCursor(int color)
     {
-        if (singleNode[currentCursor] >= 0)
+        if (_singleNode[_currentCursor] >= 0)
         {
-            selectedNode[color] = singleNode[currentCursor];
+            _selectedNode[color] = _singleNode[_currentCursor];
         }
 
-        if (currentCursor < rows)
+        if (_currentCursor < Rows)
         {
-            selectedRow[color] = currentCursor;
+            _selectedRow[color] = _currentCursor;
         }
         else
         {
-            selectedColumn[color] = currentCursor - rows;
+            _selectedColumn[color] = _currentCursor - Rows;
         }
 
-        if (selectedColumn[color] >= 0 && selectedRow[color] >= 0)
+        if (_selectedColumn[color] >= 0 && _selectedRow[color] >= 0)
         {
-            selectedNode[color] = GetNode(selectedRow[color], selectedColumn[color]);
-            if (nodes.Length > selectedNode[color]) if (nodes[selectedNode[color]]) ResetSelection(color);
+            _selectedNode[color] = GetNode(_selectedRow[color], _selectedColumn[color]);
+            if (Nodes.Length > _selectedNode[color]) if (Nodes[_selectedNode[color]]) ResetSelection(color);
         }
 
-        if (selectedNode.All(i => i >= 0))
+        if (_selectedNode.All(i => i >= 0))
         {
-            state = State.Confirm;
-            currentCursor = 0;
+            _state = State.Confirm;
+            _currentCursor = 0;
         }
-        selectionUpdate.Invoke();
+        SelectionUpdate.Invoke();
     }
 
     void ConfirmCursor(int color)
     {
-        if (currentCursor == 0)
+        if (_currentCursor == 0)
         {
-            state = State.Select;
+            _state = State.Select;
             ResetSelection(color);
-            Array.Fill(confirmed, false);
+            Array.Fill(_confirmed, false);
             return;
         }
-        confirmed[color] = true;
-        if (confirmed.All(c => c))
+        _confirmed[color] = true;
+        if (_confirmed.All(c => c))
         {
-            state = State.Done;
+            _state = State.Done;
         }
     }
 
     void UpdateCursor()
     {
-        currentCursor++;
-        if (state == State.Select)
+        _currentCursor++;
+        if (_state == State.Select)
         {
-            if (selectType == SelectType.Columns && currentCursor < rows - 1)
+            if (_selectType == SelectType.Columns && _currentCursor < Rows - 1)
             {
-                currentCursor = rows - 1;
+                _currentCursor = Rows - 1;
             }
-            else if (selectType == SelectType.Rows && currentCursor >= rows)
+            else if (_selectType == SelectType.Rows && _currentCursor >= Rows)
             {
-                currentCursor = 0;
+                _currentCursor = 0;
             }
-            else if (currentCursor >= rows + columns)
+            else if (_currentCursor >= Rows + Columns)
             {
-                currentCursor = selectType == SelectType.Columns ? rows - 1 : 0;
+                _currentCursor = _selectType == SelectType.Columns ? Rows - 1 : 0;
             }
-            if (skipped[currentCursor])
+            if (_skipped[_currentCursor])
             {
                 UpdateCursor();
             }
 
         }
-        else if (state == State.Confirm)
+        else if (_state == State.Confirm)
         {
-            if (currentCursor > 1)
+            if (_currentCursor > 1)
             {
-                currentCursor = 0;
+                _currentCursor = 0;
             }
         }
 
@@ -222,33 +222,33 @@ public class GridCursor : MonoBehaviour
 
     int GetNode(int row, int column)
     {
-        return row * columns + column;
+        return row * Columns + column;
     }
 
     public int GetCursor()
     {
-        return currentCursor;
+        return _currentCursor;
     }
 
     public int GetSelectedRow(int color)
     {
-        return selectedRow[color];
+        return _selectedRow[color];
     }
 
     public int GetSelectedColumn(int color)
     {
-        return selectedColumn[color];
+        return _selectedColumn[color];
     }
 
     public int GetSelectedNode(int color)
     {
-        return selectedNode[color];
+        return _selectedNode[color];
     }
 
     public void ResetSelection(int color)
     {
-        selectedColumn[color] = -1;
-        selectedRow[color] = -1;
-        selectedNode[color] = -1;
+        _selectedColumn[color] = -1;
+        _selectedRow[color] = -1;
+        _selectedNode[color] = -1;
     }
 }

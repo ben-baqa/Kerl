@@ -8,96 +8,96 @@ using UnityEngine.Events;
 
 public class GridManager : MonoBehaviour
 {
-    public int columns;
-    public int rows;
-    public bool[] locked;
-    public List<NodeElement> nodeInfo;
-    public List<Color> colors;
-    public Sprite borderSprite;
+    public int Columns;
+    public int Rows;
+    public bool[] Locked;
+    public List<NodeElement> NodeInfo;
+    public List<Color> Colors;
+    public Sprite BorderSprite;
 
-    public float nodeSize;
-    public float nodeImageSize;
-    public float nodeSelectRatio;
+    public float NodeSize;
+    public float NodeImageSize;
+    public float NodeSelectRatio;
 
-    public float selectorSize;
+    public float SelectorSize;
 
-    public float spacing;
+    public float Spacing;
 
-    public float delayTime;
+    public float DelayTime;
 
     public UnityEvent<int> OnNodeSelected;
 
-    private SelectorDrawer selectorDrawer;
-    private List<Node> nodes;
+    private SelectorDrawer _selectorDrawer;
+    private List<Node> _nodes;
 
-    private GridCursor cursor;
+    private GridCursor _cursor;
 
     private void Start()
     {
-        cursor = gameObject.AddComponent<GridCursor>();
-        cursor.columns = columns;
-        cursor.rows = rows;
-        cursor.nodes = locked;
-        cursor.delayTime = delayTime;
-        cursor.cursorUpdate.AddListener(UpdateCursor);
-        cursor.selectionUpdate.AddListener(UpdateSelection);
+        _cursor = gameObject.AddComponent<GridCursor>();
+        _cursor.Columns = Columns;
+        _cursor.Rows = Rows;
+        _cursor.Nodes = Locked;
+        _cursor.DelayTime = DelayTime;
+        _cursor.CursorUpdate.AddListener(UpdateCursor);
+        _cursor.SelectionUpdate.AddListener(UpdateSelection);
 
         GameObject selectorDrawerObject = new GameObject("Selector Drawer", typeof(RectTransform), typeof(SelectorDrawer));
         selectorDrawerObject.GetComponent<RectTransform>().SetParent(transform);
         selectorDrawerObject.GetComponent<RectTransform>().localPosition = Vector3.zero;
-        selectorDrawer = selectorDrawerObject.GetComponent<SelectorDrawer>();
-        selectorDrawer.borderSprite = borderSprite;
-        selectorDrawer.columns = columns;
-        selectorDrawer.rows = rows;
-        selectorDrawer.size = selectorSize;
-        selectorDrawer.spacing = spacing;
-        selectorDrawer.colors = colors;
+        _selectorDrawer = selectorDrawerObject.GetComponent<SelectorDrawer>();
+        _selectorDrawer.BorderSprite = BorderSprite;
+        _selectorDrawer.Columns = Columns;
+        _selectorDrawer.Rows = Rows;
+        _selectorDrawer.Size = SelectorSize;
+        _selectorDrawer.Spacing = Spacing;
+        _selectorDrawer.Colors = Colors;
 
-        nodes = new List<Node>();
-        for (int i = 0; i < nodeInfo.Count; i++)
+        _nodes = new List<Node>();
+        for (int i = 0; i < NodeInfo.Count; i++)
         {
             GameObject newNodeObject = new GameObject("Node", typeof(RectTransform), typeof(Node));
             newNodeObject.GetComponent<RectTransform>().SetParent(transform);
-            newNodeObject.GetComponent<RectTransform>().localPosition = new Vector2(spacing * (i % columns), -spacing * (i / columns));
+            newNodeObject.GetComponent<RectTransform>().localPosition = new Vector2(Spacing * (i % Columns), -Spacing * (i / Columns));
             Node newNode = newNodeObject.GetComponent<Node>();
-            newNode.borderSprite = borderSprite;
-            newNode.imageSprite = nodeInfo[i].Image;
-            newNode.size = nodeSize;
-            newNode.imageSize = nodeImageSize;
-            newNode.selectedRatio = nodeSelectRatio;
-            newNode.disabled = locked[i];
-            nodes.Add(newNode);
+            newNode.BorderSprite = BorderSprite;
+            newNode.ImageSprite = NodeInfo[i].Image;
+            newNode.Size = NodeSize;
+            newNode.ImageSize = NodeImageSize;
+            newNode.SelectedRatio = NodeSelectRatio;
+            newNode.Disabled = Locked[i];
+            _nodes.Add(newNode);
         }
         UpdateCursor();
     }
 
     private void UpdateCursor()
     {
-        int current = cursor.GetCursor();
+        int current = _cursor.GetCursor();
         int nodeCount;
-        for (int i = 0; i < nodes.Count; i++)
+        for (int i = 0; i < _nodes.Count; i++)
         {
-            nodes[i].SetSelected(false);
+            _nodes[i].SetSelected(false);
         }
-        if (current < rows)
+        if (current < Rows)
         {
-            nodeCount = Mathf.Min(columns, nodes.Count - current * columns);
+            nodeCount = Mathf.Min(Columns, _nodes.Count - current * Columns);
         }
         else
         {
-            nodeCount = Mathf.Min(rows, nodes.Count / (current + 1 - rows));
+            nodeCount = Mathf.Min(Rows, _nodes.Count / (current + 1 - Rows));
         }
         for (int i = 0; i < nodeCount; i++) {
             int currentNode;
-            if (current < rows)
+            if (current < Rows)
             {
-                currentNode = current * columns + i;
+                currentNode = current * Columns + i;
             }
             else
             {
-                currentNode = i * columns + current - rows;
+                currentNode = i * Columns + current - Rows;
             }
-            nodes[currentNode].SetSelected(true);
+            _nodes[currentNode].SetSelected(true);
         }
     }
 
@@ -106,17 +106,17 @@ public class GridManager : MonoBehaviour
         List<int> selectedNodesSet = new List<int>(); 
         int[] selectedNodes = new int[InputProxy.playerCount];
         for (int i = 0; i < InputProxy.playerCount; i++) {
-            int node = cursor.GetSelectedNode(i);
+            int node = _cursor.GetSelectedNode(i);
             if (node < 0)
             {
-                int row = cursor.GetSelectedRow(i);
-                int column = cursor.GetSelectedColumn(i);
-                selectorDrawer.AddSelection(i, true, row);
-                selectorDrawer.AddSelection(i, false, column);
+                int row = _cursor.GetSelectedRow(i);
+                int column = _cursor.GetSelectedColumn(i);
+                _selectorDrawer.AddSelection(i, true, row);
+                _selectorDrawer.AddSelection(i, false, column);
             }
             else {
-                selectorDrawer.AddSelection(i, true, -1);
-                selectorDrawer.AddSelection(i, false, -1);
+                _selectorDrawer.AddSelection(i, true, -1);
+                _selectorDrawer.AddSelection(i, false, -1);
                 if (!selectedNodesSet.Contains(node)) {
                     selectedNodesSet.Add(node);
                 }
@@ -124,30 +124,30 @@ public class GridManager : MonoBehaviour
             }
             selectedNodes[i] = node;
         }
-        foreach (Node node in nodes) {
+        foreach (Node node in _nodes) {
             node.ChangeColor(new Color[] { });
         }
         for (int i = 0; i < selectedNodesSet.Count; i++) {
             List<Color> nodeColors = new List<Color>();
             for (int j = 0; j < InputProxy.playerCount; j++) {
                 if (selectedNodes[j] == selectedNodesSet[i]) {
-                    nodeColors.Add(colors[j]);
+                    nodeColors.Add(Colors[j]);
                 }
             }
-            nodes[selectedNodesSet[i]].ChangeColor(nodeColors.ToArray());
+            _nodes[selectedNodesSet[i]].ChangeColor(nodeColors.ToArray());
         }
-        selectorDrawer.DrawSelectors();
+        _selectorDrawer.DrawSelectors();
     }
 
     public string GetStringSelection(int color)
     {
-        int selected = cursor.GetSelectedNode(color);
-        return nodeInfo[selected].StringPayload;
+        int selected = _cursor.GetSelectedNode(color);
+        return NodeInfo[selected].StringPayload;
     }
 
     public GameObject GetPrefabSelection(int color)
     {
-        int selected = cursor.GetSelectedNode(color);
-        return nodeInfo[selected].PrefabPayload;
+        int selected = _cursor.GetSelectedNode(color);
+        return NodeInfo[selected].PrefabPayload;
     }
 }

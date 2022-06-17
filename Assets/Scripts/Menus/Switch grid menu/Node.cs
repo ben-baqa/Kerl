@@ -5,18 +5,18 @@ using UnityEngine.UI;
 
 public class Node : MonoBehaviour
 {
-    public Sprite borderSprite;
-    public Sprite imageSprite;
+    public Sprite BorderSprite;
+    public Sprite ImageSprite;
 
-    public float size;
-    public float imageSize;
-    public float selectedRatio;
+    public float Size;
+    public float ImageSize;
+    public float SelectedRatio;
 
-    public bool disabled;
+    public bool Disabled;
 
-    private GameObject image;
-    private GameObject border;
-    private List<GameObject> frame;
+    private GameObject _image;
+    private GameObject _border;
+    private List<GameObject> _frame;
 
     private bool selected;
 
@@ -29,20 +29,20 @@ public class Node : MonoBehaviour
     {
         if (selected)
         {
-            foreach (GameObject piece in frame)
+            foreach (GameObject piece in _frame)
             {
-                piece.GetComponent<RectTransform>().localScale = selectedRatio * Vector2.one;
+                piece.GetComponent<RectTransform>().localScale = SelectedRatio * Vector2.one;
             }
-            image.GetComponent<RectTransform>().localScale = selectedRatio * Vector2.one;
-            border.GetComponent<RectTransform>().localScale = selectedRatio * Vector2.one;
+            _image.GetComponent<RectTransform>().localScale = SelectedRatio * Vector2.one;
+            _border.GetComponent<RectTransform>().localScale = SelectedRatio * Vector2.one;
         }
         else {
-            foreach (GameObject piece in frame)
+            foreach (GameObject piece in _frame)
             {
                 piece.GetComponent<RectTransform>().localScale = Vector2.one;
             }
-            image.GetComponent<RectTransform>().localScale = Vector2.one;
-            border.GetComponent<RectTransform>().localScale = Vector2.one;
+            _image.GetComponent<RectTransform>().localScale = Vector2.one;
+            _border.GetComponent<RectTransform>().localScale = Vector2.one;
         }
     }
 
@@ -52,45 +52,45 @@ public class Node : MonoBehaviour
     }
 
     void CreateNode(Color[] colors) {
-        frame = new List<GameObject>();
+        _frame = new List<GameObject>();
         for (int i = 0; i < colors.Length; i++) {
             GameObject framePiece = new GameObject("Frame Piece", typeof(Image));
             framePiece.GetComponent<RectTransform>().SetParent(transform);
             framePiece.GetComponent<RectTransform>().localPosition = Vector3.zero;
-            framePiece.GetComponent<RectTransform>().sizeDelta = size * Vector2.one;
-            framePiece.GetComponent<Image>().sprite = borderSprite;
+            framePiece.GetComponent<RectTransform>().sizeDelta = Size * Vector2.one;
+            framePiece.GetComponent<Image>().sprite = BorderSprite;
             framePiece.GetComponent<Image>().color = colors[i];
             framePiece.GetComponent<Image>().type = Image.Type.Filled;
             framePiece.GetComponent<Image>().fillAmount = (float)(colors.Length - i) / (float)(colors.Length);
-            frame.Add(framePiece);
+            _frame.Add(framePiece);
         }
-        border = new GameObject("Border", typeof(Image));
-        border.GetComponent<RectTransform>().SetParent(transform);
-        border.GetComponent<RectTransform>().localPosition = Vector3.zero;
-        if (colors.Length > 0) border.GetComponent<RectTransform>().sizeDelta = imageSize * Vector2.one;
-        else border.GetComponent<RectTransform>().sizeDelta = size * Vector2.one;
-        border.GetComponent<Image>().sprite = borderSprite;
-        border.GetComponent<Image>().color = disabled ? Color.gray : Color.white;
+        _border = new GameObject("Border", typeof(Image));
+        _border.GetComponent<RectTransform>().SetParent(transform);
+        _border.GetComponent<RectTransform>().localPosition = Vector3.zero;
+        if (colors.Length > 0) _border.GetComponent<RectTransform>().sizeDelta = ImageSize * Vector2.one;
+        else _border.GetComponent<RectTransform>().sizeDelta = Size * Vector2.one;
+        _border.GetComponent<Image>().sprite = BorderSprite;
+        _border.GetComponent<Image>().color = Disabled ? Color.gray : Color.white;
 
-        image = new GameObject("Image", typeof(Image));
-        image.GetComponent<RectTransform>().SetParent(transform);
-        image.GetComponent<RectTransform>().localPosition = Vector3.zero;
-        if (colors.Length > 0) image.GetComponent<RectTransform>().sizeDelta = imageSize * Vector2.one;
-        else image.GetComponent<RectTransform>().sizeDelta = size * Vector2.one;
-        image.GetComponent<Image>().sprite = imageSprite;
-        image.GetComponent<Image>().color = disabled ? new Color(1, 1, 1, 0.3f) : Color.white;
+        _image = new GameObject("Image", typeof(Image));
+        _image.GetComponent<RectTransform>().SetParent(transform);
+        _image.GetComponent<RectTransform>().localPosition = Vector3.zero;
+        if (colors.Length > 0) _image.GetComponent<RectTransform>().sizeDelta = ImageSize * Vector2.one;
+        else _image.GetComponent<RectTransform>().sizeDelta = Size * Vector2.one;
+        _image.GetComponent<Image>().sprite = ImageSprite;
+        _image.GetComponent<Image>().color = Disabled ? new Color(1, 1, 1, 0.3f) : Color.white;
     }
 
     void DestroyCurrent() {
-        if (image != null)
+        if (_image != null)
         {
-            Destroy(image);
+            Destroy(_image);
         }
-        if (border != null)
+        if (_border != null)
         {
-            Destroy(border);
+            Destroy(_border);
         }
-        foreach (GameObject piece in frame)
+        foreach (GameObject piece in _frame)
         {
             Destroy(piece);
         }
