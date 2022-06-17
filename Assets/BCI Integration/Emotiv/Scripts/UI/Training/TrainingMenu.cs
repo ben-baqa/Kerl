@@ -85,6 +85,7 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
         //    $"current training count: {trainedActions.trainingCount}," +
         //    $"training rounds completed: {trainedActions.trainingRoundsCompleted}");
 
+        training.roundsTrained = trainedActions.trainingRoundsCompleted;
         if (trainedActions.trainingRoundsCompleted < minTrainingRounds)
         {
             trainingExplanation.SetActive(true);
@@ -155,6 +156,7 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
         Cortex.training.EraseTraining("push");
         Cortex.training.EraseTraining("neutral");
 
+        training.roundsTrained = 0;
         training.ResetTraining();
         validationView.SetActive(false);
     }
@@ -181,5 +183,11 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
         validating = true;
         training.gameObject.SetActive(false);
         validationView.SetActive(true);
+    }
+
+    // called by UI
+    public void SaveProgress()
+    {
+        Cortex.training.SaveProfile(profileName, headsetID);
     }
 }

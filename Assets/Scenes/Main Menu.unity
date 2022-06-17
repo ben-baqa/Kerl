@@ -3936,7 +3936,7 @@ MonoBehaviour:
   timerText: {fileID: 458253456}
   activeColor: {r: 1, g: 1, b: 1, a: 1}
   inactiveColor: {r: 0.7830189, g: 0.7830189, b: 0.7830189, a: 0.5882353}
-  interval: 2
+  interval: 4
   itemLerp: 0.3
   gridOffset: 115
 --- !u!1 &1154891449
