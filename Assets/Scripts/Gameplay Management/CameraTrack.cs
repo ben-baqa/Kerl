@@ -5,7 +5,6 @@ using UnityEngine;
 public class CameraTrack : MonoBehaviour
 {
     public float duration = 5;
-    public float loopTime = 1;
     public bool lookAtTrack;
     public bool uniformSpeed;
     public Transform lookAt;
@@ -15,6 +14,7 @@ public class CameraTrack : MonoBehaviour
     Transform cameraTransform;
 
     float progress;
+    bool complete;
     bool active;
 
     private void Start()
@@ -25,7 +25,7 @@ public class CameraTrack : MonoBehaviour
         Activate();
     }
 
-    void Activate()
+    public void Activate()
     {
         active = true;
     }
@@ -35,18 +35,31 @@ public class CameraTrack : MonoBehaviour
         if (!active)
             return;
 
+        Process();
+    }
+
+    public void Process()
+    {
+        Process(cameraTransform);
+    }
+
+    public void Process(Transform target)
+    {
+        if (complete)
+            return;
+
         Vector3 point = spline.GetPoint(curve.Evaluate(progress));
         if(uniformSpeed)
             point = spline.GetPointByLength(curve.Evaluate(progress));
-        cameraTransform.position = point;
+        target.position = point;
         if (lookAtTrack)
-            cameraTransform.LookAt(point + spline.GetDirection(curve.Evaluate(progress)));
+            target.LookAt(point + spline.GetDirection(curve.Evaluate(progress)));
         else if (lookAt)
-            cameraTransform.LookAt(lookAt.position);
+            target.LookAt(lookAt.position);
+
+        if (progress >= 1)
+            complete = true;
 
         progress += Time.deltaTime / duration;
-        
-        if (progress > loopTime)
-            progress -= loopTime;
     }
 }

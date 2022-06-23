@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// Keeps track of which player has active input, and the flow of game state
@@ -23,15 +24,27 @@ public class TurnManager : MonoBehaviour
         score = FindObjectOfType<ScoreHUD>();
         ai = GetComponent<AIScript>();
 
-        blueTeam = new Team(MenuSelections.teams[0], ai);
-        redTeam = new Team(MenuSelections.teams[1], ai);
+        if (MenuSelections.teams == null)
+        {
+            // fabricate players for input
+            InputProxy.AddInput(new KeyInput(Keyboard.current, "a"));
+            InputProxy.AddInput(new KeyInput(Keyboard.current, "b"));
+            blueTeam = new Team(new List<int> { 0, 1 }, ai);
+            redTeam = new Team(new List<int>(), ai);
+        }
+        else
+        {
+            // use real input
+            blueTeam = new Team(MenuSelections.teams[0], ai);
+            redTeam = new Team(MenuSelections.teams[1], ai);
+        }
 
         //score.UpdateTurn((blueTurn ? blueTeam : redTeam).currentPlayer);
     }
 
-    public void OnTurn()
+    public void OnTurnStart(bool turn)
     {
-        blueTurn = !blueTurn;
+        blueTurn = turn;
 
         if (blueTurn)
             blueTeam.Next(2);

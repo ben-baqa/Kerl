@@ -11,14 +11,14 @@ public class AIScript : MonoBehaviour
 
     private bool throwing;
     private float timer;
-    private Skipper skipper;
+    private FakeSkipper skipper;
     private CurlingBar bar;
 
     private void Start()
     {
         throwing = false;
         brushing = false;
-        skipper = FindObjectOfType<Skipper>();
+        skipper = FindObjectOfType<FakeSkipper>();
         bar = FindObjectOfType<CurlingBar>(true);
     }
 

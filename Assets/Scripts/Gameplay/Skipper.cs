@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class Skipper : MonoBehaviour
 {
-    public float period = 2, maxAngle, pushDelay = .5f;
+    public float period = 5, maxAngle, pushDelay = .5f;
     public bool weightedCurve, throwing;
     public int rocks = 5;
 
@@ -73,7 +73,7 @@ public class Skipper : MonoBehaviour
         this.angle = angle;
         throwing = false;
         n = 0;
-        line.OnPush();
+        line.OnThrow();
         input.OnThrow();
         sfx.Play();
         throwSfx.clip = throwSounds[Random.Range(0, throwSounds.Length)];
@@ -115,30 +115,30 @@ public class Skipper : MonoBehaviour
         }
         // end of game
 
-        CameraPositions.OnTurnStart();
-        throwing = true;
-        if (blueTurn)
-        {
-            rock = Instantiate(blueRock).GetComponent<Rock>();
-            rock.skip = this;
-            rend.material = blueMat;
-            sweeper.OnTurnStart(blueMat);
-            turnStartSound.clip = blueTurnSound;
-        }
-        else
-        {
-            rock = Instantiate(redRock).GetComponent<Rock>();
-            rock.skip = this;
-            rend.material = redMat;
-            sweeper.OnTurnStart(redMat);
-            turnStartSound.clip = redTurnSound;
-        }
-        blueTurn = !blueTurn;
+        //CameraPositions.OnTurnStart();
+        //throwing = true;
+        //if (blueTurn)
+        //{
+        //    rock = Instantiate(blueRock).GetComponent<Rock>();
+        //    rock.skip = this;
+        //    rend.material = blueMat;
+        //    sweeper.OnTurnStart(blueMat);
+        //    turnStartSound.clip = blueTurnSound;
+        //}
+        //else
+        //{
+        //    rock = Instantiate(redRock).GetComponent<Rock>();
+        //    rock.skip = this;
+        //    rend.material = redMat;
+        //    sweeper.OnTurnStart(redMat);
+        //    turnStartSound.clip = redTurnSound;
+        //}
+        //blueTurn = !blueTurn;
 
-        rockPile.OnTurnStart();
-        turnStartSound.Play();
+        //rockPile.OnTurnStart();
+        //turnStartSound.Play();
 
-        if (b)
-            input.OnTurn();
+        //if (b)
+        //    input.OnTurn();
     }
 }

@@ -85,7 +85,7 @@ public class CurveLine : MonoBehaviour
         //r = radius;
     }
 
-    public void OnPush()
+    public void OnThrow()
     {
         line.widthMultiplier = bigSize;
         line.colorGradient = selectedGradient;

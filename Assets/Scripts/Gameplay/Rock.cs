@@ -24,9 +24,6 @@ public class Rock : MonoBehaviour
     public AudioSource slip, onScore, onLoseScore;
 
     [HideInInspector]
-    public Skipper skip;
-
-    [HideInInspector]
     public float frictionMultiplier = 1;
 
     public bool blue;
@@ -35,7 +32,7 @@ public class Rock : MonoBehaviour
     private AudioSource sfx, grindNoise;
     private ParticleSystem particles;
 
-    private float spin = 0, particleCount;
+    private float particleCount;
     private bool thrown, turnEnded, resultsViewed, score, slipped;
 
     // Start is called before the first frame update
@@ -66,14 +63,14 @@ public class Rock : MonoBehaviour
             if (!turnEnded && rb.position.z > 25)
             {
                 turnEnded = true;
-                skip.StartTurn();
+                RoundManager.OnRockStop();
             }
         }
         if(rb.position.y < -1 && !slipped)
         {
             if (!turnEnded)
             {
-                skip.StartTurn();
+                RoundManager.OnRockStop();
                 turnEnded = true;
             }
             slipped = true;
@@ -85,9 +82,8 @@ public class Rock : MonoBehaviour
         if(!turnEnded && !resultsViewed && rb.position.z > resultViewThreshold)
         {
             resultsViewed = true;
-            CameraPositions.OnResult();
-            FindObjectOfType<Sweeper>().OnResult();
-            FindObjectOfType<ScoreHUD>().OnResult();
+
+            RoundManager.OnRockPassResultThreshold();
         }
 
         particleCount += (rb.velocity.magnitude * particleMultiplier);
@@ -104,7 +100,6 @@ public class Rock : MonoBehaviour
             return;
 
         thrown = true;
-        this.spin = spin;
 
         float rad = spin * Mathf.Deg2Rad;
         Vector3 dir = Vector3.forward * Mathf.Cos(rad) +
