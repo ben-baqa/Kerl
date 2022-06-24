@@ -12,8 +12,11 @@ public class TurnManager : MonoBehaviour
     // Identifies this instance as the authoritative Network Host
     public static bool isHost = true;
 
-    private ScoreHUD score;
-    private AIScript ai;
+    public bool IsAI => (blueTurn ? blueTeam : redTeam).aiTeam;
+    public int CurrentPlayer => (blueTurn ? blueTeam : redTeam).CurrentPlayer;
+
+    ScoreHUD score;
+    AIScript ai;
     Team blueTeam, redTeam;
 
     private bool blueTurn = true;
@@ -51,7 +54,7 @@ public class TurnManager : MonoBehaviour
         else
             redTeam.Next(2);
 
-        score.UpdateTurn((blueTurn ? blueTeam : redTeam).currentPlayer);
+        score.UpdateTurn((blueTurn ? blueTeam : redTeam).CurrentPlayer);
         ai.StartTimer();
     }
 
@@ -61,7 +64,7 @@ public class TurnManager : MonoBehaviour
             blueTeam.Next();
         else
             redTeam.Next();
-        score.UpdateTurn((blueTurn ? blueTeam : redTeam).currentPlayer);
+        score.UpdateTurn((blueTurn ? blueTeam : redTeam).CurrentPlayer);
     }
 
     public bool GetInput()
@@ -70,22 +73,34 @@ public class TurnManager : MonoBehaviour
             return false;
 
         if (blueTurn)
-            return blueTeam.input;
+            return blueTeam.Input;
         else
-            return redTeam.input;
+            return redTeam.Input;
+    }
+    
+    public bool GetToggledInput()
+    {
+        if (!isHost)
+            return false;
+
+        if (blueTurn)
+            return blueTeam.ToggledInput;
+        else
+            return redTeam.ToggledInput;
     }
 
     public class Team
     {
-        public bool input => aiTeam? ai.brushing : InputProxy.P(members[currentIndex]);
-        public int currentPlayer => aiTeam ? -1 : members[currentIndex];
+        public bool Input => aiTeam? ai.brushing : InputProxy.P(members[currentIndex]);
+        public bool ToggledInput => aiTeam ? ai.brushing : InputProxy.GetToggledInput(members[currentIndex]);
+        public int CurrentPlayer => aiTeam ? -1 : members[currentIndex];
 
         AIScript ai;
 
         int[] members;
         int count;
         int currentIndex;
-        bool aiTeam;
+        public bool aiTeam;
 
         public Team(List<int> players, AIScript aiScript = null)
         {
@@ -110,7 +125,7 @@ public class TurnManager : MonoBehaviour
             string res = "Team: [";
             for (int i = 0; i < count; i++)
                 res += members[i] + ",";
-            res += $"], active player: {currentPlayer}, aiTeam? {aiTeam}";
+            res += $"], active player: {CurrentPlayer}, aiTeam? {aiTeam}";
             return res;
         }
     }

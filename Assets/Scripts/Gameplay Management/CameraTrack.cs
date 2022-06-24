@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CameraTrack : MonoBehaviour
 {
+    public bool IsComplete => complete;
+
     public float duration = 5;
     public bool lookAtTrack;
     public bool uniformSpeed;
@@ -13,8 +15,8 @@ public class CameraTrack : MonoBehaviour
     BezierSpline spline;
     Transform cameraTransform;
 
-    float progress;
     bool complete;
+    float progress;
     bool active;
 
     private void Start()

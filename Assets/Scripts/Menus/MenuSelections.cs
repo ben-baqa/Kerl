@@ -7,7 +7,7 @@ public class MenuSelections : MonoBehaviour
     public static MenuSelections instance;
     public static List<List<int>> teams;
     public static List<GameObject> characterSelections;
-    public static List<List<GameObject>> rockSelections;
+    public static List<List<NodeElement>> rockSelections;
 
 
     public TypedInputSprites inputSprites;

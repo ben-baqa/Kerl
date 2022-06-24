@@ -79,10 +79,13 @@ public class RoundManager : MonoBehaviour
         cameraManager.ApplyGameState(GameState);
         if (GameState == GameState.TeamIntro)
             teamIntro.StartSequence();
+
+        print("New game State: " + _gameState);
     }
 
     void OnCameraTransitionComplete(object sender, GameState newState)
     {
+        print("Camera transition was completed");
         //GameState = newState;
         if (newState == GameState.Establishing)
             GameState = GameState.TeamIntro;
@@ -103,7 +106,7 @@ public class RoundManager : MonoBehaviour
 
         audioEffects.OnTurnStart(blueTurn);
         turnManager.OnTurnStart(blueTurn);
-        rockSelector.StartSelecting();
+        rockSelector.StartSelecting(blueTurn);
 
         GameState = GameState.RockSelection;
     }

@@ -61,6 +61,7 @@ public class FakeSkipper : MonoBehaviour
 
         anim.SetTrigger("push");
         rock.Throw(angle, angle / maxAngle);
+        RoundManager.instance.OnThrow();
     }
 
     private float Angle()
@@ -77,7 +78,7 @@ public class FakeSkipper : MonoBehaviour
 
     void RunTargetingLogic()
     {
-        if(turnManager.GetInput())
+        if(turnManager.GetToggledInput())
         {
             RoundManager.instance.OnTargetSelect();
             state = State.throwing;

@@ -8,7 +8,7 @@ public class CameraAngleManager : MonoBehaviour
     public CameraTransition[] transitions;
 
     CameraTransition current;
-    GameState currentState;
+    GameState currentState = GameState.Establishing;
     Transform cameraTransform;
 
     public event EventHandler<GameState> TransitionComplete;
@@ -73,13 +73,13 @@ public class CameraTransition
         complete = false;
         progress = 0;
 
-        if(type == CameraTransitionType.Cut)
+        if (type == CameraTransitionType.Cut)
         {
             camera.position = lerpTarget.position;
             camera.rotation = lerpTarget.rotation;
             complete = true;
         }
-        else if(type == CameraTransitionType.Lerp)
+        else if (type == CameraTransitionType.Lerp)
         {
             startPosition = camera.position;
             startRotation = camera.rotation;
@@ -98,13 +98,15 @@ public class CameraTransition
         {
             cameraTransform.position = Vector3.Lerp(startPosition, lerpTarget.position, progress);
             cameraTransform.rotation = Quaternion.Lerp(startRotation, lerpTarget.rotation, progress);
+
+            if (progress >= 1)
+                complete = true;
         }
         else if(type == CameraTransitionType.Spline)
         {
             track.Process(cameraTransform);
+            complete = track.IsComplete;
         }
-        if (progress >= 1)
-            complete = true;
         return complete;
     }
 }

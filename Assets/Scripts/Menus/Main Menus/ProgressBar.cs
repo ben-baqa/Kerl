@@ -25,7 +25,11 @@ public class ProgressBar : MonoBehaviour
     private void FixedUpdate()
     {
         if (!rect)
+        {
+            Init();
             return;
+        }
+
         progress = Mathf.Lerp(progress, target, lerp);
 
         rect.sizeDelta = finalScale * (horizontal ? Vector2.up : Vector2.right);
