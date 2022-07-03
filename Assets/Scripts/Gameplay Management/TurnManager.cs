@@ -15,7 +15,7 @@ public class TurnManager : MonoBehaviour
     public bool IsAI => (blueTurn ? blueTeam : redTeam).aiTeam;
     public int CurrentPlayer => (blueTurn ? blueTeam : redTeam).CurrentPlayer;
 
-    ScoreHUD score;
+    InputIconHUDManager inputIconHUDManager;
     AIScript ai;
     Team blueTeam, redTeam;
 
@@ -24,7 +24,7 @@ public class TurnManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        score = FindObjectOfType<ScoreHUD>();
+        inputIconHUDManager = FindObjectOfType<InputIconHUDManager>();
         ai = GetComponent<AIScript>();
 
         if (MenuSelections.teams == null)
@@ -32,8 +32,9 @@ public class TurnManager : MonoBehaviour
             // fabricate players for input
             InputProxy.AddInput(new KeyInput(Keyboard.current, "a"));
             InputProxy.AddInput(new KeyInput(Keyboard.current, "b"));
+            InputProxy.AddInput(new KeyInput(Keyboard.current, "c"));
             blueTeam = new Team(new List<int> { 0, 1 }, ai);
-            redTeam = new Team(new List<int>(), ai);
+            redTeam = new Team(new List<int> { 2 }, ai);
         }
         else
         {
@@ -54,7 +55,7 @@ public class TurnManager : MonoBehaviour
         else
             redTeam.Next(2);
 
-        score.UpdateTurn((blueTurn ? blueTeam : redTeam).CurrentPlayer);
+        inputIconHUDManager.Index = ((blueTurn ? blueTeam : redTeam).CurrentPlayer);
         ai.StartTimer();
     }
 
@@ -64,7 +65,7 @@ public class TurnManager : MonoBehaviour
             blueTeam.Next();
         else
             redTeam.Next();
-        score.UpdateTurn((blueTurn ? blueTeam : redTeam).CurrentPlayer);
+        inputIconHUDManager.Index = ((blueTurn ? blueTeam : redTeam).CurrentPlayer);
     }
 
     public bool GetInput()

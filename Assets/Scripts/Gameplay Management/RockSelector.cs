@@ -17,6 +17,7 @@ public class RockSelector : MonoBehaviour
 
     [Header("Selection options")]
     public float delay = 5;
+    public float fillMultiplier = 1.5f;
     public float startingAmount = 2;
     public float requiredAmount = 5;
     public Color disabledColor;
@@ -54,7 +55,7 @@ public class RockSelector : MonoBehaviour
     {
         List<List<int>> teams = MenuSelections.teams;
         if (teams == null)
-            teams = new List<List<int>> { new List<int> { 0, 1 }, new List<int>() };
+            teams = new List<List<int>> { new List<int> { 0, 1 }, new List<int> { 2 } };
 
         if (MenuSelections.rockSelections == null)
         {
@@ -90,7 +91,7 @@ public class RockSelector : MonoBehaviour
         if(selectionProgress > 0)
         {
             if (turnManager.GetInput())
-                selectionProgress += Time.deltaTime;
+                selectionProgress += Time.deltaTime * fillMultiplier;
             else
                 selectionProgress -= Time.deltaTime;
 
@@ -151,6 +152,9 @@ public class RockSelector : MonoBehaviour
 
         active = true;
         selection = 0;
+        selectionProgress = 0;
+        progressBar.Deactivate();
+        activeOptions[selection].image.color = Color.white;
     }
 
     void InstantiateOption(Vector3 position, GameObject prefab, Sprite sprite)
@@ -165,6 +169,7 @@ public class RockSelector : MonoBehaviour
 
     void Select()
     {
+        active = false;
         Rock rock = Instantiate(activeOptions[selection].prefab).GetComponent<Rock>();
         RoundManager.instance.OnRockSelect(rock);
     }

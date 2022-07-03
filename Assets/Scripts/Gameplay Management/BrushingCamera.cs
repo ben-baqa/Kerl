@@ -5,27 +5,38 @@ using UnityEngine;
 public class BrushingCamera : MonoBehaviour
 {
     public float followLerp = .05f;
-    public float xOffset = 5.5f;
-    public float zOffset = 1.5f;
+    public Vector3 positionOffset;
+    public Vector3 lookOffset;
 
-    Transform cameraTransform;
+    Transform rock;
+    Vector3 pos = Vector3.zero;
 
-    bool followRock;
-
+    [HideInInspector]
+    public bool followRock = false;
 
     void Start()
     {
-        cameraTransform = Camera.main.transform;
+        followRock = false;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        if (!followRock)
+            return;
+
+        pos.z = Mathf.Lerp(pos.z, rock.position.z + positionOffset.z, followLerp);
+        pos.x = rock.position.x + positionOffset.x;
+        pos.y = rock.position.y + positionOffset.y;
+        transform.position = Vector3.Lerp(transform.position, pos, followLerp);
+
+        Quaternion targetRotation = Quaternion.LookRotation(rock.position + lookOffset - transform.position, Vector3.up);
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, .01f);
+        //transform.LookAt(rock.position + lookOffset);
     }
 
-    public void OnPuch(Transform start)
+    public void SetRock(Rock rockInstance)
     {
-
+        rock = rockInstance.transform;
+        pos = rock.position + positionOffset;
     }
 }

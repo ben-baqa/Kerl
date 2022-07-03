@@ -52,23 +52,28 @@ public class RockPile : MonoBehaviour
     GameObject PlaceRock(Vector3 pos, Material mat)
     {
         GameObject newRock = Instantiate(rockPrefab, transform);
-        newRock.GetComponent<MeshRenderer>().materials[1] = mat;
+
+        MeshRenderer rend = newRock.GetComponent<MeshRenderer>();
+        Material[] mats = rend.materials;
+        mats[1] = mat;
+        rend.materials = mats;
         newRock.transform.position = pos;
         return newRock;
     }
 
     public void RemoveRock(bool blueTurn)
     {
-        GameObject toRemove = redRocks[redRocks.Count - 1];
         if (blueTurn)
         {
-            toRemove = blueRocks[blueRocks.Count - 1];
+            GameObject toRemove = blueRocks[blueRocks.Count - 1];
             blueRocks.Remove(toRemove);
+            Destroy(toRemove);
         }
         else
         {
+            GameObject toRemove = redRocks[redRocks.Count - 1];
             redRocks.Remove(toRemove);
+            Destroy(toRemove);
         }
-        Destroy(toRemove);
     }
 }

@@ -45,14 +45,19 @@ public class CameraAngleManager : MonoBehaviour
     }
 }
 
-public enum CameraTransitionType { Cut, Lerp, Spline }
+public enum CameraTransitionType { Cut, Lerp, Spline, None }
+public enum CameraTransitionLerpType { Linear, EaseIn, Easeout, EaseBoth }
 [System.Serializable]
 public class CameraTransition
 {
+    [Header("Transition Type")]
     public CameraTransitionType type;
+    public CameraTransitionLerpType lerpType;
+    [Header("States")]
     public GameState previousState;
     public GameState targetState;
 
+    [Header("Settings")]
     public Transform lerpTarget;
 
     public float duration;
@@ -63,6 +68,7 @@ public class CameraTransition
     Vector3 startPosition;
     Quaternion startRotation;
     float progress = 0;
+    float scaledProgress;
     bool complete = false;
 
 
@@ -73,7 +79,9 @@ public class CameraTransition
         complete = false;
         progress = 0;
 
-        if (type == CameraTransitionType.Cut)
+        if (type == CameraTransitionType.None)
+            complete = true;
+        else if (type == CameraTransitionType.Cut)
         {
             camera.position = lerpTarget.position;
             camera.rotation = lerpTarget.rotation;
@@ -96,8 +104,21 @@ public class CameraTransition
 
         if(type == CameraTransitionType.Lerp)
         {
-            cameraTransform.position = Vector3.Lerp(startPosition, lerpTarget.position, progress);
-            cameraTransform.rotation = Quaternion.Lerp(startRotation, lerpTarget.rotation, progress);
+            if (lerpType == CameraTransitionLerpType.Linear)
+                scaledProgress = progress;
+            else if (lerpType == CameraTransitionLerpType.EaseIn)
+                scaledProgress = Mathf.Pow(progress, 3);
+            else if (lerpType == CameraTransitionLerpType.Easeout)
+                scaledProgress = 1 - Mathf.Pow(1 - progress, 3);
+            else if (lerpType == CameraTransitionLerpType.EaseBoth)
+            {
+                float a = Mathf.Pow(progress, 3);
+                float b = 1 - Mathf.Pow(1 - progress, 3);
+                scaledProgress = Mathf.Lerp(a, b, progress);
+            }
+
+            cameraTransform.position = Vector3.Lerp(startPosition, lerpTarget.position, scaledProgress);
+            cameraTransform.rotation = Quaternion.Lerp(startRotation, lerpTarget.rotation, scaledProgress);
 
             if (progress >= 1)
                 complete = true;

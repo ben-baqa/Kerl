@@ -30,7 +30,7 @@ public class Skipper : MonoBehaviour
     private LoadSceneOnInput endLoader;
 
     private float n, angle;
-    private bool blueTurn = true;
+    //private bool blueTurn = true;
     private int throwCount = 1;
 
     // Start is called before the first frame update
@@ -89,7 +89,7 @@ public class Skipper : MonoBehaviour
         anim.SetTrigger("push");
         CameraPositions.OnPush(rock.transform);
         sweeper.OnThrow(rock);
-        score.OnThrow();
+        //score.OnThrow();
     }
 
     private float Angle()
@@ -108,7 +108,7 @@ public class Skipper : MonoBehaviour
     {
         if (throwCount > rocks * 2)
         {
-            score.EndGame();
+            score.ShowEndCard();
             if(NetworkMessageHandler.isHost)
                 endLoader.enabled = true;
             return;

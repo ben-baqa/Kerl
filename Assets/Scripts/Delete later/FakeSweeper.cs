@@ -14,10 +14,10 @@ public class FakeSweeper : MonoBehaviour
     public float frictionMultipler = 1;
     public float decay = .01f, sweepValue = .1f;
 
-    [Header("body movment")]
+    [Header("body movement")]
     public float followLerp;
     public float lerpLerp, normalLerp, rotLerp,
-        broomSoundDelay, brushRot, startRot, resultRot;
+        brushRot, startRot, resultRot;
 
 
     private Animator anim;
@@ -69,7 +69,7 @@ public class FakeSweeper : MonoBehaviour
                 break;
         }
         if (input.GetInput() && followLerp > .3f &&
-            anim.GetCurrentAnimatorStateInfo(0).IsName("slide") &&
+            //anim.GetCurrentAnimatorStateInfo(0).IsName("slide") &&
             followState == Follow.rock)
         {
             Sweep();

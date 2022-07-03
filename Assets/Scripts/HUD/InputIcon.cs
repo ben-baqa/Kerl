@@ -19,6 +19,9 @@ public class InputIcon : MonoBehaviour
         text = GetComponentInChildren<TextMeshProUGUI>(true);
     }
 
+    public void Activate() => gameObject.SetActive(true);
+    public void Deactivate() => gameObject.SetActive(false);
+
     public int Index
     {
         get

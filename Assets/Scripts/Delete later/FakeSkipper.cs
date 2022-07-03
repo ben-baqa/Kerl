@@ -30,7 +30,7 @@ public class FakeSkipper : MonoBehaviour
         line = GetComponentInChildren<CurveLine>();
         rend = GetComponentInChildren<SkinnedMeshRenderer>();
         turnManager = FindObjectOfType<TurnManager>();
-        StartTurn(false);
+        OnTurnStart(false);
     }
 
     // Update is called once per frame
@@ -47,7 +47,7 @@ public class FakeSkipper : MonoBehaviour
         angle = Angle();
         line.Generate(angle);
 
-        if (turnManager.GetInput())
+        if (turnManager.GetToggledInput())
         {
             Throw();
         }
@@ -55,6 +55,7 @@ public class FakeSkipper : MonoBehaviour
 
     public void Throw()
     {
+        //print("throw called");
         state = State.idle;
         n = 0;
         line.OnThrow();
@@ -80,20 +81,21 @@ public class FakeSkipper : MonoBehaviour
     {
         if(turnManager.GetToggledInput())
         {
+            //print("target selected");
             RoundManager.instance.OnTargetSelect();
             state = State.throwing;
         }
     }
 
-    public void StartTurn(bool blueTurn)
+    public void OnTurnStart(bool blueTurn)
     {
-        //state = State.idle;
-
         rend.material = blueTurn ? blueTeam : redTeam;
     }
 
     public void StartTargetSelection(Rock selectedRock)
     {
+        //print("target select started");
+        turnManager.GetToggledInput();
         state = State.targeting;
         rock = selectedRock;
     }

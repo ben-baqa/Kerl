@@ -136,4 +136,13 @@ public class InputProxy : MonoBehaviour
         //Debug.LogWarning("Attempting to access info on an input that doesn't exist");
         return new InputInfo("Invalid input index");
     }
+
+    public static InputInfo[] GetAllInputInfo()
+    {
+        InputInfo[] res = new InputInfo[inputs.Count];
+        for(int i = 0; i < inputs.Count; i++)
+            res[i] = new InputInfo(inputs[i], i);
+
+        return res;
+    }
 }

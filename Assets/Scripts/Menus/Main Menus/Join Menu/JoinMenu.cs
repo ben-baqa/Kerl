@@ -73,6 +73,17 @@ public class JoinMenu : MonoBehaviour
             player_buttons[i].Join(i);
 
         timer = 0;
+
+        // fill active inputs with extant controls
+        List<InputControl> activeKeyInputs = new List<InputControl>();
+        List<Gamepad> activeGamepadInputs = new List<Gamepad>();
+        foreach(InputInfo i in InputProxy.GetAllInputInfo())
+        {
+            if (i.type == InputType.key)
+                activeKeyInputs.Add(i.device[i.name]);
+            else if (i.type == InputType.gamepad)
+                activeGamepadInputs.Add(i.device as Gamepad);
+        }
     }
 
     void CheckForNewInput()

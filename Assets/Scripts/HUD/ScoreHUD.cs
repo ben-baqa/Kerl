@@ -8,76 +8,35 @@ using UnityEngine.UI;
 /// </summary>
 public class ScoreHUD : MonoBehaviour
 {
-    public Text bScoreOutline, rScoreOutline, endText;
-    public Vector3 startPos, throwPos, endScorePos;
+    public Text bScoreOutline, rScoreOutline, endHeader, endLeaveText;
+    public Vector3 endScorePos;
     public Color blue, red;
     public Canvas endCanvas;
-
-    public float sizeDelta = .2f, sizeFreq = 5;
 
     public AudioSource blueWinNoise, redWinNoise, tieNoise, appluase, mainMusic;
 
     private Text bScore, rScore;
-    InputIcon inputIcon;
 
-    private float size = 1;
     private bool ended = false;
 
-    // Start is called before the first frame update
     void Start()
     {
         bScore = bScoreOutline.GetComponentsInChildren<Text>()[1];
         rScore = rScoreOutline.GetComponentsInChildren<Text>()[1];
-        inputIcon = GetComponentInChildren<InputIcon>(true);
         endCanvas.enabled = false;
-    }
-
-    private void Update()
-    {
-        size = 1 + Mathf.Sin(Time.time * sizeFreq) * sizeDelta;
-
-        inputIcon.transform.localScale = Vector3.one * size;
-    }
-
-    public void OnThrow()
-    {
-        //playerOutline.gameObject.SetActive(false);
-        bScoreOutline.gameObject.SetActive(false);
-        rScoreOutline.gameObject.SetActive(false);
-        //playerOutline.rectTransform.localPosition = throwPos;
-
-        inputIcon.rectTransform.localPosition = throwPos;
+        endLeaveText.enabled = false;
     }
 
     public void OnResult()
     {
-        //playerOutline.gameObject.SetActive(false);
-        inputIcon.gameObject.SetActive(false);
-        bScoreOutline.gameObject.SetActive(false);
-        rScoreOutline.gameObject.SetActive(false);
-    }
-
-    public void UpdateTurn(int turn)
-    {
-        string s = turn < 0? "AI": $"P{turn + 1}";
-        Color c = MenuSelections.GetColor(turn);
-
-        if (turn >= 0)
-            inputIcon.Index = turn;
-        else
-            inputIcon.text.text = "AI";
-        inputIcon.image.enabled = turn >= 0;
-
-        inputIcon.rectTransform.localPosition = startPos;
-
-        //playerOutline.text = player.text = s;
-        //player.color = c;
-        //playerOutline.rectTransform.localPosition = startPos;
-
-        //playerOutline.gameObject.SetActive(true);
-        inputIcon.gameObject.SetActive(true);
         bScoreOutline.gameObject.SetActive(true);
         rScoreOutline.gameObject.SetActive(true);
+    }
+
+    public void OnTurnStart()
+    {
+        bScoreOutline.gameObject.SetActive(false);
+        rScoreOutline.gameObject.SetActive(false);
     }
 
     public void UpdateScore(int score)
@@ -96,16 +55,12 @@ public class ScoreHUD : MonoBehaviour
         }
     }
 
-    public void EndGame()
-    {
-        StartCoroutine(ShowEndCard());
-    }
 
-    private IEnumerator ShowEndCard()
+    public void ShowEndCard()
     {
-        yield return new WaitForSeconds(3);
         float score = FindObjectOfType<Scorekeeper>().score;
 
+        rScoreOutline.gameObject.SetActive(false);
         bScoreOutline.gameObject.SetActive(true);
         bScoreOutline.rectTransform.localPosition = endScorePos;
         bScore.color = score > 0 ? blue : red;
@@ -113,25 +68,30 @@ public class ScoreHUD : MonoBehaviour
 
         if (score > 0)
         {
-            endText.text = "Purple\nTeam\nWins!";
+            endHeader.text = "Purple\nTeam\nWins!";
             blueWinNoise.Play();
             appluase.Play();
         }
         else if(score < 0)
         {
-            endText.text = "Yellow\nTeam\nWins!";
+            endHeader.text = "Yellow\nTeam\nWins!";
             redWinNoise.Play();
             if (JoinMenu.player_count > 2)
                 appluase.Play();
         }
         else
         {
-            endText.text = "A\nTie!";
+            endHeader.text = "A\nTie!";
             tieNoise.Play();
             bScoreOutline.color = new Color(0, 1, 1);
         }
         mainMusic.Stop();
         endCanvas.enabled = true;
         ended = true;
+    }
+
+    public void ShowEndLeaveText()
+    {
+        endLeaveText.enabled = true;
     }
 }
