@@ -69,7 +69,7 @@ namespace EmotivUnityPlugin
         /// synchronous callbacks, called by Cortex in Start
         /// </summary>
         /// <param name="host">gameobject to attach event buffers to</param>
-        public void InstantiateEventBuffers(GameObject host)
+        public void InstantiateEventBuffers(EventBufferInstance host)
         {
             GetDetectionInfoResult = new EventBuffer<DetectionInfo>();
             ctxClient.GetDetectionInfoDone += ParseDetectionInfo;
@@ -127,7 +127,7 @@ namespace EmotivUnityPlugin
                 GetTrainedActionsResult,
                 TrainingThresholdResult
             };
-            foreach (EventBufferBase b in buffers) host.AddComponent<EventBufferInstance>().buffer = b;
+            foreach (EventBufferBase b in buffers) host.AddBuffer(b);
         }
 
         /// <summary>

@@ -23,7 +23,7 @@ public class RockPile : MonoBehaviour
         Vector3 xOff = Vector3.right * placementOffset.x;
         Vector3 zOff = Vector3.forward * placementOffset.y;
         Vector3 position = transform.position + startingPosition;
-        Vector3 size = Vector3.one;
+        Vector3 size = new Vector3(0.291f, 0.114f, 0.291f);
         for (int i = 0; i < 5; i++)
         {
             Gizmos.DrawCube(position, size);

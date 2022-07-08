@@ -63,5 +63,5 @@ Material:
     - _Smoothness: 0.00001
     - _USE_FRESNEL: 1
     m_Colors:
-    - _Tint: {r: 1, g: 0.54143643, b: 0, a: 1}
+    - _Tint: {r: 0.75, g: 0, b: 0.06250012, a: 1}
   m_BuildTextureStacks: []

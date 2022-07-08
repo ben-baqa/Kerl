@@ -7,12 +7,17 @@ namespace EmotivUnityPlugin
 {
     public class EventBufferInstance: MonoBehaviour
     {
-        public EventBufferBase buffer;
+        //public EventBufferBase buffer;
+        List<EventBufferBase> buffers = new List<EventBufferBase>();
 
         private void Update()
         {
-            buffer.Process();
+            foreach (EventBufferBase buffer in buffers)
+                buffer.Process();
+            //buffer.Process();
         }
+
+        public void AddBuffer(EventBufferBase newBuffer) => buffers.Add(newBuffer);
     }
 
     public abstract class EventBufferBase

@@ -50,6 +50,7 @@ namespace EmotivUnityPlugin
             GameObject eventBufferObject = new GameObject();
             GameObject.DontDestroyOnLoad(eventBufferObject);
             eventBufferObject.name = "Event Buffer Object";
+            EventBufferInstance eventBufferInstance = eventBufferObject.AddComponent<EventBufferInstance>();
 
             // add data subscriber (data stream event buffer handler)
             dataSubscriber = eventBufferObject.AddComponent<DataSubscriber>();
@@ -57,36 +58,36 @@ namespace EmotivUnityPlugin
             // add buffer for headset query completion
             HeadsetQueryResult = new EventBuffer<List<Headset>>();
             headsetFinder.QueryHeadsetOK += HeadsetQueryResult.OnParentEvent;
-            eventBufferObject.AddComponent<EventBufferInstance>().buffer = HeadsetQueryResult;
+            eventBufferInstance.AddBuffer(HeadsetQueryResult);
 
             // add buffer for successful start of data stream (initating session with headset)
             DataStreamStarted = new EventBuffer<string>();
             dataStreamManager.DataStreamStarted += DataStreamStarted.OnParentEvent;
-            eventBufferObject.AddComponent<EventBufferInstance>().buffer = DataStreamStarted;
+            eventBufferInstance.AddBuffer(DataStreamStarted);
 
             // add buffer for headset connection (pairing with computer)
             HeadsetConnected = new EventBuffer<HeadsetConnectEventArgs>();
             ctxClient.HeadsetConnectNotify += HeadsetConnected.OnParentEvent;
-            eventBufferObject.AddComponent<EventBufferInstance>().buffer = HeadsetConnected;
+            eventBufferInstance.AddBuffer(HeadsetConnected);
 
             // add buffer for when a headset is unexpectedly disconnected (sends session ID)
             HeadsetDisconnected = new EventBuffer<string>();
             dataStreamManager.HeadsetDisconnected += HeadsetDisconnected.OnParentEvent;
-            eventBufferObject.AddComponent<EventBufferInstance>().buffer = HeadsetDisconnected;
+            eventBufferInstance.AddBuffer(HeadsetDisconnected);
 
             // add buffer for connection state changing
             ConnectionStateChanged = new EventBuffer<ConnectToCortexStates>();
             authorizer.ConnectServiceStateChanged += ConnectionStateChanged.OnParentEvent;
-            eventBufferObject.AddComponent<EventBufferInstance>().buffer = ConnectionStateChanged;
+            eventBufferInstance.AddBuffer(ConnectionStateChanged);
 
             // add buffer for error recieved
             ErrorRecieved = new EventBuffer<ErrorMsgEventArgs>();
             ctxClient.ErrorMsgReceived += ErrorRecieved.OnParentEvent;
-            eventBufferObject.AddComponent<EventBufferInstance>().buffer = ErrorRecieved;
+            eventBufferInstance.AddBuffer(ErrorRecieved);
 
             // initialize Training handler
             training = new TrainingHandler();
-            training.InstantiateEventBuffers(eventBufferObject);
+            training.InstantiateEventBuffers(eventBufferInstance);
 
             // Initiate data stream manager
             dataStreamManager.Init();
