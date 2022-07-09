@@ -20,6 +20,8 @@ public class FakeSweeper : MonoBehaviour
         brushRot, startRot, resultRot;
 
 
+    private Character character;
+
     private Animator anim;
     private SkinnedMeshRenderer rend;
     private TurnManager input;

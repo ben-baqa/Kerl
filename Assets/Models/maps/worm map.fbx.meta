@@ -3,7 +3,52 @@ guid: 4e542faa719c1cb45814e13d60cad4c4
 ModelImporter:
   serializedVersion: 21202
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: base
+    second: {fileID: 2100000, guid: f9aa4186e9d950b409bd97f3c899c074, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: cave
+    second: {fileID: 2100000, guid: c254ac97fdd9ae3448fec63d8b5cf483, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: eyes
+    second: {fileID: 2100000, guid: ca96e8f5f1276a644a0040570b277bab, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: flood light base
+    second: {fileID: 2100000, guid: 8be6a75f6c6db544ba6312b9e7ab7cad, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: flood light rim
+    second: {fileID: 2100000, guid: 05574565c9700af4db22b8c1825aa09e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: flood light shiny
+    second: {fileID: 2100000, guid: 1e2197b36fd6e9a45af846797c09fbab, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: inside mouth
+    second: {fileID: 2100000, guid: 5f069e06b0d4cbe45ac804bf49c15bf9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: teeth
+    second: {fileID: 2100000, guid: 7352050f94a308d4db9c3824c67bd974, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: tongue
+    second: {fileID: 2100000, guid: 8be153540f86c294d9fc13d39cb956d9, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

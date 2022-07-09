@@ -14,8 +14,10 @@ public class TurnManager : MonoBehaviour
 
     public bool IsAI => (blueTurn ? blueTeam : redTeam).aiTeam;
     public int CurrentPlayer => (blueTurn ? blueTeam : redTeam).CurrentPlayer;
+    public int NextPlayer => (blueTurn ? blueTeam : redTeam).NextPlayer;
 
     InputIconHUDManager inputIconHUDManager;
+    CharacterManager characterManager;
     AIScript ai;
     Team blueTeam, redTeam;
 
@@ -25,6 +27,7 @@ public class TurnManager : MonoBehaviour
     void Start()
     {
         inputIconHUDManager = FindObjectOfType<InputIconHUDManager>();
+        characterManager = GetComponent<CharacterManager>();
         ai = GetComponent<AIScript>();
 
         if (MenuSelections.teams == null)
@@ -42,8 +45,6 @@ public class TurnManager : MonoBehaviour
             blueTeam = new Team(MenuSelections.teams[0], ai);
             redTeam = new Team(MenuSelections.teams[1], ai);
         }
-
-        //score.UpdateTurn((blueTurn ? blueTeam : redTeam).currentPlayer);
     }
 
     public void OnTurnStart(bool turn)
@@ -55,8 +56,10 @@ public class TurnManager : MonoBehaviour
         else
             redTeam.Next(2);
 
-        inputIconHUDManager.Index = ((blueTurn ? blueTeam : redTeam).CurrentPlayer);
+        inputIconHUDManager.Index = CurrentPlayer;
         ai.StartTimer();
+
+        characterManager.OnTurnStart(CurrentPlayer, NextPlayer);
     }
 
     public void OnThrow()
@@ -95,6 +98,7 @@ public class TurnManager : MonoBehaviour
         public bool Input => aiTeam? ai.brushing : InputProxy.P(members[currentIndex]);
         public bool ToggledInput => aiTeam ? ai.brushing : InputProxy.GetToggledInput(members[currentIndex]);
         public int CurrentPlayer => aiTeam ? -1 : members[currentIndex];
+        public int NextPlayer => aiTeam ? -1 : members[GetNextIndex()];
 
         AIScript ai;
 
@@ -120,6 +124,8 @@ public class TurnManager : MonoBehaviour
                 return;
             currentIndex = (currentIndex + increase) % count;
         }
+
+        private int GetNextIndex(int increase = 1) => (currentIndex + increase) % count;
 
         public override string ToString()
         {

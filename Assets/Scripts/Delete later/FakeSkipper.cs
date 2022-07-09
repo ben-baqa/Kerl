@@ -7,8 +7,8 @@ using UnityEngine;
 /// </summary>
 public class FakeSkipper : MonoBehaviour
 {
-    enum State { idle, targeting, throwing }
-    State state = State.idle;
+    enum State { inactive, targeting, throwing }
+    State state = State.inactive;
 
     public float period = 5, maxAngle;
     public bool weightedCurve;
@@ -56,7 +56,7 @@ public class FakeSkipper : MonoBehaviour
     public void Throw()
     {
         //print("throw called");
-        state = State.idle;
+        state = State.inactive;
         n = 0;
         line.OnThrow();
 
