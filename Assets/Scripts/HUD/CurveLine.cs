@@ -8,7 +8,7 @@ using UnityEngine;
 public class CurveLine : MonoBehaviour
 {
     public int segments = 10;
-    public float distance = 35, bigSize, shrinkLerp;
+    public float distance = 35, bigSize, normalSize, shrinkLerp;
 
     public Gradient regularGradient, selectedGradient;
 
@@ -27,6 +27,9 @@ public class CurveLine : MonoBehaviour
         line = GetComponent<LineRenderer>();
         start = Vector3.zero;
         end = Vector3.forward * distance;
+
+        hide = true;
+        line.widthMultiplier = 0;
     }
 
     private void FixedUpdate()
@@ -76,7 +79,7 @@ public class CurveLine : MonoBehaviour
 
         line.SetPositions(positions);
         line.colorGradient = regularGradient;
-        line.widthMultiplier = 1;
+        line.widthMultiplier = normalSize;
         hide = false;
 
         //Debug.DrawLine(centre, start, Color.black, Time.deltaTime);

@@ -9,11 +9,12 @@ public class CameraTrack : MonoBehaviour
     public float duration = 5;
     public bool lookAtTrack;
     public bool uniformSpeed;
+    public bool startOnAwake;
+    public Transform target;
     public Transform lookAt;
     public AnimationCurve curve;
 
     BezierSpline spline;
-    Transform cameraTransform;
 
     bool complete;
     float progress;
@@ -22,9 +23,9 @@ public class CameraTrack : MonoBehaviour
     private void Start()
     {
         spline = GetComponent<BezierSpline>();
-        cameraTransform = Camera.main.transform;
 
-        Activate();
+        if (startOnAwake)
+            Activate();
     }
 
     public void Activate()
@@ -42,7 +43,7 @@ public class CameraTrack : MonoBehaviour
 
     public void Process()
     {
-        Process(cameraTransform);
+        Process(target);
     }
 
     public void Process(Transform target)

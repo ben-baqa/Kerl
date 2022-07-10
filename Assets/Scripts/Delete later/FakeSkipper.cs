@@ -14,23 +14,23 @@ public class FakeSkipper : MonoBehaviour
     public bool weightedCurve;
 
     // TODO: change Jersey switching to character swap
-    public Material blueTeam, redTeam;
+    //public Material blueTeam, redTeam;
 
-    private Animator anim;
-    private CurveLine line;
-    private SkinnedMeshRenderer rend;
-    private TurnManager turnManager;
-    private Rock rock;
+    //Animator anim;
+    CurveLine line;
+    //SkinnedMeshRenderer rend;
+    TurnManager turnManager;
+    Rock rock;
 
     private float n, angle;
 
     void Start()
     {
-        anim = GetComponentInChildren<Animator>();
+        //anim = GetComponentInChildren<Animator>();
         line = GetComponentInChildren<CurveLine>();
-        rend = GetComponentInChildren<SkinnedMeshRenderer>();
+        //rend = GetComponentInChildren<SkinnedMeshRenderer>();
         turnManager = FindObjectOfType<TurnManager>();
-        OnTurnStart(false);
+        //OnTurnStart(false);
     }
 
     // Update is called once per frame
@@ -60,7 +60,7 @@ public class FakeSkipper : MonoBehaviour
         n = 0;
         line.OnThrow();
 
-        anim.SetTrigger("push");
+        //anim.SetTrigger("push");
         rock.Throw(angle, angle / maxAngle);
         RoundManager.instance.OnThrow();
     }
@@ -87,10 +87,10 @@ public class FakeSkipper : MonoBehaviour
         }
     }
 
-    public void OnTurnStart(bool blueTurn)
-    {
-        rend.material = blueTurn ? blueTeam : redTeam;
-    }
+    //public void OnTurnStart(bool blueTurn)
+    //{
+    //    rend.material = blueTurn ? blueTeam : redTeam;
+    //}
 
     public void StartTargetSelection(Rock selectedRock)
     {

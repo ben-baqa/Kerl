@@ -13,15 +13,19 @@ public class Scorekeeper : MonoBehaviour
     public int score;
     public float minDistance = 6.75f;
 
-    private ScoreHUD display;
+    ScoreHUD display;
 
-    // Start is called before the first frame update
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = new Color(0, 1, 0, .3f);
+        Gizmos.DrawWireSphere(transform.position, minDistance);
+    }
+
     void Start()
     {
         display = FindObjectOfType<ScoreHUD>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         UpdateScore();

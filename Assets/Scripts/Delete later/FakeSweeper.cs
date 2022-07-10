@@ -20,24 +20,20 @@ public class FakeSweeper : MonoBehaviour
         brushRot, startRot, resultRot;
 
 
-    private Character character;
+    Character character;
 
-    private Animator anim;
-    private SkinnedMeshRenderer rend;
-    private TurnManager input;
-    private CurlingBar barDisplay;
-    private Rock rock;
+    TurnManager input;
+    CurlingBar barDisplay;
+    Rock rock;
 
-    private Vector3 startPosition;
+    Vector3 startPosition;
 
-    private enum Follow { rock, result, start }
-    private Follow followState = Follow.start;
+    enum Follow { rock, result, start }
+    Follow followState = Follow.start;
 
-    // Start is called before the first frame update
+
     void Awake()
     {
-        anim = GetComponent<Animator>();
-        rend = GetComponentInChildren<SkinnedMeshRenderer>();
         input = FindObjectOfType<TurnManager>();
 
         barDisplay = FindObjectOfType<CurlingBar>();
@@ -45,44 +41,35 @@ public class FakeSweeper : MonoBehaviour
         startPosition = transform.position;
     }
 
-    // Update is called once per frame
     void FixedUpdate()
     {
         frictionMultipler += decay / 50;
         bool sliding = followState == Follow.rock;
         barDisplay.gameObject.SetActive(sliding);
-        anim.SetBool("sliding", sliding);
 
         switch (followState)
         {
             case Follow.rock:
-                transform.position = Vector3.Lerp(transform.position,
-                    rock.transform.position + offsetFromRock, followLerp);
+                character.MoveToRock(rock.position, followLerp);
                 followLerp = Mathf.Lerp(followLerp, 1, lerpLerp);
-                transform.eulerAngles = Vector3.Lerp(transform.eulerAngles,
-                    Vector3.up * brushRot, followLerp);
+
                 PredictLand();
+
+                if (followLerp > .3f)
+                {
+                    if (input.GetInput())
+                    {
+                        frictionMultipler -= sweepValue;
+                        character.BrushSpeed = 1;
+                    }
+                    else
+                        character.BrushSpeed = 0;
+                }
                 break;
             case Follow.result:
-                transform.position = Vector3.Lerp(transform.position,
-                    resultPosition, followLerp);
-                transform.eulerAngles = Vector3.Lerp(transform.eulerAngles,
-                    Vector3.up * resultRot, rotLerp);
+                character.MoveToResult(followLerp);
                 break;
         }
-        if (input.GetInput() && followLerp > .3f &&
-            //anim.GetCurrentAnimatorStateInfo(0).IsName("slide") &&
-            followState == Follow.rock)
-        {
-            Sweep();
-            //DataSender.Instance.SendToJS("sweep");
-        }
-    }
-
-    public void Sweep()
-    {
-        anim.SetTrigger("sweep");
-        frictionMultipler -= sweepValue;
     }
 
     public void OnThrow()
@@ -101,18 +88,22 @@ public class FakeSweeper : MonoBehaviour
     {
         followState = Follow.result;
         followLerp = normalLerp;
+        character.OnResult();
     }
 
-    public void OnTurnStart(Material mat)
+    public void OnTurnStart()
     {
         followState = Follow.start;
-        transform.position = startPosition;
-        transform.eulerAngles = Vector3.up * startRot;
+    }
 
-        Material[] ar = rend.materials;
-        ar[1] = mat;
-        ar[3] = mat;
-        rend.materials = ar;
+    public void SetCharacter(Character c)
+    {
+        character = c;
+        offsetFromRock = c.brushingPlacement.position;
+        brushRot = c.brushingPlacement.rotation;
+
+        resultPosition = c.resultPlacement.position;
+        resultRot = c.resultPlacement.rotation;
     }
 
     // predict landing zone, 1 = 82, .75 = 75, 0 = 54
@@ -153,7 +144,7 @@ public class FakeSweeper : MonoBehaviour
         //pos.z = (rb.velocity.z * (1 - friction) / -50) / Mathf.Log(1 - friction);
         //print(s + pos.z);
 
-        float v = Mathf.Clamp01((pos.z - 54) / 28);
+        float v = Mathf.Clamp01((pos.z - 21) / 7);
         barDisplay.progress = v;
     }
 }

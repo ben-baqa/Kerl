@@ -28,6 +28,8 @@ public class Rock : MonoBehaviour
 
     public bool blue;
 
+    public Vector3 position => transform.position;
+
     private Rigidbody rb;
     private AudioSource sfx, grindNoise;
     private ParticleSystem particles;
@@ -60,10 +62,10 @@ public class Rock : MonoBehaviour
         if (rb.velocity.magnitude < stopThreshold)
         {
             rb.velocity = Vector3.zero;
-            if (!turnEnded && rb.position.z > 25)
+            if (!turnEnded && rb.position.z > 10)
             {
-                turnEnded = true;
                 RoundManager.OnRockStop();
+                turnEnded = true;
             }
         }
         if(rb.position.y < -1 && !slipped)

@@ -219,18 +219,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42b93745eb28dab43971d73a76979c60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  throwForce: 12
-  spinForce: 5
-  spinPush: 0.15
+  throwForce: 3.75
+  spinForce: 3
+  spinPush: 0.065
   spinWeightExponent: 3
-  friction: 0.0025
+  friction: 0.0015
   radialFriction: 0
-  stopThreshold: 0.1
+  stopThreshold: 0.05
   slowDownThreshold: 2.5
-  slowDownLerp: 0.025
+  slowDownLerp: 0.01
   bounce: 1.5
-  particleMultiplier: 0.3
-  resultViewThreshold: 60
+  particleMultiplier: 0.1
+  resultViewThreshold: 17
   sounds:
   - {fileID: 8300000, guid: de4fc6fa07ac1c5439829def9b91b757, type: 3}
   - {fileID: 8300000, guid: 3ae6b435a5d696b4aa69d09f28b7db93, type: 3}
@@ -467,7 +467,7 @@ Light:
   m_Shape: 0
   m_Color: {r: 0.9433962, g: 0.2729322, b: 0.33080244, a: 1}
   m_Intensity: 0.1
-  m_Range: 2
+  m_Range: 0.5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -1044,7 +1044,7 @@ Light:
   m_Shape: 0
   m_Color: {r: 0.9433962, g: 0.2729322, b: 0.33080244, a: 1}
   m_Intensity: 0.1
-  m_Range: 2
+  m_Range: 0.5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -1159,7 +1159,7 @@ Light:
   m_Shape: 0
   m_Color: {r: 0.9433962, g: 0.2729322, b: 0.33080244, a: 1}
   m_Intensity: 0.1
-  m_Range: 2
+  m_Range: 0.5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -1274,7 +1274,7 @@ Light:
   m_Shape: 0
   m_Color: {r: 0.9433962, g: 0.2729322, b: 0.33080244, a: 1}
   m_Intensity: 0.1
-  m_Range: 2
+  m_Range: 0.5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -1389,7 +1389,7 @@ Light:
   m_Shape: 0
   m_Color: {r: 0.9433962, g: 0.2729322, b: 0.33080244, a: 1}
   m_Intensity: 0.1
-  m_Range: 2
+  m_Range: 0.5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -1504,7 +1504,7 @@ Light:
   m_Shape: 0
   m_Color: {r: 0.9433962, g: 0.2729322, b: 0.33080244, a: 1}
   m_Intensity: 0.1
-  m_Range: 2
+  m_Range: 0.5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -1743,7 +1743,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 10
+      scalar: 3
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -1860,7 +1860,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 3
       scalar: 0
-      minScalar: 0.5
+      minScalar: 0.1
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -1913,7 +1913,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 3
       scalar: 0
-      minScalar: 0.5
+      minScalar: 0.1
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -1966,7 +1966,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 3
       scalar: 0
-      minScalar: 0.5
+      minScalar: 0.1
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -2322,7 +2322,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 0.9
+      value: 0.1
       mode: 0
       spread: 0
       speed:
@@ -4145,7 +4145,7 @@ ParticleSystem:
     magnitude:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 0
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -4199,11 +4199,11 @@ ParticleSystem:
     inWorldSpace: 0
     multiplyDragByParticleSize: 1
     multiplyDragByParticleVelocity: 1
-    dampen: 0.05
+    dampen: 0
     drag:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0
+      scalar: 10
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -6780,7 +6780,7 @@ Light:
   m_Shape: 0
   m_Color: {r: 0.9433962, g: 0.2729322, b: 0.33080244, a: 1}
   m_Intensity: 0.1
-  m_Range: 2
+  m_Range: 0.5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10

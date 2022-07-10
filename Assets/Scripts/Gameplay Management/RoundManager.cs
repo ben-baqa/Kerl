@@ -24,9 +24,10 @@ public class RoundManager : MonoBehaviour
     public float endLoaderDelay = 3;
 
     TurnManager turnManager;
-    RockSelector rockSelector;
+    CharacterManager characterManager;
     FakeSkipper skipper;
     FakeSweeper sweeper;
+    RockSelector rockSelector;
     RockPile rockPile;
 
     ScoreHUD scoreHUD;
@@ -46,9 +47,10 @@ public class RoundManager : MonoBehaviour
         instance = this;
 
         turnManager = FindObjectOfType<TurnManager>();
-        rockSelector = FindObjectOfType<RockSelector>();
+        characterManager = FindObjectOfType<CharacterManager>();
         skipper = FindObjectOfType<FakeSkipper>();
         sweeper = FindObjectOfType<FakeSweeper>();
+        rockSelector = FindObjectOfType<RockSelector>();
         rockPile = FindObjectOfType<RockPile>();
         rockPile.PlaceRocks(rocks);
 
@@ -114,7 +116,8 @@ public class RoundManager : MonoBehaviour
         turnManager.OnTurnStart(blueTurn);
         scoreHUD.OnTurnStart();
         inputIconHUDManager.OnTurnStart(blueTurn);
-        skipper.OnTurnStart(blueTurn);
+        //skipper.OnTurnStart(blueTurn);
+        sweeper.OnTurnStart();
         rockSelector.StartSelecting(blueTurn);
 
         GameState = GameState.RockSelection;
@@ -144,6 +147,7 @@ public class RoundManager : MonoBehaviour
         brushCam.followRock = true;
         turnManager.OnThrow();
         inputIconHUDManager.OnThrow();
+        characterManager.OnThrow();
         sweeper.OnThrow();
         //scoreHUD.OnThrow();
         audioEffects.OnThrow();
