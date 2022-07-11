@@ -55,7 +55,7 @@ public class RockSelector : MonoBehaviour
     {
         List<List<int>> teams = MenuSelections.teams;
         if (teams == null)
-            teams = new List<List<int>> { new List<int> { 0, 1 }, new List<int> { 2 } };
+            teams = MenuSelections.debugTeams;
 
         if (MenuSelections.rockSelections == null)
         {

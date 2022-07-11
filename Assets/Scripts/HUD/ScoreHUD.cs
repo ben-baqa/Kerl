@@ -25,6 +25,9 @@ public class ScoreHUD : MonoBehaviour
         rScore = rScoreOutline.GetComponentsInChildren<Text>()[1];
         endCanvas.enabled = false;
         endLeaveText.enabled = false;
+
+        bScoreOutline.gameObject.SetActive(false);
+        rScoreOutline.gameObject.SetActive(false);
     }
 
     public void OnResult()

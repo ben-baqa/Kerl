@@ -65,7 +65,7 @@ public class RoundManager : MonoBehaviour
 
         brushCam = FindObjectOfType<BrushingCamera>();
         teamIntro = FindObjectOfType<TeamIntro>();
-        teamIntro.Complete += OnTeamIntroComplete;
+        teamIntro.Complete = StartTurn;
 
         audioEffects = FindObjectOfType<AudioEffects>();
     }
@@ -100,7 +100,7 @@ public class RoundManager : MonoBehaviour
     }
 
 
-    void OnTeamIntroComplete(object sender, EventArgs e) => StartTurn();
+    //void OnTeamIntroComplete(object sender, EventArgs e) => StartTurn();
 
     public void StartTurn()
     {

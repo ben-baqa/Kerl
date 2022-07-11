@@ -67,6 +67,7 @@ public class TeamMenu : MonoBehaviour
                 List<List<int>> teams = new List<List<int>>();
                 foreach (PlacementGrid grid in selectionGrids)
                     teams.Add(grid.GetPlayers());
+
                 MenuSelections.teams = teams;
             }
         }

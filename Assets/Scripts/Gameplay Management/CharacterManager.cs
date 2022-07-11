@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class CharacterManager : MonoBehaviour
 {
@@ -15,7 +16,9 @@ public class CharacterManager : MonoBehaviour
     public Mesh broomstickDefaultMesh;
     public Material[] broomstickDefaultMaterials;
 
-    List<Character> characters = new List<Character>();
+    //List<PlayerCharacter> characters = new List<PlayerCharacter>();
+
+    CharacterSet characterSet;
 
     //FakeSkipper skipper;
     FakeSweeper sweeper;
@@ -25,28 +28,37 @@ public class CharacterManager : MonoBehaviour
 
     void Start()
     {
-        List<GameObject> selectedCharacters;
-        if(MenuSelections.characterSelections != null)
-        {
-            selectedCharacters = new List<GameObject>(MenuSelections.characterSelections);
-        }
-        else
-        {
-            selectedCharacters = new List<GameObject> { fallbackCharacter, 
-                fallbackCharacter, fallbackCharacter, fallbackCharacter };
-        }
+        List<GameObject> selectedCharacters = MenuSelections.characterSelections;
+        if(selectedCharacters == null)
+            selectedCharacters = new List<GameObject> { fallbackCharacter,
+                fallbackCharacter, fallbackCharacter};
 
-        foreach(GameObject characterPrefab in selectedCharacters)
-            characters.Add(Instantiate(characterPrefab).GetComponent<Character>());
+        List<List<int>> teams = MenuSelections.teams;
+        if (teams == null)
+            teams = MenuSelections.debugTeams;
 
-        foreach (Character character in characters)
-        {
-            character.Init();
-            character.Hide();
-            //assign default brush
-            character.SetBrushMeshes(broomHeadDefaultMesh, broomHeadDefaultMaterials,
-                broomstickDefaultMesh, broomstickDefaultMaterials);
-        }
+        characterSet = new CharacterSet(selectedCharacters, teams);
+        characterSet.SetTeamMaterials(blueTeam, redTeam, teams);
+        characterSet.SetBrushMeshes(broomHeadDefaultMesh, broomHeadDefaultMaterials,
+            broomstickDefaultMesh, broomstickDefaultMaterials);
+
+        //for (int i = 0; i < selectedCharacters.Count; i++)
+        //{
+        //    Character instantiatedCharacter = Instantiate(selectedCharacters[i]).GetComponent<Character>();
+        //    characters.Add(new PlayerCharacter(i, instantiatedCharacter));
+        //}
+
+        //foreach(GameObject characterPrefab in selectedCharacters)
+        //    characters.Add(Instantiate(characterPrefab).GetComponent<Character>());
+
+        //foreach (PlayerCharacter pc in characters)
+        //{
+        //    pc.Init();
+        //    pc.Hide();
+        //    //assign default brush
+        //    pc.character.SetBrushMeshes(broomHeadDefaultMesh, broomHeadDefaultMaterials,
+        //        broomstickDefaultMesh, broomstickDefaultMaterials);
+        //}
 
         //skipper = FindObjectOfType<FakeSkipper>();
         sweeper = FindObjectOfType<FakeSweeper>();
@@ -54,13 +66,12 @@ public class CharacterManager : MonoBehaviour
 
     public void OnTurnStart(int skipperIndex, int sweeperIndex)
     {
-        foreach (Character c in characters)
-            c.Hide();
+        characterSet.HideAll();
 
-        skipperCharacter = characters[skipperIndex];
+        skipperCharacter = characterSet[skipperIndex];
         skipperCharacter.SetUpThrowing();
 
-        sweeperCharacter = characters[sweeperIndex];
+        sweeperCharacter = characterSet[sweeperIndex];
         sweeperCharacter.SetUpBrushing();
         sweeper.SetCharacter(sweeperCharacter);
     }
@@ -69,5 +80,121 @@ public class CharacterManager : MonoBehaviour
     {
         skipperCharacter.OnThrow();
         sweeperCharacter.OnThrow();
+    }
+
+    class CharacterSet
+    {
+        List<IndexedCharacter> characters;
+        int lastFetched;
+
+        public CharacterSet(List<GameObject> selectedCharacters, List<List<int>> teams)
+        {
+            characters = new List<IndexedCharacter>();
+
+            for(int i = 0; i < selectedCharacters.Count; i++)
+            {
+                characters.Add(InstantiateCharacter(selectedCharacters[i], i));
+                if (IsPlayerOnSoloTeam(i, teams))
+                    characters.Add(InstantiateCharacter(selectedCharacters[i], i));
+            }
+        }
+
+        IndexedCharacter InstantiateCharacter(GameObject target, int index)
+        {
+            GameObject characterObject = Instantiate(target);
+            characterObject.name = $"P{index} character ({target.name})";
+            Character instantiatedCharacter = characterObject.GetComponent<Character>();
+            instantiatedCharacter.Init();
+            instantiatedCharacter.Hide();
+
+            return new IndexedCharacter(index, instantiatedCharacter);
+        }
+
+        private bool IsPlayerOnSoloTeam(int playerIndex, List<List<int>> teams)
+        {
+            foreach (List<int> team in teams)
+                if (team.Count == 1 && team[0] == playerIndex)
+                    return true;
+            return false;
+        }
+
+        public Character this[int index]
+        {
+            get
+            {
+                // search for an indexed character that was not fetched last time
+                // this allows for one player index to use multiple characters
+                for (int i = 0; i < characters.Count; i++)
+                {
+                    if (characters[i].playerIndex == index && i != lastFetched)
+                    {
+                        lastFetched = i;
+                        return characters[i].character;
+                    }
+                }
+
+                for (int i = 0; i < characters.Count; i++)
+                {
+                    if (characters[i].playerIndex == index)
+                    {
+                        lastFetched = i;
+                        return characters[i].character;
+                    }
+                }
+
+                print("Character not found");
+                return null;
+            }
+        }
+
+        public void HideAll()
+        {
+            foreach (IndexedCharacter ic in characters)
+                ic.character.Hide();
+        }
+
+        public void SetBrushMeshes(Mesh head, Material[] headMaterials, Mesh stick, Material[] stickMaterials)
+        {
+            foreach (IndexedCharacter ic in characters)
+                ic.character.SetBrushMeshes(head, headMaterials, stick, stickMaterials);
+        }
+
+        public void SetTeamMaterials(Material team1Mat, Material team2Mat, List<List<int>> teams)
+        {
+            foreach (IndexedCharacter ic in characters)
+            {
+                if (teams[0].Contains(ic.playerIndex))
+                    ic.character.SetTeamMaterial(team1Mat);
+                if (teams[1].Contains(ic.playerIndex))
+                    ic.character.SetTeamMaterial(team2Mat);
+            }
+        }
+
+        struct IndexedCharacter
+        {
+            public int playerIndex;
+            public Character character;
+
+            public IndexedCharacter(int index, Character c)
+            {
+                playerIndex = index;
+                character = c;
+            }
+        }
+    }
+
+    public class PlayerCharacter
+    {
+        public int playerIndex;
+        public Character character;
+
+        public PlayerCharacter(int index, Character c)
+        {
+            playerIndex = index;
+            character = c;
+        }
+
+        public void Hide() => character.Hide();
+        public void Init() => character.Init();
     }
 }

@@ -144,7 +144,8 @@ public class FakeSweeper : MonoBehaviour
         //pos.z = (rb.velocity.z * (1 - friction) / -50) / Mathf.Log(1 - friction);
         //print(s + pos.z);
 
-        float v = Mathf.Clamp01((pos.z - 21) / 7);
+        // 21 = .75, 19.5 = 0.5
+        float v = Mathf.Clamp01((pos.z - 16.5f) / 6);
         barDisplay.progress = v;
     }
 }

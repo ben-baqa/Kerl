@@ -33,11 +33,18 @@ public class TurnManager : MonoBehaviour
         if (MenuSelections.teams == null)
         {
             // fabricate players for input
-            InputProxy.AddInput(new KeyInput(Keyboard.current, "a"));
-            InputProxy.AddInput(new KeyInput(Keyboard.current, "b"));
-            InputProxy.AddInput(new KeyInput(Keyboard.current, "c"));
-            blueTeam = new Team(new List<int> { 0, 1 }, ai);
-            redTeam = new Team(new List<int> { 2 }, ai);
+            //InputProxy.AddInput(new KeyInput(Keyboard.current, "a"));
+            //InputProxy.AddInput(new KeyInput(Keyboard.current, "b"));
+            //InputProxy.AddInput(new KeyInput(Keyboard.current, "c"));
+            blueTeam = new Team(MenuSelections.debugTeams[0], ai);
+            redTeam = new Team(MenuSelections.debugTeams[1], ai);
+
+            //int playerCount = 0;
+            foreach (List<int> team in MenuSelections.debugTeams)
+                foreach (int i in team)
+                    InputProxy.AddInput(new KeyInput(Keyboard.current, "" + (char)('a' + i)));
+            //        playerCount++;
+            //for(int i = 0; i < playerCount; i++)
         }
         else
         {

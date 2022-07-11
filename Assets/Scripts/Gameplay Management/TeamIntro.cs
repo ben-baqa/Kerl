@@ -6,7 +6,7 @@ using System;
 public class TeamIntro : MonoBehaviour
 {
     public float duration = 5;
-    public event EventHandler Complete;
+    public Action Complete;
 
     float timer;
     bool active;
@@ -23,7 +23,7 @@ public class TeamIntro : MonoBehaviour
             if(timer >= duration)
             {
                 active = false;
-                Complete(this, EventArgs.Empty);
+                Complete();
             }
         }
     }
