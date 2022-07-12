@@ -32,11 +32,12 @@ public class RoundManager : MonoBehaviour
 
     ScoreHUD scoreHUD;
     InputIconHUDManager inputIconHUDManager;
-    LoadSceneOnInput endLoader;
+    ExitOptions exitOptions;
 
     CameraAngleManager cameraManager;
     BrushingCamera brushCam;
     TeamIntro teamIntro;
+    PodiumView podiumView;
 
     AudioEffects audioEffects;
 
@@ -56,8 +57,7 @@ public class RoundManager : MonoBehaviour
 
         scoreHUD = FindObjectOfType<ScoreHUD>();
         inputIconHUDManager = FindObjectOfType<InputIconHUDManager>();
-        endLoader = FindObjectOfType<LoadSceneOnInput>();
-        endLoader.enabled = false;
+        exitOptions = FindObjectOfType<ExitOptions>();
 
         cameraManager = FindObjectOfType<CameraAngleManager>();
         cameraManager.TransitionComplete += OnCameraTransitionComplete;
@@ -66,25 +66,14 @@ public class RoundManager : MonoBehaviour
         brushCam = FindObjectOfType<BrushingCamera>();
         teamIntro = FindObjectOfType<TeamIntro>();
         teamIntro.Complete = StartTurn;
+        podiumView = FindObjectOfType<PodiumView>();
 
         audioEffects = FindObjectOfType<AudioEffects>();
-    }
-
-    public void Proceed()
-    {
-        GameState++;
-        if (GameState > GameState.Complete)
-        {
-            // return to menu
-        }
-        //ApplyState();
     }
 
     void ApplyState()
     {
         cameraManager.ApplyGameState(GameState);
-        if (GameState == GameState.TeamIntro)
-            teamIntro.StartSequence();
 
         //print("New game State: " + _gameState);
     }
@@ -94,13 +83,13 @@ public class RoundManager : MonoBehaviour
         //print("Camera transition was completed");
         //GameState = newState;
         if (newState == GameState.Establishing)
+        {
+            teamIntro.StartSequence();
             GameState = GameState.TeamIntro;
+        }
         if (newState == GameState.Brushing)
             brushCam.followRock = true;
     }
-
-
-    //void OnTeamIntroComplete(object sender, EventArgs e) => StartTurn();
 
     public void StartTurn()
     {
@@ -116,7 +105,6 @@ public class RoundManager : MonoBehaviour
         turnManager.OnTurnStart(blueTurn);
         scoreHUD.OnTurnStart();
         inputIconHUDManager.OnTurnStart(blueTurn);
-        //skipper.OnTurnStart(blueTurn);
         sweeper.OnTurnStart();
         rockSelector.StartSelecting(blueTurn);
 
@@ -149,7 +137,6 @@ public class RoundManager : MonoBehaviour
         inputIconHUDManager.OnThrow();
         characterManager.OnThrow();
         sweeper.OnThrow();
-        //scoreHUD.OnThrow();
         audioEffects.OnThrow();
         throwCount++;
         GameState = GameState.Brushing;
@@ -175,13 +162,21 @@ public class RoundManager : MonoBehaviour
     // wait a few seconds at the podium view before the player can load back to the menu
     IEnumerator EnableEndLoader()
     {
+        scoreHUD.ShowWinner();
         yield return new WaitForSecondsRealtime(finishDelay);
-        scoreHUD.ShowEndCard();
         GameState = GameState.Complete;
+
+        scoreHUD.Hide();
+        sweeper.OnTurnStart();
+        podiumView.Apply(turnManager, characterManager);
         yield return new WaitForSecondsRealtime(endLoaderDelay);
-        scoreHUD.ShowEndLeaveText();
-        endLoader.enabled = true;
+        exitOptions.Activate();
     }
+
+    //public void Reset()
+    //{
+    //    print("Attempting to reset game, but method is not implemented");
+    //}
 }
 
 public enum GameState

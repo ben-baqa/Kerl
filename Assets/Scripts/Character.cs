@@ -19,14 +19,14 @@ public class Character : MonoBehaviour
     public SkinnedMeshRenderer teamColourMesh;
     public int teamMaterialIndex;
 
-    //[Header("Animator references")]
-    //public AnimatorController animationController;
-    //public GameObject animationTarget;
-
     [Header("Broom Bones")]
     public GameObject broomHeadBone;
     public GameObject broomstickBone;
-    public Transform testTransform;
+
+    [Header("Misc settings")]
+    public bool hideBroomOnThrow = true;
+    public bool hideBroomOnIntro;
+    public bool hideBroomOnPodium;
 
     private Animator animator;
     public float BrushSpeed { set { animator.SetFloat("brush speed", value); } }
@@ -40,6 +40,7 @@ public class Character : MonoBehaviour
     public void Init()
     {
         animator = GetComponentInChildren<Animator>(true);
+        ApplyRandomOffsetToAnimator();
 
         var broomHeadObject = new GameObject("mesh");
         broomHeadObject.transform.SetParent(broomHeadBone.transform, false);
@@ -75,7 +76,7 @@ public class Character : MonoBehaviour
         Show();
         brushingWaitPlacement.Apply(transform);
         animator.SetTrigger("brushing");
-        ShowBrush();
+        ShowBroom();
     }
 
     public void SetUpThrowing()
@@ -83,23 +84,37 @@ public class Character : MonoBehaviour
         Show();
         throwingPlacement.Apply(transform);
         animator.SetTrigger("throwing");
-        HideBrush();
+        if (hideBroomOnThrow)
+            HideBroom();
     }
 
     public void OnThrow() => animator.SetTrigger("throw");
     public void OnResult() => animator.SetTrigger("brushing");
-    public void OnWin() => animator.SetTrigger("win");
-    public void OnLose() => animator.SetTrigger("lose");
+    public void OnWin() => OnResult("win");
+    public void OnLose() => OnResult("lose");
+    void OnResult(string trigger)
+    {
+        Show();
+        if (hideBroomOnPodium)
+            HideBroom();
+        else
+            ShowBroom();
+
+        animator.SetTrigger(trigger);
+        ApplyRandomOffsetToAnimator();
+    }
 
     public void Hide() => gameObject.SetActive(false);
     public void Show() => gameObject.SetActive(true);
 
-    public void HideBrush()
+    public void ApplyRandomOffsetToAnimator() => animator.Update(Random.Range(0, 10f));
+
+    public void HideBroom()
     {
         broomHead.enabled = false;
         broomstick.enabled = false;
     }
-    public void ShowBrush()
+    public void ShowBroom()
     {
         broomHead.enabled = true;
         broomstick.enabled = true;
@@ -110,36 +125,35 @@ public class Character : MonoBehaviour
         brushingPlacement.LerpTo(transform, rockPosition, lerp);
     }
     public void MoveToResult(float lerp) => resultPlacement.LerpTo(transform, lerp);
+}
 
+[System.Serializable]
+public class Placement
+{
+    public Vector3 position;
+    public float rotation;
 
-    [System.Serializable]
-    public class Placement
+    public void Apply(Transform t)
     {
-        public Vector3 position;
-        public float rotation;
+        t.localPosition = position;
+        t.localEulerAngles = Vector3.up * rotation;
+    }
 
-        public void Apply(Transform t)
-        {
-            t.localPosition = position;
-            t.localEulerAngles = Vector3.up * rotation;
-        }
+    public void LerpTo(Transform t, float posLerp = 0.05f, float rotLerp = 0.1f)
+        => LerpTo(t, Vector3.zero, posLerp, rotLerp);
+    public void LerpTo(Transform t, Vector3 positionOffset,
+        float posLerp = 0.05f, float rotLerp = 0.1f)
+    {
+        t.localPosition = Vector3.Lerp(t.localPosition, position + positionOffset, posLerp);
+        t.localEulerAngles = Vector3.up * Mathf.Lerp(LoopAngle(t.localEulerAngles.y), rotation, rotLerp);
+    }
 
-        public void LerpTo(Transform t, float posLerp = 0.05f, float rotLerp = 0.1f)
-            => LerpTo(t, Vector3.zero, posLerp, rotLerp);
-        public void LerpTo(Transform t, Vector3 positionOffset,
-            float posLerp = 0.05f, float rotLerp = 0.1f)
-        {
-            t.localPosition = Vector3.Lerp(t.localPosition, position + positionOffset, posLerp);
-            t.localEulerAngles = Vector3.up * Mathf.Lerp(LoopAngle(t.localEulerAngles.y), rotation, rotLerp);
-        }
-
-        private float LoopAngle(float angle, float centre = 0)
-        {
-            if (angle > centre + 180)
-                return LoopAngle(angle - 360, centre);
-            else if (angle < centre - 180)
-                return LoopAngle(angle + 360, centre);
-            return angle;
-        }
+    private float LoopAngle(float angle, float centre = 0)
+    {
+        if (angle > centre + 180)
+            return LoopAngle(angle - 360, centre);
+        else if (angle < centre - 180)
+            return LoopAngle(angle + 360, centre);
+        return angle;
     }
 }

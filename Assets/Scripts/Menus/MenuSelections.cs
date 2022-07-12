@@ -19,12 +19,6 @@ public class MenuSelections : MonoBehaviour
     public static List<GameObject> characterSelections;
     public static List<List<NodeElement>> rockSelections;
 
-    ///// <summary>
-    ///// stores the selections made by each player in the pre game menu,
-    ///// including character, team, and special rocks.
-    ///// Also stores the same (randomized) selections for each ai team.
-    ///// </summary>
-    //public static PlayerSelections[] playerSelections;
 
 
     public static List<List<int>> debugTeams =
@@ -36,8 +30,6 @@ public class MenuSelections : MonoBehaviour
     // TODO replace with an enum when relevant to do so
     public string gameMode = "party";
     public static string map = "game";
-
-    //public static int aiTeamCount;
 
     void Awake()
     {
@@ -59,23 +51,6 @@ public class MenuSelections : MonoBehaviour
     }
     public static Color GetColor(int index) => instance.playerColours[index];
 
-    //public static void SetTeams(List<List<int>> teams)
-    //{
-    //    aiTeamCount = 0;
-    //    for(int i = 0; i < teams.Count; i++)
-    //        if (teams[i].Count == 0)
-    //            aiTeamCount++;
-
-    //    playerSelections = new PlayerSelections[InputProxy.playerCount + aiTeamCount];
-
-    //    for (int i = 0; i < teams.Count; i++)
-    //    {
-
-    //        foreach (int playerIndex in teams[i])
-    //            playerSelections[playerIndex].team = i;
-    //    }
-    //}
-    
     public static void SetCharacterSelections(GridManager grid)
     {
 

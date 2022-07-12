@@ -62,6 +62,19 @@ public class CharacterManager : MonoBehaviour
 
         //skipper = FindObjectOfType<FakeSkipper>();
         sweeper = FindObjectOfType<FakeSweeper>();
+
+        ApplyScriptedPlacements(FindObjectOfType<TeamIntro>().GetPlayerPlacments());
+    }
+
+    public void ApplyScriptedPlacements(Placement[] characterPlacements)
+    {
+        Character[] characters = characterSet.GetCharacters();
+        for(int i = 0; i < characters.Length; i++)
+        {
+            characterPlacements[i].Apply(characters[i].transform);
+            if (characters[i].hideBroomOnIntro)
+                characters[i].HideBroom();
+        }
     }
 
     public void OnTurnStart(int skipperIndex, int sweeperIndex)
@@ -82,6 +95,8 @@ public class CharacterManager : MonoBehaviour
         sweeperCharacter.OnThrow();
     }
 
+    public Character GetCharacter(int playerIndex) => characterSet[playerIndex];
+
     class CharacterSet
     {
         List<IndexedCharacter> characters;
@@ -94,7 +109,7 @@ public class CharacterManager : MonoBehaviour
             for(int i = 0; i < selectedCharacters.Count; i++)
             {
                 characters.Add(InstantiateCharacter(selectedCharacters[i], i));
-                if (IsPlayerOnSoloTeam(i, teams))
+                if (IsPlayerOnSoloTeam(i, teams) || IsAITeam(i, teams))
                     characters.Add(InstantiateCharacter(selectedCharacters[i], i));
             }
         }
@@ -105,7 +120,6 @@ public class CharacterManager : MonoBehaviour
             characterObject.name = $"P{index} character ({target.name})";
             Character instantiatedCharacter = characterObject.GetComponent<Character>();
             instantiatedCharacter.Init();
-            instantiatedCharacter.Hide();
 
             return new IndexedCharacter(index, instantiatedCharacter);
         }
@@ -118,10 +132,21 @@ public class CharacterManager : MonoBehaviour
             return false;
         }
 
+        private bool IsAITeam(int playerIndex, List<List<int>> teams)
+        {
+            foreach (List<int> team in teams)
+                if (team.Contains(playerIndex))
+                    return false;
+            return true;
+        }
+
         public Character this[int index]
         {
             get
             {
+                if (index < 0)
+                    index = characters.Count - index;
+
                 // search for an indexed character that was not fetched last time
                 // this allows for one player index to use multiple characters
                 for (int i = 0; i < characters.Count; i++)
@@ -142,9 +167,18 @@ public class CharacterManager : MonoBehaviour
                     }
                 }
 
-                print("Character not found");
+                print($"Character not found for index {index}");
                 return null;
             }
+        }
+
+        public Character[] GetCharacters()
+        {
+            Character[] characterArray = new Character[characters.Count];
+            for (int i = 0; i < characters.Count; i++)
+                characterArray[i] = characters[i].character;
+
+            return characterArray;
         }
 
         public void HideAll()

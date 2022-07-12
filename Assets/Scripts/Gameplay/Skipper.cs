@@ -108,7 +108,7 @@ public class Skipper : MonoBehaviour
     {
         if (throwCount > rocks * 2)
         {
-            score.ShowEndCard();
+            //score.ShowEndCard();
             if(NetworkMessageHandler.isHost)
                 endLoader.enabled = true;
             return;

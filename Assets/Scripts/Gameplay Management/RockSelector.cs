@@ -11,6 +11,7 @@ public class RockSelector : MonoBehaviour
     [Header("Option placement options")]
     public GameObject optionPrefab;
     public float optionOffset = 150;
+    public float optionXPlacement = -20;
     public Vector3 activePosition;
     public Vector3 hiddenPosition;
     public float hideLerp = 0.1f;
@@ -143,6 +144,7 @@ public class RockSelector : MonoBehaviour
         List<NodeElement> rocks = options[optionIndex];
 
         Vector3 position = Vector3.down * optionOffset * rocks.Count / 2;
+        position += Vector3.right * optionXPlacement;
         foreach(NodeElement rock in rocks)
         {
             InstantiateOption(position, rock.PrefabPayload, rock.Image);

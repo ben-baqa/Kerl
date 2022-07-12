@@ -21,14 +21,17 @@ public class JoinMenu : MonoBehaviour
 
     AudioSource sfx;
     List<InputControl> activeKeyInputs = new List<InputControl>();
-    List<Gamepad> activeGamepadInputs = new List<Gamepad>();
+    List<int> activeGamepadInputs = new List<int>();
 
     float timer;
-
 
     void Start()
     {
         sfx = GetComponent<AudioSource>();
+
+        InputProxy.AddInput(new KeyInput(Keyboard.current, "a"));
+        InputProxy.AddInput(new KeyInput(Keyboard.current, "b"));
+        InputProxy.AddInput(new KeyInput(Keyboard.current, "c"));
     }
 
     private void OnEnable()
@@ -66,6 +69,7 @@ public class JoinMenu : MonoBehaviour
 
     void ResetMenu()
     {
+        print("resetting menu");
         foreach (var b in player_buttons)
             b.Reset(MenuSelections.GetInputSprite(-1));
 
@@ -75,15 +79,16 @@ public class JoinMenu : MonoBehaviour
         timer = 0;
 
         // fill active inputs with extant controls
-        List<InputControl> activeKeyInputs = new List<InputControl>();
-        List<Gamepad> activeGamepadInputs = new List<Gamepad>();
+        activeKeyInputs = new List<InputControl>();
+        activeGamepadInputs = new List<int>();
         foreach(InputInfo i in InputProxy.GetAllInputInfo())
         {
             if (i.type == InputType.key)
                 activeKeyInputs.Add(i.device[i.name]);
             else if (i.type == InputType.gamepad)
-                activeGamepadInputs.Add(i.device as Gamepad);
+                activeGamepadInputs.Add(i.device.deviceId);
         }
+
     }
 
     void CheckForNewInput()
@@ -93,7 +98,7 @@ public class JoinMenu : MonoBehaviour
             if (device.IsActuated())
                 if (device is Gamepad)
                 {
-                    if (!activeGamepadInputs.Contains(device as Gamepad))
+                    if (!activeGamepadInputs.Contains(device.deviceId))
                         foreach (InputControl control in device.allControls)
                             if (control.IsPressed())
                             {
@@ -104,7 +109,7 @@ public class JoinMenu : MonoBehaviour
                 else if (device is Keyboard)
                 {
                     foreach (InputControl control in device.allControls)
-                        if (control.IsPressed() && !activeKeyInputs.Contains(control))
+                        if (control.IsPressed() && IsNovelKeyInput(control))
                             AddKeyboardInput(control);
                 }
                 else if (!(device is Mouse))
@@ -112,12 +117,24 @@ public class JoinMenu : MonoBehaviour
         }
     }
 
+    bool IsNovelKeyInput(InputControl c)
+    {
+        if (c.name == "anyKey")
+            return false;
+
+        foreach (InputControl i in activeKeyInputs)
+            if (i.name == c.name && i.device.deviceId == c.device.deviceId)
+                return false;
+
+        return true;
+    }
+
     void AddGamepadInput(Gamepad gamepad)
     {
         if (player_count >= maxPlayerCount)
             return;
 
-        activeGamepadInputs.Add(gamepad);
+        activeGamepadInputs.Add(gamepad.deviceId);
 
         InputProxy.AddInput(new GamepadInput(gamepad));
         player_buttons[player_count - 1].Join(player_count - 1);
@@ -129,8 +146,6 @@ public class JoinMenu : MonoBehaviour
             return;
 
         activeKeyInputs.Add(control);
-        if (control.name == "anyKey")
-            return;
 
         InputProxy.AddInput(new KeyInput(control.device as Keyboard, control.name));
         player_buttons[player_count - 1].Join(player_count - 1);
@@ -147,7 +162,7 @@ public class JoinMenu : MonoBehaviour
     void OnInputRemoved(InputInfo info)
     {
         InputControl keyToRemove = null;
-        Gamepad gamepadToRemove = null;
+        int gamepadToRemove = -1;
         if (info.type == InputType.key)
         {
             foreach (InputControl i in activeKeyInputs)
@@ -156,14 +171,14 @@ public class JoinMenu : MonoBehaviour
         }
         else if (info.type == InputType.gamepad)
         {
-            foreach (Gamepad g in activeGamepadInputs)
-                if (g == info.device)
+            foreach (int g in activeGamepadInputs)
+                if (g == info.device.deviceId)
                     gamepadToRemove = g;
         }
 
         if (keyToRemove != null)
             activeKeyInputs.Remove(keyToRemove);
-        if (gamepadToRemove != null)
+        if (gamepadToRemove >= 0)
             activeGamepadInputs.Remove(gamepadToRemove);
 
         ResetMenu();

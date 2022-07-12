@@ -100,6 +100,9 @@ public class TurnManager : MonoBehaviour
             return redTeam.ToggledInput;
     }
 
+    public int[] GetBlueTeam() => blueTeam.members;
+    public int[] GetRedTeam() => redTeam.members;
+
     public class Team
     {
         public bool Input => aiTeam? ai.brushing : InputProxy.P(members[currentIndex]);
@@ -109,7 +112,7 @@ public class TurnManager : MonoBehaviour
 
         AIScript ai;
 
-        int[] members;
+        public int[] members;
         int count;
         int currentIndex;
         public bool aiTeam;

@@ -65,6 +65,9 @@ MonoBehaviour:
   broomHeadBone: {fileID: 901557123290227793}
   broomstickBone: {fileID: 5125995476665358842}
   testTransform: {fileID: 0}
+  hideBroomOnThrow: 1
+  hideBroomOnIntro: 1
+  hideBroomOnPodium: 1
 --- !u!1001 &5500811549118903674
 PrefabInstance:
   m_ObjectHideFlags: 0
