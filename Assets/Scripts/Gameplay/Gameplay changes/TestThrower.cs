@@ -6,127 +6,105 @@ using UnityEditor;
 
 public class TestThrower : MonoBehaviour
 {
-    enum ThrowState { 
+    public enum ThrowState { 
         SelectEnd,
         SelectMid,
         PreThrow,
-        PostThrow
+        Brushing,
+        End
     }
 
+    private bool lastSignal = false;
+
     public Vector3 ForwardDirection;
-    public Vector3 AimingWidth;
+    public float TargetDiameter;
 
     public LineRenderer CurveRenderer;
-    public TestNewRock rock;
+    public TestNewRock Rock;
 
-    [Range(-1.0f, 1.0f)]
-    public float EndPointAim;
-    [Range(-1.0f, 1.0f)]
-    public float MidpointAim;
+    private float endPointAim;
+    private float midPointAim;
 
     private bool aimMovingRight = true;
-    private ThrowState throwState = ThrowState.SelectEnd;
+    public ThrowState throwState = ThrowState.SelectEnd;
 
-    public void CurveUpdate() {
-        int steps = 20;
-        for (int i = 0; i <= steps; i++)
+    public void CurveUpdate(bool isCurve) {
+        if (isCurve)
         {
-            CurveRenderer.SetPosition(i, Bezier.GetPoint(Vector3.zero, GetMidPoint(), GetEndPoint(), (float)i / (float)steps));
+            int steps = 20;
+            for (int i = 0; i <= steps; i++)
+            {
+                CurveRenderer.SetPosition(i, Bezier.GetPoint(Vector3.zero, GetMidPoint2(), GetEndPoint(), (float)i / (float)steps));
+            }
+        }
+        else {
+            int steps = 20;
+            for (int i = 0; i <= steps; i++)
+            {
+                CurveRenderer.SetPosition(i, Vector3.Lerp(Vector3.zero, GetEndPoint(), (float)i / (float)steps));
+            }
         }
     }
 
     private void Start()
     {
+        endPointAim = 0;
+        midPointAim = 0;
     }
 
     private void FixedUpdate()
     {
-        if (throwState == ThrowState.SelectEnd)
+        if (TestInput.GetInstance().GetSignal())
         {
-            EndPointAim += Time.deltaTime * (aimMovingRight ? 1 : -1);
-            if (Mathf.Abs(EndPointAim) >= 1)
+            if (throwState == ThrowState.SelectEnd && !lastSignal)
             {
-                EndPointAim = aimMovingRight ? 1 : -1;
-                aimMovingRight = !aimMovingRight;
-            }
-            if (Keyboard.current[Key.Space].wasPressedThisFrame) {
                 throwState = ThrowState.SelectMid;
                 aimMovingRight = true;
             }
-            CurveUpdate();
-        }
-        else if (throwState == ThrowState.SelectMid)
-        {
-            MidpointAim += Time.deltaTime * (aimMovingRight ? 1 : -1);
-            if (Mathf.Abs(MidpointAim) >= 1)
-            {
-                MidpointAim = aimMovingRight ? 1 : -1;
-                aimMovingRight = !aimMovingRight;
-            }
-            if (Keyboard.current[Key.Space].wasPressedThisFrame)
+            else if (throwState == ThrowState.SelectMid && !lastSignal)
             {
                 throwState = ThrowState.PreThrow;
             }
-            CurveUpdate();
-        }
-        else if (throwState == ThrowState.PreThrow)
-        {
-            if (Keyboard.current[Key.Space].wasPressedThisFrame)
+            else if (throwState == ThrowState.PreThrow && !lastSignal)
             {
-                throwState = ThrowState.PostThrow;
-                rock.MidPoint = GetMidPoint();
-                rock.EndPoint = GetEndPoint();
-                rock.Throw();
+                throwState = ThrowState.Brushing;
+                Rock.Throw(transform.position, GetMidPoint2(), GetEndPoint());
+                TestInput.GetInstance().StraightInput = true;
+
+                CurveRenderer.enabled = false;
             }
+        }
+
+        lastSignal = TestInput.GetInstance().GetSignal();
+
+        if (throwState == ThrowState.SelectEnd)
+        {
+            endPointAim += Time.deltaTime * (aimMovingRight ? 1 : -1);
+            if (Mathf.Abs(endPointAim) >= 1)
+            {
+                endPointAim = aimMovingRight ? 1 : -1;
+                aimMovingRight = !aimMovingRight;
+            }
+            CurveUpdate(false);
+        }
+        else if (throwState == ThrowState.SelectMid)
+        {
+            midPointAim += Time.deltaTime * (aimMovingRight ? 1 : -1);
+            if (Mathf.Abs(midPointAim) >= 1)
+            {
+                midPointAim = aimMovingRight ? 1 : -1;
+                aimMovingRight = !aimMovingRight;
+            }
+            CurveUpdate(true);
         }
     }
 
     public Vector3 GetEndPoint() {
-        return ForwardDirection + AimingWidth * EndPointAim;
+        return ForwardDirection + (Quaternion.Euler(0, -90, 0) * ForwardDirection).normalized * (TargetDiameter / 2) * endPointAim;
     }
 
-    public Vector3 GetMidPoint()
+    public Vector3 GetMidPoint2()
     {
-        return ForwardDirection * 0.5f + AimingWidth * MidpointAim;
-    }
-}
-
-[CustomEditor(typeof(TestThrower))]
-public class TestThrowerEditor : Editor
-{
-    private TestThrower thrower;
-    private Transform handleTransform;
-
-    private void OnSceneGUI()
-    {
-        thrower = target as TestThrower;
-        handleTransform = thrower.transform;
-
-        Vector3 direction = handleTransform.position + thrower.ForwardDirection;
-
-        Vector3 start = handleTransform.position;
-        Vector3 mid = handleTransform.position + thrower.GetMidPoint();
-        Vector3 end = handleTransform.position + thrower.GetEndPoint();
-
-        Handles.color = Color.blue;
-        Handles.DrawLine(start, direction);
-        Handles.color = Color.green;
-        Handles.DrawLine(direction + thrower.AimingWidth, direction - thrower.AimingWidth);
-
-        Handles.color = Color.white;
-        Handles.DrawLine(start, mid);
-        Handles.color = Color.cyan;
-        Handles.DrawLine(mid, end);
-
-        Handles.color = Color.red;
-        int steps = 20;
-        Vector3 lastPoint = start;
-        for (int i = 1; i <= steps; i++)
-        {
-            Vector3 temp = Bezier.GetPoint(start, mid, end, (float)i / (float)steps);
-            Handles.DrawLine(lastPoint, temp);
-            lastPoint = temp;
-        }
-        thrower.CurveUpdate();
+        return GetEndPoint() * 0.5f + (Quaternion.Euler(0, -90, 0) * GetEndPoint()).normalized * (TargetDiameter / 2) * midPointAim;
     }
 }
