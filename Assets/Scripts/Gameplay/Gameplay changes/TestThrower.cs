@@ -19,8 +19,12 @@ public class TestThrower : MonoBehaviour
     public Vector3 ForwardDirection;
     public float TargetDiameter;
 
+    public float UpRate;
+    public float DownRate;
+    public float progress;
+
     public LineRenderer CurveRenderer;
-    public TestNewRock Rock;
+    public NewRock Rock;
 
     private float endPointAim;
     private float midPointAim;
@@ -34,7 +38,7 @@ public class TestThrower : MonoBehaviour
             int steps = 20;
             for (int i = 0; i <= steps; i++)
             {
-                CurveRenderer.SetPosition(i, Bezier.GetPoint(Vector3.zero, GetMidPoint2(), GetEndPoint(), (float)i / (float)steps));
+                CurveRenderer.SetPosition(i, Bezier.GetPoint(Vector3.zero, GetMidPoint(), GetEndPoint(), (float)i / (float)steps));
             }
         }
         else {
@@ -50,6 +54,7 @@ public class TestThrower : MonoBehaviour
     {
         endPointAim = 0;
         midPointAim = 0;
+        progress = 0.75f;
     }
 
     private void FixedUpdate()
@@ -68,10 +73,15 @@ public class TestThrower : MonoBehaviour
             else if (throwState == ThrowState.PreThrow && !lastSignal)
             {
                 throwState = ThrowState.Brushing;
-                Rock.Throw(transform.position, GetMidPoint2(), GetEndPoint());
+                Rock.Throw(transform.position, GetMidPoint(), GetEndPoint(), TargetDiameter / 2);
                 TestInput.GetInstance().StraightInput = true;
 
                 CurveRenderer.enabled = false;
+
+                Rock.OnDoneBrushing.AddListener(OnStopBrushing);
+            }
+            else if (throwState == ThrowState.Brushing) {
+                progress += UpRate * Time.deltaTime;
             }
         }
 
@@ -97,14 +107,27 @@ public class TestThrower : MonoBehaviour
             }
             CurveUpdate(true);
         }
+        else if (throwState == ThrowState.Brushing) {
+            progress += -DownRate * Time.deltaTime;
+        }
+    }
+
+    public void OnStopBrushing() {
+        Rock.StopBrushing(progress);
+        throwState = ThrowState.End;
     }
 
     public Vector3 GetEndPoint() {
         return ForwardDirection + (Quaternion.Euler(0, -90, 0) * ForwardDirection).normalized * (TargetDiameter / 2) * endPointAim;
     }
 
-    public Vector3 GetMidPoint2()
+    public Vector3 GetMidPoint()
     {
         return GetEndPoint() * 0.5f + (Quaternion.Euler(0, -90, 0) * GetEndPoint()).normalized * (TargetDiameter / 2) * midPointAim;
+    }
+
+    public Vector3[] GetPredictionPoints() {
+        float notBrushing = 1.5f * TargetDiameter / Vector3.Distance(transform.position, GetEndPoint());
+        return Rock.MakeShiftBezierPoints(100, 1 - notBrushing, 4 * notBrushing * progress / 3);
     }
 }

@@ -16,7 +16,7 @@ public class TestNewCurlingBar : MonoBehaviour
     public float Progress;
 
     public GameObject Fill;
-    public TestUIPredictLine PredictLine;
+    public UIPredictLine PredictLine;
     public Gradient Gradient;
 
     private Slider slider;
@@ -34,17 +34,18 @@ public class TestNewCurlingBar : MonoBehaviour
 
     void Update()
     {
+        Progress = Thrower.progress;
+
         slider.value = Progress;
         image.color = Gradient.Evaluate(Progress);
 
-        if (Thrower.throwState == TestThrower.ThrowState.Brushing) {
-            Vector3[] originalPoints = Thrower.Rock.MakeShiftPrediction(100);
+        if (Thrower.throwState == TestThrower.ThrowState.Brushing)
+        {
+            Vector3[] originalPoints = Thrower.GetPredictionPoints();
             List<Vector2> points = new List<Vector2>();
-            for (int i = 0; i < originalPoints.Length; i++) {
-                if (CheckPositive(Vector3.Project(originalPoints[i] - anchor, upLeft), upLeft)) points.Add(ConvertToUI(originalPoints[i]));
-                if (i == originalPoints.Length - 1) {
-                    Progress = Vector3.Project(originalPoints[i] - anchor, upLeft).magnitude / upLeft.magnitude;
-                }
+            for (int i = 0; i < originalPoints.Length; i++)
+            {
+                    points.Add(ConvertToUI(originalPoints[i]));
             }
             PredictLine.DrawLines(points);
         }
@@ -52,10 +53,6 @@ public class TestNewCurlingBar : MonoBehaviour
 
     private Vector2 ConvertToUI(Vector3 original) {
         return new Vector2(GetComponent<RectTransform>().rect.width * Vector3.Project(original - anchor, downRight).magnitude / downRight.magnitude, GetComponent<RectTransform>().rect.height * Vector3.Project(original - anchor, upLeft).magnitude / upLeft.magnitude);
-    }
-
-    private bool CheckPositive(Vector3 projection, Vector3 axis) {
-        return !(projection.x * axis.x < 0 || projection.y * axis.y < 0 || projection.z * axis.z < 0);
     }
 }
 

@@ -1,13 +1,12 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TestUIPredictLine : Graphic
+public class UIPredictLine : Graphic
 {
-    private List<Vector2> points;
+    public float thickness = 10f;
 
-    public float Thickness = 10f;
+    private List<Vector2> points;
 
     protected override void OnPopulateMesh(VertexHelper vh)
     {
@@ -37,11 +36,11 @@ public class TestUIPredictLine : Graphic
         UIVertex vertex = UIVertex.simpleVert;
         vertex.color = color;
 
-        vertex.position = new Vector3(Thickness / -2, 0);
+        vertex.position = new Vector3(thickness / -2, 0);
         vertex.position += new Vector3(point.x, point.y);
         vh.AddVert(vertex);
 
-        vertex.position = new Vector3(Thickness / 2, 0);
+        vertex.position = new Vector3(thickness / 2, 0);
         vertex.position += new Vector3(point.x, point.y);
         vh.AddVert(vertex);
     }
