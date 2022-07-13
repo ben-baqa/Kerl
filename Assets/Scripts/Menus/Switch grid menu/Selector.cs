@@ -5,40 +5,56 @@ using UnityEngine.UI;
 
 public class Selector : MonoBehaviour
 {
-    public Sprite BorderSprite;
+    List<GameObject> pieces;
+    Sprite borderSprite;
 
-    public int Length;
-    public float Size;
-    public float Spacing;
+    float size;
+    float spacing;
+    int length;
+    int height;
+    bool isVertical;
 
-    public bool IsVertical;
-
-    private List<GameObject> _pieces;
-
-    public void DrawSelector(Color[] colors)
+    public void Init(Sprite border, NodePlacementSettings placementSettings, bool vertical, Transform parent)
     {
-        _pieces = new List<GameObject>();
+        borderSprite = border;
+        length = placementSettings.columns;
+        height = placementSettings.rows;
+        size = placementSettings.selectorSize;
+        spacing = placementSettings.spacing;
+
+        isVertical = vertical;
+
+        transform.SetParent(parent, false);
+    }
+
+    public void DrawSelector(Color[] colors, Vector2 position)
+    {
+        transform.localPosition = position;
+
+        pieces = new List<GameObject>();
         for (int i = 0; i < colors.Length; i++)
         {
-            GameObject piece = new GameObject("Selector Piece", typeof(Image));
-            piece.GetComponent<RectTransform>().SetParent(transform);
-            piece.GetComponent<RectTransform>().localPosition = Vector3.zero;
+            GameObject piece = new GameObject("Selector Piece");
+            piece.transform.SetParent(transform);
+            piece.transform.localPosition = Vector3.zero;
+            piece.transform.localScale = Vector3.one;
 
-            piece.GetComponent<Image>().sprite = BorderSprite;
-            piece.GetComponent<Image>().color = colors[i];
-            piece.GetComponent<Image>().type = Image.Type.Filled;
-            if (IsVertical)
+            Image im = piece.AddComponent<Image>();
+            im.sprite = borderSprite;
+            im.color = colors[i];
+            im.type = Image.Type.Filled;
+            if (isVertical)
             {
-                piece.GetComponent<RectTransform>().sizeDelta = new Vector3(Size, Size + Spacing * (Length - 1));
-                piece.GetComponent<Image>().fillMethod = Image.FillMethod.Horizontal;
+                piece.GetComponent<RectTransform>().sizeDelta = new Vector3(size, size + spacing * (height - 1));
+                im.fillMethod = Image.FillMethod.Horizontal;
             }
             else
             {
-                piece.GetComponent<RectTransform>().sizeDelta = new Vector3(Size + Spacing * (Length - 1), Size);
-                piece.GetComponent<Image>().fillMethod = Image.FillMethod.Vertical;
+                piece.GetComponent<RectTransform>().sizeDelta = new Vector3(size + spacing * (length - 1), size);
+                im.fillMethod = Image.FillMethod.Vertical;
             }
-            piece.GetComponent<Image>().fillAmount = (float)(colors.Length - i) / (float)(colors.Length);
-            _pieces.Add(piece);
+            im.fillAmount = (float)(colors.Length - i) / (float)(colors.Length);
+            pieces.Add(piece);
         }
     }
 

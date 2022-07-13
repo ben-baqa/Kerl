@@ -64,7 +64,6 @@ MonoBehaviour:
   teamMaterialIndex: 0
   broomHeadBone: {fileID: 901557123290227793}
   broomstickBone: {fileID: 5125995476665358842}
-  testTransform: {fileID: 0}
   hideBroomOnThrow: 1
   hideBroomOnIntro: 1
   hideBroomOnPodium: 1
@@ -166,7 +165,7 @@ Animator:
   m_GameObject: {fileID: 4654372515078211627}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: a52fa47216010ab4a86480b78bd2a469, type: 2}
+  m_Controller: {fileID: 22100000, guid: d24d905e63b40994f8c14ba5b12f3fb1, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

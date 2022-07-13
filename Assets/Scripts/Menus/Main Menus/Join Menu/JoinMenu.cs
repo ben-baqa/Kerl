@@ -29,9 +29,9 @@ public class JoinMenu : MonoBehaviour
     {
         sfx = GetComponent<AudioSource>();
 
-        InputProxy.AddInput(new KeyInput(Keyboard.current, "a"));
-        InputProxy.AddInput(new KeyInput(Keyboard.current, "b"));
-        InputProxy.AddInput(new KeyInput(Keyboard.current, "c"));
+        //InputProxy.AddInput(new KeyInput(Keyboard.current, "a"));
+        //InputProxy.AddInput(new KeyInput(Keyboard.current, "b"));
+        //InputProxy.AddInput(new KeyInput(Keyboard.current, "c"));
     }
 
     private void OnEnable()
@@ -69,7 +69,6 @@ public class JoinMenu : MonoBehaviour
 
     void ResetMenu()
     {
-        print("resetting menu");
         foreach (var b in player_buttons)
             b.Reset(MenuSelections.GetInputSprite(-1));
 

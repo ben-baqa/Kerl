@@ -7,90 +7,109 @@ using UnityEngine.UI;
 
 public class SelectorDrawer : MonoBehaviour
 {
-    public Sprite BorderSprite;
+    List<Selector> selectors;
+    Sprite borderSprite;
 
-    public float Size;
-    public float Spacing;
+    int[,] selections;
 
-    public int Columns;
-    public int Rows;
+    Vector2 offset;
+    float size;
+    float spacing;
 
-    public List<Color> Colors;
-    public int[,] Selections;
+    int columns;
+    int rows;
 
-    private List<Selector> _selectors;
+    NodePlacementSettings placementSettings;
 
-    public void AddSelection(int color, bool isRow, int index) {
-        if (Selections == null) {
-            Selections = new int[InputProxy.playerCount, 2];
+    public void Init(Sprite border, NodePlacementSettings placementSettings, Transform parent)
+    {
+        this.placementSettings = placementSettings;
+
+        borderSprite = border;
+        columns = placementSettings.columns;
+        rows = placementSettings.rows;
+        size = placementSettings.selectorSize;
+        spacing = placementSettings.spacing;
+        offset = placementSettings.Offset;
+
+        transform.SetParent(parent, false);
+        //transform.localPosition = Vector3.zero;
+        //transform.localScale = Vector3.one;
+    }
+
+    public void AddSelection(int playerIndex, bool isRow, int index) {
+        if (selections == null) {
+            selections = new int[InputProxy.playerCount, 2];
             for (int i = 0; i < InputProxy.playerCount; i++)
             {
-                Selections[i, 0] = -1;
-                Selections[i, 1] = -1;
+                selections[i, 0] = -1;
+                selections[i, 1] = -1;
             }
         }
         if (isRow)
         {
-            Selections[color, 0] = index;
+            selections[playerIndex, 0] = index;
         }
         else
         {
-            Selections[color, 1] = index;
+            selections[playerIndex, 1] = index;
         }
     }
 
     public void DrawSelectors() {
-        if (_selectors == null) {
-            _selectors = new List<Selector>();
+        if (selectors == null) {
+            selectors = new List<Selector>();
         }
-        for (int i = 0; i < _selectors.Count; i++)
+        for (int i = 0; i < selectors.Count; i++)
         {
-            _selectors[i].EraseSelector();
+            selectors[i].EraseSelector();
         }
-        _selectors = new List<Selector>();
-        for (int i = 0; i < Rows + Columns; i++) {
-            if (i < Rows)
+        selectors = new List<Selector>();
+        for (int i = 0; i < rows + columns; i++) {
+            if (i < rows)
             {
-                GameObject selectorObject = new GameObject("Selector", typeof(Selector));
-                Selector selector = selectorObject.GetComponent<Selector>();
-                selector.BorderSprite = BorderSprite;
-                selector.Length = Columns;
-                selector.Size = Size;
-                selector.Spacing = Spacing;
-                selector.IsVertical = false;
-                selectorObject.transform.SetParent(transform);
-                selectorObject.transform.localPosition = new Vector2(Spacing * (Columns - 1) / 2, -i * Spacing);
+                GameObject selectorObject = new GameObject("Selector");
+                Selector selector = selectorObject.AddComponent<Selector>();
+                selector.Init(borderSprite, placementSettings, false, transform);
+                //selector.borderSprite = borderSprite;
+                //selector.length = columns;
+                //selector.size = size;
+                //selector.spacing = spacing;
+                //selector.isVertical = false;
+                //selectorObject.transform.SetParent(transform);
+                //selectorObject.transform.localPosition = 
+                    
+                Vector2 selectorPosition = new Vector2(spacing * (columns - 1) / 2f, -i * spacing);
+
                 List<Color> selectorColors = new List<Color>();
                 for (int j = 0; j < InputProxy.playerCount; j++)
-                {
-                    if (Selections[j, 0] == i)
-                    {
-                        selectorColors.Add(Colors[j]);
-                    }
-                }
-                selector.DrawSelector(selectorColors.ToArray());
-                _selectors.Add(selector);
+                    if (selections[j, 0] == i)
+                        selectorColors.Add(MenuSelections.GetColor(j));
+
+                selector.DrawSelector(selectorColors.ToArray(), selectorPosition + offset);
+                selectors.Add(selector);
             }
             else {
-                GameObject selectorObject = new GameObject("Selector", typeof(Selector));
-                Selector selector = selectorObject.GetComponent<Selector>();
-                selector.BorderSprite = BorderSprite;
-                selector.Length = Rows;
-                selector.Size = Size;
-                selector.Spacing = Spacing;
-                selector.IsVertical = true;
-                selectorObject.transform.SetParent(transform);
-                selectorObject.transform.localPosition = new Vector2((i - Rows) * Spacing, -Spacing * (Rows - 1) / 2);
+                GameObject selectorObject = new GameObject("Selector");
+                Selector selector = selectorObject.AddComponent<Selector>();
+                selector.Init(borderSprite, placementSettings, true, transform);
+                //selector.borderSprite = borderSprite;
+                //selector.length = rows;
+                //selector.size = size;
+                //selector.spacing = spacing;
+                //selector.isVertical = true;
+                //selectorObject.transform.SetParent(transform);
+                //selectorObject.transform.localPosition = 
+                    
+                Vector2 selectorPosition = new Vector2((i - rows) * spacing, -spacing * (rows - 1) / 2f);
+
                 List<Color> selectorColors = new List<Color>();
                 for (int j = 0; j < InputProxy.playerCount; j++)
-                {
-                    if (Selections[j, 1] == i - Rows)
-                    {
-                        selectorColors.Add(Colors[j]);
-                    }
-                }
-                selector.DrawSelector(selectorColors.ToArray());
-                _selectors.Add(selector);
+                    if (selections[j, 1] == i - rows)
+                        selectorColors.Add(MenuSelections.GetColor(j));
+
+                selector.DrawSelector(selectorColors.ToArray(), selectorPosition + offset);
+                selectors.Add(selector);
             }
         }
     }

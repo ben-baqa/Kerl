@@ -966,18 +966,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae67d4ac5b2f8df4c8f7094cc08f55af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  columns: 0
-  rows: 0
-  locked: 
+  selectionPeriod: 0
   nodeInfo: []
-  colors: []
   borderSprite: {fileID: 0}
-  nodeSize: 0
-  nodeImageSize: 0
-  nodeSelectRatio: 0
-  selectorSize: 0
-  spacing: 0
-  delayTime: 0
+  placement:
+    columns: 0
+    rows: 0
+    size: 0
+    selectedImageSize: 0
+    highlightedSizeRatio: 0
+    selectorSize: 0
+    spacing: 0
   OnNodeSelected:
     m_PersistentCalls:
       m_Calls: []
@@ -2197,7 +2196,7 @@ MonoBehaviour:
   m_text: 5
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a4038e3271badfb40bb5ebb2afde1d15, type: 2}
-  m_sharedMaterial: {fileID: -131469463006891970, guid: a4038e3271badfb40bb5ebb2afde1d15, type: 2}
+  m_sharedMaterial: {fileID: 4520025412474201817, guid: a4038e3271badfb40bb5ebb2afde1d15, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3936,7 +3935,7 @@ MonoBehaviour:
   timerText: {fileID: 458253456}
   activeColor: {r: 1, g: 1, b: 1, a: 1}
   inactiveColor: {r: 0.7830189, g: 0.7830189, b: 0.7830189, a: 0.5882353}
-  interval: 4
+  interval: 1
   itemLerp: 0.3
   gridOffset: 115
 --- !u!1 &1154891449
@@ -4322,7 +4321,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1232265328
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4371,7 +4370,7 @@ MonoBehaviour:
   - {fileID: 1229863015}
   timerText: {fileID: 570697742}
   maxPlayerCount: 4
-  maxTimer: 5
+  maxTimer: 1
 --- !u!82 &1232265330
 AudioSource:
   m_ObjectHideFlags: 0
@@ -5285,7 +5284,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52a21ec229473674cb52eb51e81b244a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugInput: 1
+  debugInput: 0
   playerCountDebugOverride: 0
 --- !u!1 &1437565187
 GameObject:
@@ -7520,7 +7519,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2115085806
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7554,18 +7553,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae67d4ac5b2f8df4c8f7094cc08f55af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  columns: 0
-  rows: 0
-  locked: 
-  nodeInfo: []
-  colors: []
-  borderSprite: {fileID: 0}
-  nodeSize: 0
-  nodeImageSize: 0
-  nodeSelectRatio: 0
-  selectorSize: 0
-  spacing: 0
-  delayTime: 0
+  selectionPeriod: 1
+  nodeInfo:
+  - node: {fileID: 11400000, guid: d63d47516f37cea4dbef92c0b47d95de, type: 2}
+    locked: 0
+  - node: {fileID: 11400000, guid: cee131e59be4ea342bbdbc99e99a91ef, type: 2}
+    locked: 0
+  - node: {fileID: 11400000, guid: cee131e59be4ea342bbdbc99e99a91ef, type: 2}
+    locked: 0
+  - node: {fileID: 11400000, guid: cee131e59be4ea342bbdbc99e99a91ef, type: 2}
+    locked: 0
+  - node: {fileID: 11400000, guid: cee131e59be4ea342bbdbc99e99a91ef, type: 2}
+    locked: 0
+  - node: {fileID: 11400000, guid: cee131e59be4ea342bbdbc99e99a91ef, type: 2}
+    locked: 0
+  borderSprite: {fileID: 3286163911610860551, guid: 9e891d685f5a2c446bf54e78c95aedcc, type: 3}
+  placement:
+    columns: 3
+    rows: 2
+    size: 130
+    selectedImageSize: 100
+    highlightedSizeRatio: 1.25
+    selectorSize: 190
+    spacing: 200
   OnNodeSelected:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1703263123}
+        m_TargetAssemblyTypeName: MenuSelections, Assembly-CSharp
+        m_MethodName: SetRockSelections
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 2115085807}
+          m_ObjectArgumentAssemblyTypeName: GridManager, Assembly-CSharp
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2

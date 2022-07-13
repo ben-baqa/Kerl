@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aaccb02eba7558a40a69a932e423168f, type: 3}
+  m_Name: Greg node
+  m_EditorClassIdentifier: 
+  ItemName: Greg
+  Image: {fileID: 3286163911610860551, guid: ce2e2ca10c24f7442b4108a455f39caa, type: 3}
+  Type: 0
+  PrefabPayload: {fileID: 6464361532977092875, guid: 04a9048e27197e243bb57bb3263d8a6c, type: 3}
+  StringPayload: 

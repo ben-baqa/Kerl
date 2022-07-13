@@ -8,96 +8,133 @@ using UnityEngine.Events;
 
 public class GridManager : MonoBehaviour
 {
-    public int Columns;
-    public int Rows;
-    public bool[] Locked;
-    public List<NodeElement> NodeInfo;
-    public List<Color> Colors;
-    public Sprite BorderSprite;
+    public float selectionPeriod;
 
-    public float NodeSize;
-    public float NodeImageSize;
-    public float NodeSelectRatio;
+    public List<LockedNode> nodeInfo;
 
-    public float SelectorSize;
+    public Sprite borderSprite;
+    public NodePlacementSettings placement;
 
-    public float Spacing;
+    //bool[] Locked;
+    //List<NodeElement> NodeInfo;
+    //public List<Color> Colors;
 
-    public float DelayTime;
+    //public float nodeSize;
+    //public float nodeImageSize;
+    //public float nodeSelectRatio;
+
+    //public float selectorSize;
+
+    //public float spacing;
+
 
     public UnityEvent<int> OnNodeSelected;
 
-    private SelectorDrawer _selectorDrawer;
-    private List<Node> _nodes;
+    SelectorDrawer selectorDrawer;
+    List<Node> nodes;
 
-    private GridCursor _cursor;
+    GridCursor cursor;
+
+    int columns;
+    int rows;
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.matrix = transform.localToWorldMatrix;
+
+        if (nodeInfo == null)
+            return;
+
+        Gizmos.color = new Color(0, 1, 0, 0.5f);
+        Gizmos.DrawCube(placement.GetNodePositionDebug(1, nodeInfo.Count),
+            new Vector2(placement.selectorSize + placement.spacing * (placement.columns - 1), placement.selectorSize));
+
+        Gizmos.color = new Color(1, 1, 1, 0.5f);
+        for(int i = 0; i < nodeInfo.Count; i++)
+        {
+            Vector3 pos = placement.GetNodePositionDebug(i, nodeInfo.Count);
+            Gizmos.DrawCube(pos, Vector3.one * placement.size);
+            Gizmos.DrawCube(pos, Vector3.one * placement.selectedImageSize);
+        }
+
+    }
 
     private void Start()
     {
-        _cursor = gameObject.AddComponent<GridCursor>();
-        _cursor.Columns = Columns;
-        _cursor.Rows = Rows;
-        _cursor.Nodes = Locked;
-        _cursor.DelayTime = DelayTime;
-        _cursor.CursorUpdate.AddListener(UpdateCursor);
-        _cursor.SelectionUpdate.AddListener(UpdateSelection);
+        columns = placement.columns;
+        rows = placement.rows = (int)Mathf.Ceil((float)nodeInfo.Count / placement.columns);
+        print(placement.rows);
 
-        GameObject selectorDrawerObject = new GameObject("Selector Drawer", typeof(RectTransform), typeof(SelectorDrawer));
-        selectorDrawerObject.GetComponent<RectTransform>().SetParent(transform);
-        selectorDrawerObject.GetComponent<RectTransform>().localPosition = Vector3.zero;
-        _selectorDrawer = selectorDrawerObject.GetComponent<SelectorDrawer>();
-        _selectorDrawer.BorderSprite = BorderSprite;
-        _selectorDrawer.Columns = Columns;
-        _selectorDrawer.Rows = Rows;
-        _selectorDrawer.Size = SelectorSize;
-        _selectorDrawer.Spacing = Spacing;
-        _selectorDrawer.Colors = Colors;
+        bool[] locked = new bool[nodeInfo.Count];
+        for (int i = 0; i < locked.Length; i++)
+            locked[i] = nodeInfo[i].locked;
 
-        _nodes = new List<Node>();
-        for (int i = 0; i < NodeInfo.Count; i++)
+        cursor = gameObject.AddComponent<GridCursor>();
+        cursor.Init(columns, rows, locked, selectionPeriod, UpdateCursor, UpdateSelection);
+        //cursor.columns = columns;
+        //cursor.rows = rows;
+        //cursor.locked = locked;
+        //cursor.period = selectionPeriod;
+        //cursor.CursorUpdate.AddListener(UpdateCursor);
+        //cursor.SelectionUpdate.AddListener(UpdateSelection);
+
+        GameObject selectorDrawerObject = new GameObject("Selector Drawer", typeof(RectTransform));
+        selectorDrawer = selectorDrawerObject.AddComponent<SelectorDrawer>();
+        selectorDrawer.Init(borderSprite, placement, transform);
+        //selectorDrawer.borderSprite = BorderSprite;
+        //selectorDrawer.columns = columns;
+        //selectorDrawer.rows = rows;
+        //selectorDrawer.size = selectorSize;
+        //selectorDrawer.spacing = spacing;
+        //selectorDrawer.colors = Colors;
+
+        nodes = new List<Node>();
+        for (int i = 0; i < nodeInfo.Count; i++)
         {
-            GameObject newNodeObject = new GameObject("Node", typeof(RectTransform), typeof(Node));
-            newNodeObject.GetComponent<RectTransform>().SetParent(transform);
-            newNodeObject.GetComponent<RectTransform>().localPosition = new Vector2(Spacing * (i % Columns), -Spacing * (i / Columns));
-            Node newNode = newNodeObject.GetComponent<Node>();
-            newNode.BorderSprite = BorderSprite;
-            newNode.ImageSprite = NodeInfo[i].Image;
-            newNode.Size = NodeSize;
-            newNode.ImageSize = NodeImageSize;
-            newNode.SelectedRatio = NodeSelectRatio;
-            newNode.Disabled = Locked[i];
-            _nodes.Add(newNode);
+            GameObject newNodeObject = new GameObject("Node", typeof(RectTransform));
+            newNodeObject.transform.SetParent(transform, false);
+            newNodeObject.transform.localPosition = placement.GetNodePosition(i);
+
+            Node newNode = newNodeObject.AddComponent<Node>();
+            newNode.Init(borderSprite, nodeInfo[i].Image, placement, locked[i]);
+            nodes.Add(newNode);
+            //newNode.BorderSprite = borderSprite;
+            //newNode.ImageSprite = NodeInfo[i].Image;
+            //newNode.Size = nodeSize;
+            //newNode.ImageSize = nodeImageSize;
+            //newNode.SelectedRatio = nodeSelectRatio;
+            //newNode.Disabled = Locked[i];
         }
         UpdateCursor();
     }
 
     private void UpdateCursor()
     {
-        int current = _cursor.GetCursor();
+        int current = cursor.GetCursor();
         int nodeCount;
-        for (int i = 0; i < _nodes.Count; i++)
+        for (int i = 0; i < nodes.Count; i++)
         {
-            _nodes[i].SetSelected(false);
+            nodes[i].SetSelected(false);
         }
-        if (current < Rows)
+        if (current < rows)
         {
-            nodeCount = Mathf.Min(Columns, _nodes.Count - current * Columns);
+            nodeCount = Mathf.Min(columns, nodes.Count - current * columns);
         }
         else
         {
-            nodeCount = Mathf.Min(Rows, _nodes.Count / (current + 1 - Rows));
+            nodeCount = Mathf.Min(rows, nodes.Count / (current + 1 - rows));
         }
         for (int i = 0; i < nodeCount; i++) {
             int currentNode;
-            if (current < Rows)
+            if (current < rows)
             {
-                currentNode = current * Columns + i;
+                currentNode = current * columns + i;
             }
             else
             {
-                currentNode = i * Columns + current - Rows;
+                currentNode = i * columns + current - rows;
             }
-            _nodes[currentNode].SetSelected(true);
+            nodes[currentNode].SetSelected(true);
         }
     }
 
@@ -106,17 +143,17 @@ public class GridManager : MonoBehaviour
         List<int> selectedNodesSet = new List<int>(); 
         int[] selectedNodes = new int[InputProxy.playerCount];
         for (int i = 0; i < InputProxy.playerCount; i++) {
-            int node = _cursor.GetSelectedNode(i);
+            int node = cursor.GetSelectedNode(i);
             if (node < 0)
             {
-                int row = _cursor.GetSelectedRow(i);
-                int column = _cursor.GetSelectedColumn(i);
-                _selectorDrawer.AddSelection(i, true, row);
-                _selectorDrawer.AddSelection(i, false, column);
+                int row = cursor.GetSelectedRow(i);
+                int column = cursor.GetSelectedColumn(i);
+                selectorDrawer.AddSelection(i, true, row);
+                selectorDrawer.AddSelection(i, false, column);
             }
             else {
-                _selectorDrawer.AddSelection(i, true, -1);
-                _selectorDrawer.AddSelection(i, false, -1);
+                selectorDrawer.AddSelection(i, true, -1);
+                selectorDrawer.AddSelection(i, false, -1);
                 if (!selectedNodesSet.Contains(node)) {
                     selectedNodesSet.Add(node);
                 }
@@ -124,30 +161,90 @@ public class GridManager : MonoBehaviour
             }
             selectedNodes[i] = node;
         }
-        foreach (Node node in _nodes) {
+        foreach (Node node in nodes) {
             node.ChangeColor(new Color[] { });
         }
         for (int i = 0; i < selectedNodesSet.Count; i++) {
             List<Color> nodeColors = new List<Color>();
             for (int j = 0; j < InputProxy.playerCount; j++) {
                 if (selectedNodes[j] == selectedNodesSet[i]) {
-                    nodeColors.Add(Colors[j]);
+                    nodeColors.Add(MenuSelections.GetColor(j));
                 }
             }
-            _nodes[selectedNodesSet[i]].ChangeColor(nodeColors.ToArray());
+            nodes[selectedNodesSet[i]].ChangeColor(nodeColors.ToArray());
         }
-        _selectorDrawer.DrawSelectors();
+        selectorDrawer.DrawSelectors();
     }
 
     public string GetStringSelection(int color)
     {
-        int selected = _cursor.GetSelectedNode(color);
-        return NodeInfo[selected].StringPayload;
+        int selected = cursor.GetSelectedNode(color);
+        return nodeInfo[selected].StringPayload;
     }
 
     public GameObject GetPrefabSelection(int color)
     {
-        int selected = _cursor.GetSelectedNode(color);
-        return NodeInfo[selected].PrefabPayload;
+        int selected = cursor.GetSelectedNode(color);
+        return nodeInfo[selected].PrefabPayload;
     }
+
+    
+}
+[System.Serializable]
+public class NodePlacementSettings
+{
+    [Min(1)]
+    public int columns;
+    [HideInInspector]
+    public int rows;
+
+    public float size;
+    public float selectedImageSize;
+    public float highlightedSizeRatio;
+    public float selectorSize;
+    public float spacing;
+
+    public Vector2 Offset
+    {
+        get
+        {
+            if (_offset != Vector2.zero)
+                return _offset;
+            _offset = new Vector2(spacing * (1 - columns) / 2f, -spacing * (1 - rows) / 2f);
+            return _offset;
+        }
+    }
+    Vector2 _offset = Vector2.zero;
+
+    public Vector2 GetNodePosition(int index)
+    {
+        Vector2 pos = Vector2.zero;
+
+        pos.x = spacing * (index % columns);
+        pos.y = -spacing * (index / columns);
+        return pos + Offset;
+    }
+
+    public Vector2 GetNodePositionDebug(int index, int total)
+    {
+        int rows = (int)Mathf.Ceil((float)total / columns);
+        Vector2 pos = Vector2.zero;
+
+        pos.x = spacing * (index % columns);
+        pos.y = -spacing * (index / columns);
+        return pos + new Vector2(spacing * (1 - columns) / 2f, -spacing * (1 - rows) / 2f);
+    }
+}
+
+[System.Serializable]
+public class LockedNode
+{
+    public NodeElement node;
+    public bool locked;
+
+    public string ItemName => node.ItemName;
+    public Sprite Image => node.Image;
+    public NodeElement.PayloadType Type => node.Type;
+    public GameObject PrefabPayload => node.PrefabPayload;
+    public string StringPayload => node.StringPayload;
 }

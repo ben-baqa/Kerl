@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aaccb02eba7558a40a69a932e423168f, type: 3}
+  m_Name: Worm node
+  m_EditorClassIdentifier: 
+  ItemName: Jeffrey
+  Image: {fileID: 3286163911610860551, guid: c2604cdf65120b745bfd01adab5b271a, type: 3}
+  Type: 0
+  PrefabPayload: {fileID: 1357345569099269632, guid: 7ba3156930d740140b6e701729644eb5, type: 3}
+  StringPayload: 

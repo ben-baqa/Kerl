@@ -51,9 +51,10 @@ public class MenuSelections : MonoBehaviour
     }
     public static Color GetColor(int index) => instance.playerColours[index];
 
+
     public static void SetCharacterSelections(GridManager grid)
     {
-
+        print("Character Selections made");
     }
 
     public static void SetRockSelections(GridManager grid)

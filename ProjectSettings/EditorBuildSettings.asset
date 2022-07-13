@@ -9,6 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Main Menu.unity
     guid: 983a80cc1df32c3468d2ddb1793e2c1d
   - enabled: 1
-    path: Assets/Scenes/Game.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
+    path: Assets/Scenes/Maps/Worm Map.unity
+    guid: ab1b3c42d12b0b743bee0918ffb06369
   m_configObjects: {}

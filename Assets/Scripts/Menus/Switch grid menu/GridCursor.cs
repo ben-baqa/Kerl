@@ -19,236 +19,227 @@ public class GridCursor : MonoBehaviour
         Both
     }
 
-    public int Columns;
-    public int Rows;
-    public bool[] Nodes;
+    Action cursorUpdate;
+    Action selectionUpdate;
 
-    public float DelayTime;
+    int columns;
+    int rows;
+    bool[] locked;
 
-    [HideInInspector]
-    public UnityEvent CursorUpdate = new UnityEvent();
-    [HideInInspector]
-    public UnityEvent SelectionUpdate = new UnityEvent();
+    int playerCount;
 
-    private int _colors;
+    int[] selectedRow;
+    int[] selectedColumn;
+    int[] selectedNode;
+    int currentCursor;
 
-    private int[] _selectedRow;
-    private int[] _selectedColumn;
-    private int[] _selectedNode;
-    private int _currentCursor;
+    bool[] confirmed;
+    bool[] skipped;
+    int[] singleNode;
 
-    private bool[] _confirmed;
-    private bool[] _skipped;
-    private int[] _singleNode;
+    SelectType selectType;
+    State state;
 
-    private SelectType _selectType;
-    private State _state;
+    float period;
+    float timer;
 
-    private float _timer;
-
-    void Start()
+    public void Init(int columns, int rows, bool[] locked, float period, Action updateCursor, Action updateSelection)
     {
-        _colors = InputProxy.playerCount;
+        this.columns = columns;
+        this.rows = rows;
+        this.locked = locked;
+        this.period = period;
+        cursorUpdate = updateCursor;
+        selectionUpdate = updateSelection;
 
-        _skipped = new bool[Rows + Columns];
-        _singleNode = new int[Rows + Columns];
+        playerCount = InputProxy.playerCount;
 
-        _selectedRow = new int[_colors];
-        Array.Fill(_selectedRow, -1);
-        _selectedColumn = new int[_colors];
-        Array.Fill(_selectedColumn, -1);
-        _selectedNode = new int[_colors];
-        Array.Fill(_selectedNode, -1);
-        _confirmed = new bool[_colors];
-        Array.Fill(_confirmed, false);
+        skipped = new bool[rows + columns];
+        singleNode = new int[rows + columns];
 
-        for (int i = 0; i < Rows + Columns; i++)
-        {
-            int disabled = 0;
-            int nodeCount;
-            if (i < Rows)
-            {
-                nodeCount = Mathf.Min(Columns, Nodes.Length - i * Columns);
-            }
-            else
-            {
-                nodeCount = Mathf.Min(Rows, Nodes.Length / (i + 1 - Rows));
-            }
-            for (int j = 0; j < nodeCount; j++)
-            {
-                int currentNode;
-                if (i < Rows)
-                {
-                    currentNode = i * Columns + j;
-                }
-                else
-                {
-                    currentNode = j * Columns + i - Rows;
-                }
-                if (Nodes[currentNode])
-                {
-                    disabled++;
-                }
-                else
-                {
-                    _singleNode[i] = currentNode;
-                }
-            }
-            if (disabled == nodeCount)
-            {
-                _skipped[i] = true;
-            }
-            if (nodeCount - disabled != 1)
-            {
-                _singleNode[i] = -1;
-            }
-        }
+        selectedRow = new int[playerCount];
+        Array.Fill(selectedRow, -1);
+        selectedColumn = new int[playerCount];
+        Array.Fill(selectedColumn, -1);
+        selectedNode = new int[playerCount];
+        Array.Fill(selectedNode, -1);
+        confirmed = new bool[playerCount];
+        Array.Fill(confirmed, false);
 
-        _selectType = SelectType.Both;
-        if (Rows == 1 || Enumerable.Range(Rows - 1, Columns).All(i => _skipped[i] || _singleNode[i] >= 0)) _selectType = SelectType.Columns;
-        else if (Columns == 1 || Enumerable.Range(0, Rows).All(i => _skipped[i] || _singleNode[i] >= 0)) _selectType = SelectType.Rows;
+        FindSkippableNodes();
 
-        if (_skipped[_currentCursor] || _selectType == SelectType.Columns)
+        selectType = SelectType.Both;
+        if (rows == 1 || Enumerable.Range(rows - 1, columns).All(i => skipped[i] || singleNode[i] >= 0))
+            selectType = SelectType.Columns;
+        else if (columns == 1 || Enumerable.Range(0, rows).All(i => skipped[i] || singleNode[i] >= 0))
+            selectType = SelectType.Rows;
+
+        if (skipped[currentCursor] || selectType == SelectType.Columns)
         {
             UpdateCursor();
         }
-        _timer = DelayTime;
+        timer = period;
+    }
+
+    void FindSkippableNodes()
+    {
+
+        for (int i = 0; i < rows + columns; i++)
+        {
+            int disabled = 0;
+            int nodeCount;
+            if (i < rows)
+                nodeCount = Mathf.Min(columns, locked.Length - i * columns);
+            else
+                nodeCount = Mathf.Min(rows, locked.Length / (i + 1 - rows));
+
+            for (int j = 0; j < nodeCount; j++)
+            {
+                int currentNode;
+                if (i < rows)
+                    currentNode = i * columns + j;
+                else
+                    currentNode = j * columns + i - rows;
+
+                if (locked[currentNode])
+                    disabled++;
+                else
+                    singleNode[i] = currentNode;
+            }
+
+            if (disabled == nodeCount)
+                skipped[i] = true;
+
+            if (nodeCount - disabled != 1)
+                singleNode[i] = -1;
+        }
     }
 
     void Update()
     {
-        if (_state != State.Done)
+        if (state != State.Done)
         {
-            if (_timer <= 0)
+            if (timer <= 0)
             {
-                _timer = DelayTime;
+                timer = period;
                 UpdateCursor();
-                CursorUpdate.Invoke();
+                cursorUpdate();
+                //CursorUpdate.Invoke();
             }
             else
             {
-                _timer -= Time.deltaTime;
+                timer -= Time.deltaTime;
             }
         }
 
-        for (int i = 0; i < _colors; i++)
+        for (int i = 0; i < playerCount; i++)
         {
             if (InputProxy.GetToggledInput(i))
             {
-                if (_state == State.Select) SelectCursor(i);
-                else if (_state == State.Confirm) ConfirmCursor(i);
+                if (state == State.Select)
+                    SelectCursor(i);
+                else if (state == State.Confirm)
+                    ConfirmCursor(i);
             }
         }
     }
 
-    void SelectCursor(int color)
+    void SelectCursor(int playerIndex)
     {
-        if (_singleNode[_currentCursor] >= 0)
-        {
-            _selectedNode[color] = _singleNode[_currentCursor];
-        }
+        if (singleNode[currentCursor] >= 0)
+            selectedNode[playerIndex] = singleNode[currentCursor];
 
-        if (_currentCursor < Rows)
-        {
-            _selectedRow[color] = _currentCursor;
-        }
+        if (currentCursor < rows)
+            selectedRow[playerIndex] = currentCursor;
         else
+            selectedColumn[playerIndex] = currentCursor - rows;
+
+        if (selectedColumn[playerIndex] >= 0 && selectedRow[playerIndex] >= 0)
         {
-            _selectedColumn[color] = _currentCursor - Rows;
+            selectedNode[playerIndex] = GetNode(selectedRow[playerIndex], selectedColumn[playerIndex]);
+            //if (locked.Length > selectedNode[color]) if (locked[selectedNode[color]]) ResetSelection(color);
+            if (locked.Length > selectedNode[playerIndex] && locked[selectedNode[playerIndex]])
+                ResetSelection(playerIndex);
         }
 
-        if (_selectedColumn[color] >= 0 && _selectedRow[color] >= 0)
+        if (selectedNode.All(i => i >= 0))
         {
-            _selectedNode[color] = GetNode(_selectedRow[color], _selectedColumn[color]);
-            if (Nodes.Length > _selectedNode[color]) if (Nodes[_selectedNode[color]]) ResetSelection(color);
+            state = State.Confirm;
+            currentCursor = 0;
         }
-
-        if (_selectedNode.All(i => i >= 0))
-        {
-            _state = State.Confirm;
-            _currentCursor = 0;
-        }
-        SelectionUpdate.Invoke();
+        selectionUpdate();
+        //SelectionUpdate.Invoke();
     }
 
-    void ConfirmCursor(int color)
+    void ConfirmCursor(int playerIndex)
     {
-        if (_currentCursor == 0)
+        if (currentCursor == 0)
         {
-            _state = State.Select;
-            ResetSelection(color);
-            Array.Fill(_confirmed, false);
+            state = State.Select;
+            ResetSelection(playerIndex);
+            Array.Fill(confirmed, false);
             return;
         }
-        _confirmed[color] = true;
-        if (_confirmed.All(c => c))
+        confirmed[playerIndex] = true;
+        if (confirmed.All(c => c))
         {
-            _state = State.Done;
+            state = State.Done;
         }
     }
 
     void UpdateCursor()
     {
-        _currentCursor++;
-        if (_state == State.Select)
+        currentCursor++;
+        if (state == State.Select)
         {
-            if (_selectType == SelectType.Columns && _currentCursor < Rows - 1)
-            {
-                _currentCursor = Rows - 1;
-            }
-            else if (_selectType == SelectType.Rows && _currentCursor >= Rows)
-            {
-                _currentCursor = 0;
-            }
-            else if (_currentCursor >= Rows + Columns)
-            {
-                _currentCursor = _selectType == SelectType.Columns ? Rows - 1 : 0;
-            }
-            if (_skipped[_currentCursor])
-            {
+            if (selectType == SelectType.Columns && currentCursor < rows - 1)
+                currentCursor = rows - 1;
+            else if (selectType == SelectType.Rows && currentCursor >= rows)
+                currentCursor = 0;
+            else if (currentCursor >= rows + columns)
+                currentCursor = selectType == SelectType.Columns ? rows - 1 : 0;
+
+            if (skipped[currentCursor])
                 UpdateCursor();
-            }
 
         }
-        else if (_state == State.Confirm)
+        else if (state == State.Confirm)
         {
-            if (_currentCursor > 1)
-            {
-                _currentCursor = 0;
-            }
+            if (currentCursor > 1)
+                currentCursor = 0;
         }
 
     }
 
     int GetNode(int row, int column)
     {
-        return row * Columns + column;
+        return row * columns + column;
     }
 
     public int GetCursor()
     {
-        return _currentCursor;
+        return currentCursor;
     }
 
     public int GetSelectedRow(int color)
     {
-        return _selectedRow[color];
+        return selectedRow[color];
     }
 
     public int GetSelectedColumn(int color)
     {
-        return _selectedColumn[color];
+        return selectedColumn[color];
     }
 
     public int GetSelectedNode(int color)
     {
-        return _selectedNode[color];
+        return selectedNode[color];
     }
 
     public void ResetSelection(int color)
     {
-        _selectedColumn[color] = -1;
-        _selectedRow[color] = -1;
-        _selectedNode[color] = -1;
+        selectedColumn[color] = -1;
+        selectedRow[color] = -1;
+        selectedNode[color] = -1;
     }
 }
