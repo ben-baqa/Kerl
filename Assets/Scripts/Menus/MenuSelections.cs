@@ -52,12 +52,19 @@ public class MenuSelections : MonoBehaviour
     public static Color GetColor(int index) => instance.playerColours[index];
 
 
-    public static void SetCharacterSelections(GridManager grid)
+    public static void SetCharacterSelections(NodeElement[] selections)
     {
-        print("Character Selections made");
+        string res = "Character Selections made";
+        foreach (NodeElement e in selections)
+            res += $" {e.ItemName},";
+        print(res);
+
+        characterSelections = new List<GameObject>();
+        foreach (NodeElement e in selections)
+            characterSelections.Add(e.PrefabPayload);
     }
 
-    public static void SetRockSelections(GridManager grid)
+    public static void SetRockSelections(NodeElement[] selections)
     {
 
     }

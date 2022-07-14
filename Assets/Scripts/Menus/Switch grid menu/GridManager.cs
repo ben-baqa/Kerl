@@ -10,25 +10,16 @@ public class GridManager : MonoBehaviour
 {
     public float selectionPeriod;
 
-    public List<LockedNode> nodeInfo;
+    public List<LockableNode> nodeInfo;
 
     public Sprite borderSprite;
     public NodePlacementSettings placement;
+    public ConfirmationCursorSettings confirmationCursorSettings;
 
-    //bool[] Locked;
-    //List<NodeElement> NodeInfo;
-    //public List<Color> Colors;
-
-    //public float nodeSize;
-    //public float nodeImageSize;
-    //public float nodeSelectRatio;
-
-    //public float selectorSize;
-
-    //public float spacing;
-
-
-    public UnityEvent<int> OnNodeSelected;
+    public UnityEvent<int, NodeElement> OnNodeSelected;
+    public UnityEvent OnConfirmationStarted;
+    public UnityEvent OnReject;
+    public UnityEvent<NodeElement[]> onConfirm;
 
     SelectorDrawer selectorDrawer;
     List<Node> nodes;
@@ -56,37 +47,24 @@ public class GridManager : MonoBehaviour
             Gizmos.DrawCube(pos, Vector3.one * placement.size);
             Gizmos.DrawCube(pos, Vector3.one * placement.selectedImageSize);
         }
-
     }
 
     private void Start()
     {
         columns = placement.columns;
         rows = placement.rows = (int)Mathf.Ceil((float)nodeInfo.Count / placement.columns);
-        print(placement.rows);
 
         bool[] locked = new bool[nodeInfo.Count];
         for (int i = 0; i < locked.Length; i++)
             locked[i] = nodeInfo[i].locked;
 
         cursor = gameObject.AddComponent<GridCursor>();
-        cursor.Init(columns, rows, locked, selectionPeriod, UpdateCursor, UpdateSelection);
-        //cursor.columns = columns;
-        //cursor.rows = rows;
-        //cursor.locked = locked;
-        //cursor.period = selectionPeriod;
-        //cursor.CursorUpdate.AddListener(UpdateCursor);
-        //cursor.SelectionUpdate.AddListener(UpdateSelection);
+        cursor.Init(columns, rows, locked, selectionPeriod, UpdateCursor,UpdateSelection,
+            OnConfirmationStarted.Invoke, OnReject.Invoke, OnConfirm);
 
         GameObject selectorDrawerObject = new GameObject("Selector Drawer", typeof(RectTransform));
         selectorDrawer = selectorDrawerObject.AddComponent<SelectorDrawer>();
         selectorDrawer.Init(borderSprite, placement, transform);
-        //selectorDrawer.borderSprite = BorderSprite;
-        //selectorDrawer.columns = columns;
-        //selectorDrawer.rows = rows;
-        //selectorDrawer.size = selectorSize;
-        //selectorDrawer.spacing = spacing;
-        //selectorDrawer.colors = Colors;
 
         nodes = new List<Node>();
         for (int i = 0; i < nodeInfo.Count; i++)
@@ -98,13 +76,13 @@ public class GridManager : MonoBehaviour
             Node newNode = newNodeObject.AddComponent<Node>();
             newNode.Init(borderSprite, nodeInfo[i].Image, placement, locked[i]);
             nodes.Add(newNode);
-            //newNode.BorderSprite = borderSprite;
-            //newNode.ImageSprite = NodeInfo[i].Image;
-            //newNode.Size = nodeSize;
-            //newNode.ImageSize = nodeImageSize;
-            //newNode.SelectedRatio = nodeSelectRatio;
-            //newNode.Disabled = Locked[i];
         }
+
+        // add confirmation cursor last so that it is on top
+        GameObject confirmationCursor = new GameObject("confirmation cursor");
+        confirmationCursor.transform.SetParent(transform, false);
+        confirmationCursor.AddComponent<GridConfirmationCursor>().Init(confirmationCursorSettings);
+
         UpdateCursor();
     }
 
@@ -157,7 +135,7 @@ public class GridManager : MonoBehaviour
                 if (!selectedNodesSet.Contains(node)) {
                     selectedNodesSet.Add(node);
                 }
-                OnNodeSelected.Invoke(i);
+                OnNodeSelected.Invoke(i, nodeInfo[node].node);
             }
             selectedNodes[i] = node;
         }
@@ -176,19 +154,26 @@ public class GridManager : MonoBehaviour
         selectorDrawer.DrawSelectors();
     }
 
-    public string GetStringSelection(int color)
+    public string GetStringSelection(int playerIndex)
     {
-        int selected = cursor.GetSelectedNode(color);
+        int selected = cursor.GetSelectedNode(playerIndex);
         return nodeInfo[selected].StringPayload;
     }
 
-    public GameObject GetPrefabSelection(int color)
+    public GameObject GetPrefabSelection(int playerIndex)
     {
-        int selected = cursor.GetSelectedNode(color);
+        int selected = cursor.GetSelectedNode(playerIndex);
         return nodeInfo[selected].PrefabPayload;
     }
 
-    
+    void OnConfirm(int[] selectedIndexes)
+    {
+        int playerCount = InputProxy.playerCount;
+        NodeElement[] selections = new NodeElement[playerCount];
+        for (int i = 0; i < playerCount; i++)
+            selections[i] = nodeInfo[selectedIndexes[i]].node;
+        onConfirm.Invoke(selections);
+    }
 }
 [System.Serializable]
 public class NodePlacementSettings
@@ -237,7 +222,23 @@ public class NodePlacementSettings
 }
 
 [System.Serializable]
-public class LockedNode
+public class ConfirmationCursorSettings
+{
+    public Sprite borderSprite;
+    public Sprite confirmSprite;
+    public Color confirmColour = Color.green;
+    public Sprite rejectSprite;
+    public Color rejectColor = Color.red;
+
+    public Vector2 optionPosition;
+
+    public float borderSize = 150;
+    public float imageSize = 120;
+    public float selectedSizeRatio = 1.5f;
+}
+
+[System.Serializable]
+public class LockableNode
 {
     public NodeElement node;
     public bool locked;

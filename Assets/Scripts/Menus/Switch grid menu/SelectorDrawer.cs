@@ -13,7 +13,6 @@ public class SelectorDrawer : MonoBehaviour
     int[,] selections;
 
     Vector2 offset;
-    float size;
     float spacing;
 
     int columns;
@@ -28,13 +27,10 @@ public class SelectorDrawer : MonoBehaviour
         borderSprite = border;
         columns = placementSettings.columns;
         rows = placementSettings.rows;
-        size = placementSettings.selectorSize;
         spacing = placementSettings.spacing;
         offset = placementSettings.Offset;
 
         transform.SetParent(parent, false);
-        //transform.localPosition = Vector3.zero;
-        //transform.localScale = Vector3.one;
     }
 
     public void AddSelection(int playerIndex, bool isRow, int index) {
@@ -71,13 +67,6 @@ public class SelectorDrawer : MonoBehaviour
                 GameObject selectorObject = new GameObject("Selector");
                 Selector selector = selectorObject.AddComponent<Selector>();
                 selector.Init(borderSprite, placementSettings, false, transform);
-                //selector.borderSprite = borderSprite;
-                //selector.length = columns;
-                //selector.size = size;
-                //selector.spacing = spacing;
-                //selector.isVertical = false;
-                //selectorObject.transform.SetParent(transform);
-                //selectorObject.transform.localPosition = 
                     
                 Vector2 selectorPosition = new Vector2(spacing * (columns - 1) / 2f, -i * spacing);
 
@@ -93,13 +82,6 @@ public class SelectorDrawer : MonoBehaviour
                 GameObject selectorObject = new GameObject("Selector");
                 Selector selector = selectorObject.AddComponent<Selector>();
                 selector.Init(borderSprite, placementSettings, true, transform);
-                //selector.borderSprite = borderSprite;
-                //selector.length = rows;
-                //selector.size = size;
-                //selector.spacing = spacing;
-                //selector.isVertical = true;
-                //selectorObject.transform.SetParent(transform);
-                //selectorObject.transform.localPosition = 
                     
                 Vector2 selectorPosition = new Vector2((i - rows) * spacing, -spacing * (rows - 1) / 2f);
 

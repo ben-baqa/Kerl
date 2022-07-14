@@ -32,11 +32,6 @@ public class Node : MonoBehaviour
         CreateNode(new Color[] { });
     }
 
-    //void Start()
-    //{
-    //    CreateNode(new Color[] { });
-    //}
-
     void Update()
     {
         if (selected)

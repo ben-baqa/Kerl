@@ -22,6 +22,7 @@ public class DropDownMenu : MonoBehaviour, IPointerEnterHandler
             image = GetComponent<Image>();
 
         InputProxy.InputAdded += OnInputAdded;
+        ReconstructMenu();
     }
     private void OnDisable()
     {

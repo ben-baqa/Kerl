@@ -14,6 +14,7 @@ public class Character : MonoBehaviour
     public Placement brushingPlacement;
     public Placement resultPlacement;
     public Placement podiumPlacement;
+    public Placement previewPlacement;
 
     [Header("Team Colour reference")]
     public SkinnedMeshRenderer teamColourMesh;
