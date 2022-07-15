@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: aaccb02eba7558a40a69a932e423168f, type: 3}
-  m_Name: 2
+  m_Name: Satellite Map
   m_EditorClassIdentifier: 
-  ItemName: 
-  Image: {fileID: 21300000, guid: 9c52b51f3782f1b46b27842e0d02f03a, type: 3}
-  Type: 0
+  ItemName: Sattellite
+  Image: {fileID: 21300000, guid: 255d335fb65d91f4d84196f50424ac0d, type: 3}
+  Type: 1
   PrefabPayload: {fileID: 0}
-  StringPayload: 
+  StringPayload: Worm Map

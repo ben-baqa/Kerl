@@ -32,13 +32,20 @@ public class CharacterPreviewManager : MonoBehaviour
 
     void Start()
     {
+    }
+
+    void OnEnable()
+    {
+        if (previewParent)
+            Destroy(previewParent);
+
         previewParent = new GameObject("character previews").transform;
         previewParent.SetParent(transform, false);
         previewParent.transform.position = basePosition;
 
         characterPreviews = new CharacterPreview[maxPreviews];
 
-        for(int i = 0; i < maxPreviews; i++)
+        for (int i = 0; i < maxPreviews; i++)
         {
             GameObject previewInstance = Instantiate(previewPrefab);
             previewInstance.transform.SetParent(previewParent, false);
@@ -51,10 +58,7 @@ public class CharacterPreviewManager : MonoBehaviour
             bgColour = Color.HSVToRGB(h, backgroundSaturation, v);
             characterPreviews[i].Init(bgColour, previewTextureSize, previewRotationSpeed);
         }
-    }
 
-    void OnEnable()
-    {
         confirmationPreviews = new GameObject[InputProxy.playerCount];
         for(int i = 0; i < InputProxy.playerCount; i++)
         {

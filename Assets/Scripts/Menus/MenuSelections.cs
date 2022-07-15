@@ -26,6 +26,7 @@ public class MenuSelections : MonoBehaviour
 
     public TypedInputSprites inputSprites;
     public PlayerColours playerColours;
+    public GameObject defaultCharacterPrefab;
 
     // TODO replace with an enum when relevant to do so
     public string gameMode = "party";
@@ -62,6 +63,10 @@ public class MenuSelections : MonoBehaviour
         characterSelections = new List<GameObject>();
         foreach (NodeElement e in selections)
             characterSelections.Add(e.PrefabPayload);
+
+        foreach (List<int> team in teams)
+            if (team.Count == 0)
+                characterSelections.Add(instance.defaultCharacterPrefab);
     }
 
     public static void SetRockSelections(NodeElement[] selections)

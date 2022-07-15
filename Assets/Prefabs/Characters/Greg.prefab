@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6464361532977092875}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 9.2680645, y: 38.015816, z: -1.6489547}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -60,6 +60,9 @@ MonoBehaviour:
   podiumPlacement:
     position: {x: 0, y: 0, z: 10}
     rotation: 30
+  previewPlacement:
+    position: {x: 0, y: 0, z: 0}
+    rotation: 0
   teamColourMesh: {fileID: 6711410964212231126}
   teamMaterialIndex: 0
   broomHeadBone: {fileID: 8214552844283916184}

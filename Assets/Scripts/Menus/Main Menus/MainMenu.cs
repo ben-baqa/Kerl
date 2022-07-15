@@ -15,7 +15,7 @@ public class MainMenu : MonoBehaviour
         TeamMenu,
         CharacterSelect,
         //RockSelect,
-        //MapSelect
+        MapSelect
     }
 
     MenuState state = MenuState.Title;
@@ -48,11 +48,11 @@ public class MainMenu : MonoBehaviour
     public void Continue()
     {
         state += 1;
-        if (state > MenuState.CharacterSelect)
+        if (state > MenuState.MapSelect)
         {
             // load into game
             //Debug.LogWarning("You need to implement this LMAO");
-            SceneManager.LoadScene("Worm Map");
+            SceneManager.LoadScene(MenuSelections.map);
         }
         ApplyState();
     }
@@ -78,7 +78,7 @@ public class MainMenu : MonoBehaviour
         teamMenu.gameObject.SetActive(state == MenuState.TeamMenu);
         characterSelect.SetActive(state == MenuState.CharacterSelect);
         //rockSelect.SetActive(state == MenuState.RockSelect);
-        //mapSelect.SetActive(state == MenuState.MapSelect);
+        mapSelect.SetActive(state == MenuState.MapSelect);
     }
 
     public void SetState(MenuState newState)

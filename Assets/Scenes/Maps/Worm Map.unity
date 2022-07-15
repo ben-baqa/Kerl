@@ -4064,12 +4064,13 @@ MonoBehaviour:
   fillSpeed: 0.1
   fillMultiplierMax: 10
   fillMultiplierLerp: 0.05
-  inputOffPosition: {x: -180, y: 115, z: 0}
-  inputOnPosition: {x: 180, y: 115, z: 0}
-  inputIndicatorOffset: 40
-  indicatorSize: 30
-  inputOnIndicatorSprite: {fileID: 3286163911610860551, guid: ce2e2ca10c24f7442b4108a455f39caa, type: 3}
-  inputOffIndicatorSprite: {fileID: 3286163911610860551, guid: 172cdbd7c59896644a3a912b90714d43, type: 3}
+  tokenSettings:
+    neutralPosition: {x: -180, y: 115}
+    selectedPosition: {x: 180, y: 115}
+    spacing: 40
+    size: 30
+    onSprite: {fileID: 3286163911610860551, guid: ce2e2ca10c24f7442b4108a455f39caa, type: 3}
+    offSprite: {fileID: 3286163911610860551, guid: 172cdbd7c59896644a3a912b90714d43, type: 3}
   startingY: 360
   transitionCurve:
     serializedVersion: 2

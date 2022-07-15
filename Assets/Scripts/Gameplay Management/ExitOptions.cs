@@ -17,13 +17,7 @@ public class ExitOptions : MonoBehaviour
     public float fillMultiplierLerp = 0.05f;
 
     [Header("Input Indicator Settings")]
-    public Vector3 inputOffPosition;
-    public Vector3 inputOnPosition;
-    public float inputIndicatorOffset;
-    public float indicatorSize;
-
-    public Sprite inputOnIndicatorSprite;
-    public Sprite inputOffIndicatorSprite;
+    public SelectionTokenSettings tokenSettings;
 
     [Header("Transition Settings")]
     public float startingY;
@@ -32,7 +26,7 @@ public class ExitOptions : MonoBehaviour
 
     RectTransform rect;
     ProgressBar progressBar;
-    InputIndicator[] inputIndicators;
+    SelectionToken[] inputTokens;
 
     float progress = 0.5f;
     float fillMultiplier = 1;
@@ -58,8 +52,8 @@ public class ExitOptions : MonoBehaviour
             if (InputProxy.any)
             {
                 state = State.Active;
-                foreach (InputIndicator i in inputIndicators)
-                    i.Enable(Vector3.Lerp(inputOnPosition, inputOffPosition, 0.5f));
+                foreach (SelectionToken i in inputTokens)
+                    i.Enable(Vector3.Lerp(tokenSettings.selectedPosition, tokenSettings.neutralPosition, 0.5f));
             }
             return;
         }
@@ -116,67 +110,36 @@ public class ExitOptions : MonoBehaviour
         progressBar.Activate();
 
         int playerCount = InputProxy.playerCount;
-        inputIndicators = new InputIndicator[playerCount];
+        inputTokens = new SelectionToken[playerCount];
 
         for(int i = 0; i < playerCount; i++)
         {
-            inputIndicators[i] = new InputIndicator(transform, indicatorSize);
+            inputTokens[i] = new SelectionToken(transform, tokenSettings.size);
         }
     }
 
     void PlaceIndicators(int on)
     {
 
-        Vector3 position = inputOffPosition;
-        Vector3 offset = Vector3.right * inputIndicatorOffset;
-        int off = inputIndicators.Length - on;
+        Vector2 position = tokenSettings.neutralPosition;
+        Vector2 offset = Vector2.right * tokenSettings.spacing;
+        int off = inputTokens.Length - on;
         for (int i = 0; i < off; i++) 
         {
-            inputIndicators[i].target = position;
-            inputIndicators[i].Sprite = inputOffIndicatorSprite;
+            inputTokens[i].target = position;
+            inputTokens[i].Sprite = tokenSettings.offSprite;
             position += offset;
         }
 
-        position = inputOnPosition - (on - 1) * offset;
-        for (int i = off; i < inputIndicators.Length; i++)
+        position = tokenSettings.selectedPosition - (on - 1) * offset;
+        for (int i = off; i < inputTokens.Length; i++)
         {
-            inputIndicators[i].target = position;
-            inputIndicators[i].Sprite = inputOnIndicatorSprite;
+            inputTokens[i].target = position;
+            inputTokens[i].Sprite = tokenSettings.onSprite;
             position += offset;
         }
 
-        foreach (InputIndicator i in inputIndicators)
+        foreach (SelectionToken i in inputTokens)
             i.Process();
-    }
-
-    class InputIndicator
-    {
-        public Vector3 target;
-        public Sprite Sprite { set { image.sprite = value; } }
-
-        RectTransform rect;
-        Image image;
-
-        public InputIndicator(Transform parent, float size)
-        {
-            GameObject indicatorInstance = new GameObject("indicator");
-            indicatorInstance.transform.parent = parent;
-            rect = indicatorInstance.AddComponent<RectTransform>();
-            rect.sizeDelta = Vector2.one * size;
-            rect.localScale = Vector3.one;
-            image = indicatorInstance.AddComponent<Image>();
-            image.enabled = false;
-        }
-
-        public void Enable(Vector3 position)
-        {
-            image.enabled = true;
-            rect.anchoredPosition = position;
-        }
-
-        public void Process()
-        {
-            rect.anchoredPosition = Vector3.Lerp(rect.anchoredPosition, target, 0.2f);
-        }
     }
 }
