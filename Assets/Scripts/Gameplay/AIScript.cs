@@ -7,47 +7,48 @@ using UnityEngine;
 /// </summary>
 public class AIScript : MonoBehaviour
 {
-    public bool brushing;
+    enum State { Inactive, Timed, Brushing }
 
-    private bool throwing;
+    public bool input;
+
+    State state = State.Inactive;
+
     private float timer;
-    private FakeSkipper skipper;
+    private Thrower thrower;
     private CurlingBar bar;
 
     private void Start()
     {
-        throwing = false;
-        brushing = false;
-        skipper = FindObjectOfType<FakeSkipper>();
+        input = false;
+        thrower = FindObjectOfType<Thrower>();
         bar = FindObjectOfType<CurlingBar>(true);
     }
 
     public void StartTimer() {
-        timer = Random.Range(0.0f, skipper.period);
-        throwing = true;
+        state = State.Timed;
+        timer = Random.Range(0.0f, thrower.aimMovingSpeed);
     }
 
     void Update()
     {
-        brushing = false;
-        if (throwing)
+        input = false;
+        if (state == State.Timed)
         {
             if (timer <= 0)
             {
-                brushing = true;
-                throwing = false;
+                input = true;
+                state = State.Inactive;
             }
-            else
-            {
-                timer -= Time.deltaTime;
-            }
+            timer -= Time.deltaTime;
         }
-        else
+        else if (state == State.Brushing)
         {
-            if (bar.progress < 0.75f)
-            {
-                brushing = true;
-            }
+            input = bar.Progress < 0.75f;
         }
+    }
+
+    public void OnResult()
+    {
+        state = State.Inactive;
     }
 }

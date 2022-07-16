@@ -32,19 +32,13 @@ public class TurnManager : MonoBehaviour
 
         if (MenuSelections.teams == null)
         {
-            // fabricate players for input
-            //InputProxy.AddInput(new KeyInput(Keyboard.current, "a"));
-            //InputProxy.AddInput(new KeyInput(Keyboard.current, "b"));
-            //InputProxy.AddInput(new KeyInput(Keyboard.current, "c"));
             blueTeam = new Team(MenuSelections.debugTeams[0], ai);
             redTeam = new Team(MenuSelections.debugTeams[1], ai);
 
-            //int playerCount = 0;
+            // fabricate players for input
             foreach (List<int> team in MenuSelections.debugTeams)
                 foreach (int i in team)
                     InputProxy.AddInput(new KeyInput(Keyboard.current, "" + (char)('a' + i)));
-            //        playerCount++;
-            //for(int i = 0; i < playerCount; i++)
         }
         else
         {
@@ -64,7 +58,6 @@ public class TurnManager : MonoBehaviour
             redTeam.Next(2);
 
         inputIconHUDManager.Index = CurrentPlayer;
-        ai.StartTimer();
 
         characterManager.OnTurnStart(CurrentPlayer, NextPlayer);
     }
@@ -105,8 +98,8 @@ public class TurnManager : MonoBehaviour
 
     public class Team
     {
-        public bool Input => aiTeam? ai.brushing : InputProxy.P(members[currentIndex]);
-        public bool ToggledInput => aiTeam ? ai.brushing : InputProxy.GetToggledInput(members[currentIndex]);
+        public bool Input => aiTeam? ai.input : InputProxy.P(members[currentIndex]);
+        public bool ToggledInput => aiTeam ? ai.input : InputProxy.GetToggledInput(members[currentIndex]);
         public int CurrentPlayer => aiTeam ? -1 : members[currentIndex];
         public int NextPlayer => aiTeam ? -1 : members[GetNextIndex()];
 

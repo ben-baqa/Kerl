@@ -16,14 +16,11 @@ public class CharacterManager : MonoBehaviour
     public Mesh broomstickDefaultMesh;
     public Material[] broomstickDefaultMaterials;
 
-    //List<PlayerCharacter> characters = new List<PlayerCharacter>();
-
     CharacterSet characterSet;
 
-    //FakeSkipper skipper;
-    FakeSweeper sweeper;
+    Sweeper sweeper;
 
-    Character skipperCharacter;
+    Character throwerCharacter;
     Character sweeperCharacter;
 
     void Start()
@@ -42,47 +39,28 @@ public class CharacterManager : MonoBehaviour
         characterSet.SetBrushMeshes(broomHeadDefaultMesh, broomHeadDefaultMaterials,
             broomstickDefaultMesh, broomstickDefaultMaterials);
 
-        //for (int i = 0; i < selectedCharacters.Count; i++)
-        //{
-        //    Character instantiatedCharacter = Instantiate(selectedCharacters[i]).GetComponent<Character>();
-        //    characters.Add(new PlayerCharacter(i, instantiatedCharacter));
-        //}
+        sweeper = FindObjectOfType<Sweeper>();
 
-        //foreach(GameObject characterPrefab in selectedCharacters)
-        //    characters.Add(Instantiate(characterPrefab).GetComponent<Character>());
-
-        //foreach (PlayerCharacter pc in characters)
-        //{
-        //    pc.Init();
-        //    pc.Hide();
-        //    //assign default brush
-        //    pc.character.SetBrushMeshes(broomHeadDefaultMesh, broomHeadDefaultMaterials,
-        //        broomstickDefaultMesh, broomstickDefaultMaterials);
-        //}
-
-        //skipper = FindObjectOfType<FakeSkipper>();
-        sweeper = FindObjectOfType<FakeSweeper>();
-
-        ApplyScriptedPlacements(FindObjectOfType<TeamIntro>().GetPlayerPlacments());
+        ApplyIntroPlacements(FindObjectOfType<TeamIntro>().GetPlayerPlacments());
     }
 
-    public void ApplyScriptedPlacements(Placement[] characterPlacements)
+    public void ApplyIntroPlacements(Placement[] characterPlacements)
     {
         Character[] characters = characterSet.GetCharacters();
         for(int i = 0; i < characters.Length; i++)
         {
-            characterPlacements[i].Apply(characters[i].transform);
+            (characterPlacements[i] + characters[i].introPlacement).Apply(characters[i].transform);
             if (characters[i].hideBroomOnIntro)
                 characters[i].HideBroom();
         }
     }
 
-    public void OnTurnStart(int skipperIndex, int sweeperIndex)
+    public void OnTurnStart(int throwerIndex, int sweeperIndex)
     {
         characterSet.HideAll();
 
-        skipperCharacter = characterSet[skipperIndex];
-        skipperCharacter.SetUpThrowing();
+        throwerCharacter = characterSet[throwerIndex];
+        throwerCharacter.SetUpThrowing();
 
         sweeperCharacter = characterSet[sweeperIndex];
         sweeperCharacter.SetUpBrushing();
@@ -91,7 +69,7 @@ public class CharacterManager : MonoBehaviour
 
     public void OnThrow()
     {
-        skipperCharacter.OnThrow();
+        throwerCharacter.OnThrow();
         sweeperCharacter.OnThrow();
     }
 

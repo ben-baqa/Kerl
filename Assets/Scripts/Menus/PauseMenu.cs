@@ -11,14 +11,14 @@ public class PauseMenu : MonoBehaviour
     public GameObject check;
 
     private Canvas menu;
-    private Skipper skipper;
+    private Thrower thrower;
 
     // Start is called before the first frame update
     void Start()
     {
         menu = GetComponentInChildren<Canvas>();
         menu.enabled = false;
-        skipper = FindObjectOfType<Skipper>();
+        thrower = FindObjectOfType<Thrower>();
     }
 
     // Update is called once per frame
@@ -42,13 +42,13 @@ public class PauseMenu : MonoBehaviour
 
     public void AdjustCurveSpeed(float v)
     {
-        skipper.period = 1 / v;
+        //thrower.period = 1 / v;
     }
 
     public void OnClickAimAssist()
     {
-        skipper.weightedCurve = !skipper.weightedCurve;
-        check.SetActive(skipper.weightedCurve);
+        //thrower.weightedCurve = !thrower.weightedCurve;
+        //check.SetActive(thrower.weightedCurve);
     }
 
     public void Quit()

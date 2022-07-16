@@ -2,165 +2,155 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 /// <summary>
 /// Runs the brushing logic
 /// </summary>
 public class Sweeper : MonoBehaviour
 {
-    public Vector3 offsetFromRock, resultPosition;
+    enum Follow { rock, result, start }
+    Follow followState = Follow.start;
 
     [Header("Sweeping Physics")]
     public float frictionMultipler = 1;
-    public float decay = .01f, sweepValue = .1f;
+    //public float decay = .01f, sweepValue = .1f;
+    public float progressUpRate = 0.1f;
+    public float progressDownRate = 0.05f;
 
-    [Header("body movment")]
+    [Header("body movement")]
     public float followLerp;
-    public float lerpLerp, normalLerp, rotLerp,
-        broomSoundDelay, brushRot, startRot, resultRot;
+    public float lerpLerp, normalLerp;
 
 
-    public AudioSource broomSfx;
-    public AudioClip[] sweepSounds;
+    Character character;
 
-    private Animator anim;
-    private AudioSource sfx;
-    private SkinnedMeshRenderer rend;
-    private TurnManager input;
-    private CurlingBar barDisplay;
-    private Rock rock;
+    TurnManager turnManager;
+    CurlingBar curlingBar;
+    Rock rock;
 
-    private Vector3 startPosition;
+    Vector3 startPoint;
+    Vector3 anchor;
+    Vector3 upLeft;
+    Vector3 downRight;
 
-    private enum Follow {rock, result, start }
-    private Follow followState = Follow.start;
+    float notBrushingRatio;
+    float brushingProgress;
 
-    // Start is called before the first frame update
     void Awake()
     {
-        anim = GetComponent<Animator>();
-        sfx = GetComponent<AudioSource>();
-        rend = GetComponentInChildren<SkinnedMeshRenderer>();
-        input = FindObjectOfType<TurnManager>();
+        turnManager = FindObjectOfType<TurnManager>();
 
-        barDisplay = FindObjectOfType<CurlingBar>();
-
-        startPosition = transform.position;
+        curlingBar = FindObjectOfType<CurlingBar>();
+        curlingBar.gameObject.SetActive(false);
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        frictionMultipler += decay / 50;
-        bool sliding = followState == Follow.rock;
-        barDisplay.gameObject.SetActive(sliding);
-        anim.SetBool("sliding", sliding);
-
         switch (followState)
         {
             case Follow.rock:
-                transform.position = Vector3.Lerp(transform.position,
-                    rock.transform.position + offsetFromRock, followLerp);
+                character.MoveToRock(rock.position, followLerp);
                 followLerp = Mathf.Lerp(followLerp, 1, lerpLerp);
-                transform.eulerAngles = Vector3.Lerp(transform.eulerAngles,
-                    Vector3.up * brushRot, followLerp);
-                PredictLand();
+
+                if (followLerp > .3f)
+                {
+                    if (turnManager.GetInput())
+                    {
+                        brushingProgress += progressUpRate * Time.deltaTime;
+                        character.BrushSpeed = 1;
+                    }
+                    else
+                    {
+                        brushingProgress -= progressDownRate * Time.deltaTime;
+                        character.BrushSpeed = 0;
+                    }
+                }
+                brushingProgress = Mathf.Clamp(brushingProgress, .25f, 1);
+
+                UpdateCurlingbar();
                 break;
             case Follow.result:
-                transform.position = Vector3.Lerp(transform.position,
-                    resultPosition, followLerp);
-                transform.eulerAngles = Vector3.Lerp(transform.eulerAngles,
-                    Vector3.up * resultRot, rotLerp);
+                character.MoveToResult(followLerp);
                 break;
         }
-        if (input.GetInput() && followLerp > .3f &&
-            anim.GetCurrentAnimatorStateInfo(0).IsName("slide") &&
-            followState == Follow.rock)
-        {
-            Sweep();
-            //DataSender.Instance.SendToJS("sweep");
-        }
     }
 
-    public void Sweep()
+    public void OnThrow()
     {
-        sfx.Play();
-        anim.SetTrigger("sweep");
-        frictionMultipler -= sweepValue;
-        StartCoroutine(Brush());
-    }
-
-    private IEnumerator Brush()
-    {
-        yield return new WaitForSeconds(broomSoundDelay);
-        broomSfx.clip = sweepSounds[Random.Range(0, sweepSounds.Length)];
-        broomSfx.Play();
-    }
-
-    public void OnThrow(Rock r)
-    {
-        rock = r;
         followState = Follow.rock;
         followLerp = 0;
         frictionMultipler = 1;
+    }
+
+    public void SetRock(Rock r) => rock = r;
+
+    public void OnTurnStart()
+    {
+        followState = Follow.start;
+    }
+
+    public void SetCharacter(Character c)
+    {
+        character = c;
+    }
+
+    public void OnThrow(Vector3 startPoint, Vector3 throwingDirection, float targetRadius, float notBrushingRatio)
+    {
+        curlingBar.gameObject.SetActive(true);
+        followState = Follow.rock;
+        followLerp = 0;
+        frictionMultipler = 1;
+
+        this.startPoint = startPoint;
+        this.notBrushingRatio = notBrushingRatio;
+        brushingProgress = .75f;
+
+        anchor = throwingDirection - ((Quaternion.Euler(0, 90, 0) * throwingDirection).normalized + throwingDirection.normalized * 3) * targetRadius;
+        upLeft = throwingDirection.normalized * targetRadius * 4;
+        downRight = (Quaternion.Euler(0, 90, 0) * throwingDirection).normalized * targetRadius * 2;
     }
 
     public void OnResult()
     {
         followState = Follow.result;
         followLerp = normalLerp;
+        character.OnResult();
+
+        rock.StopBrushing(brushingProgress);
+        curlingBar.gameObject.SetActive(false);
     }
 
-    public void OnTurnStart(Material mat)
+    private void UpdateCurlingbar()
     {
-        followState = Follow.start;
-        transform.position = startPosition;
-        transform.eulerAngles = Vector3.up * startRot;
+        //curlingBar.UpdateProgress(brushingProgress);
+        curlingBar.Progress = brushingProgress;
 
-        Material[] ar = rend.materials;
-        ar[1] = mat;
-        ar[3] = mat;
-        rend.materials = ar;
-    }
+        Vector3[] currentPredictionPoints = GetPredictionPoints();
+        List<Vector2> convertedPredictionPoints = new List<Vector2>();
 
-    // predict landing zone, 1 = 82, .75 = 75, 0 = 54
-    public void PredictLand()
-    {
-        Rigidbody rb = rock.GetComponent<Rigidbody>();
-
-        rock.frictionMultiplier = frictionMultipler;
-
-        Vector3 pos = rb.position;
-        Vector3 vel = rb.velocity;
-        float radVel = rb.angularVelocity.y,
-            friction = rock.friction * frictionMultipler;
-
-        int safetyCount = 0;
-
-        while(vel.magnitude > rock.stopThreshold)
+        for (int i = 0; i < currentPredictionPoints.Length; i++)
         {
-            pos += vel / 50;
-            vel += Vector3.right * radVel * rock.spinForce / 50;
-
-            vel *= (1 - friction);
-            radVel -= radVel * rb.angularDrag;
-
-            if(vel.magnitude < rock.slowDownThreshold)
-            {
-                vel = Vector3.Lerp(vel, Vector3.zero, rock.slowDownLerp);
-            }
-
-            if (safetyCount++ > 1000)
-            {
-                print("Yipes! " + safetyCount + " was not enough!");
-                break;
-            }
+            convertedPredictionPoints.Add(ConvertToUI(currentPredictionPoints[i]));
         }
 
-        //string s = "Long: " + pos.z + ", Calc: ";
-        //pos.z = (rb.velocity.z * (1 - friction) / -50) / Mathf.Log(1 - friction);
-        //print(s + pos.z);
+        curlingBar.UpdatePredictionLine(convertedPredictionPoints);
+    }
 
-        float v = Mathf.Clamp01((pos.z - 54) / 28);
-        barDisplay.progress = v;
+    private Vector2 ConvertToUI(Vector3 original)
+    {
+        Vector3 translated = original - anchor - startPoint;
+        Vector3 downRightProjection = Vector3.Project(translated, downRight);
+        Vector3 upLeftProjection = Vector3.Project(translated, upLeft);
+        return new Vector2(downRightProjection.magnitude / downRight.magnitude * (IsPositive(downRightProjection, downRight) ? 1 : -1), upLeftProjection.magnitude / upLeft.magnitude * (IsPositive(upLeftProjection, upLeft) ? 1 : -1));
+    }
+
+    private bool IsPositive(Vector3 projection, Vector3 axis)
+    {
+        return projection.x * axis.x >= 0 && projection.y * axis.y >= 0 && projection.z * axis.z >= 0;
+    }
+
+    public Vector3[] GetPredictionPoints()
+    {
+        return rock.GetPredictionPoints(100, 1 - notBrushingRatio, 4 * notBrushingRatio * brushingProgress / 3);
     }
 }

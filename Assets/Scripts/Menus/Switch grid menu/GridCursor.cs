@@ -22,8 +22,9 @@ public class GridCursor : MonoBehaviour
     Action updateVisualCursor;
     Action updateVisualSelection;
     Action onConfirmationStarted;
-    Action onReject;
-    Action<int[]> onConfirm;
+    Action<int> onReject;
+    Action<int> onConfirm;
+    Action<int[]> onComplete;
 
     GridConfirmationCursor confirmationCursor;
 
@@ -50,7 +51,7 @@ public class GridCursor : MonoBehaviour
 
     public void Init(int columns, int rows, bool[] locked, float period,
         Action updateCursor, Action updateSelection,
-        Action enterConfirmation, Action reject, Action<int[]> confirm)
+        Action enterConfirmation, Action<int> reject, Action<int> confirm, Action<int[]> complete)
     {
         this.columns = columns;
         this.rows = rows;
@@ -61,6 +62,7 @@ public class GridCursor : MonoBehaviour
         onConfirmationStarted = enterConfirmation;
         onReject = reject;
         onConfirm = confirm;
+        onComplete = complete;
 
         playerCount = InputProxy.playerCount;
 
@@ -193,14 +195,15 @@ public class GridCursor : MonoBehaviour
             ResetSelection(playerIndex);
             confirmationCursor.Hide();
             updateVisualSelection();
-            onReject();
+            onReject(playerIndex);
             return;
         }
         confirmed[playerIndex] = true;
+        onConfirm(playerIndex);
         if (confirmed.All(c => c))
         {
             state = State.Done;
-            onConfirm(selectedNode);
+            onComplete(selectedNode);
         }
     }
 

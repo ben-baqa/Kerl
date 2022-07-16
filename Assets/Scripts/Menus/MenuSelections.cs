@@ -50,7 +50,12 @@ public class MenuSelections : MonoBehaviour
             return null;
         return instance.inputSprites.GetSpriteForInput(index);
     }
-    public static Color GetColor(int index) => instance.playerColours[index];
+    public static Color GetColor(int index)
+    {
+        if(instance)
+            return instance.playerColours[index];
+        return Color.white;
+    }
 
 
     public static void SetCharacterSelections(NodeElement[] selections)

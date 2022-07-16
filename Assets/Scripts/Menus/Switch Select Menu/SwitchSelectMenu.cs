@@ -20,6 +20,7 @@ public class SwitchSelectMenu : MonoBehaviour
     public float confirmationTime = 5;
 
     [Header("Token Settings")]
+    public Transform tokenParent;
     public SelectionTokenSettings tokenSettings;
 
     SwitchSelectNode[] nodes;
@@ -52,17 +53,25 @@ public class SwitchSelectMenu : MonoBehaviour
     void OnEnable()
     {
         int playerCount = InputProxy.playerCount;
+        confirming = false;
+        timerText.enabled = false;
+        cursor = 0;
+        preview.sprite = nodeInfo[0].Image;
+
+        foreach (Transform child in tokenParent)
+            Destroy(child.gameObject);
 
         selections = new int[playerCount];
         tokens = new SelectionToken[playerCount];
         for(int i = 0; i < playerCount; i++)
         {
             selections[i] = -1;
-            tokens[i] = new SelectionToken(transform, tokenSettings.size);
+            tokens[i] = new SelectionToken(tokenParent, tokenSettings.size);
             tokens[i].Sprite = tokenSettings.offSprite;
+            tokens[i].Colour = MenuSelections.GetColor(i);
             
             tokens[i].Enable(tokenSettings.neutralPosition +
-                (i - ((playerCount - 1) / 2f)) * tokenSettings.spacing * Vector2.up);
+                (i - ((playerCount - 1) / 2f)) * tokenSettings.neutralSpacing);
         }
     }
 
@@ -135,7 +144,7 @@ public class SwitchSelectMenu : MonoBehaviour
             {
                 tokens[i].target = position;
                 tokens[i].Sprite = tokenSettings.onSprite;
-                position += Vector2.right * tokenSettings.spacing;
+                position += tokenSettings.selectedSpacing;
             }
         }
     }
@@ -153,6 +162,7 @@ public class SwitchSelectMenu : MonoBehaviour
             if (numberOfSelections > InputProxy.playerCount / 2)
             {
                 MenuSelections.map = nodeInfo[i].StringPayload;
+                preview.sprite = nodeInfo[i].Image;
                 confirmationTimer = confirmationTime;
                 confirming = true;
                 return;

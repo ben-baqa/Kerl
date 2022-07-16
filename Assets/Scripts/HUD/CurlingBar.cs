@@ -1,5 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,33 +8,37 @@ using UnityEngine.UI;
 /// </summary>
 public class CurlingBar : MonoBehaviour
 {
-    [Range(0.0f, 1.0f)]
-    public float progress;
-
     public GameObject fill;
     public Gradient gradient;
 
-    private Slider slider;
-    private Image image;
-    private AudioSource twinkleNoise;
+    UIPredictionLine predictionLine;
+    Slider slider;
+    Image image;
+
+    float _progress;
 
     void Start()
     {
         slider = gameObject.GetComponent<Slider>();
         image = fill.GetComponent<Image>();
-        twinkleNoise = GetComponent<AudioSource>();
+        predictionLine = GetComponentInChildren<UIPredictionLine>();
     }
 
-    private void OnEnable()
+    public float Progress
     {
-        if (twinkleNoise)
-            twinkleNoise.Play();
+        set
+        {
+            slider.value = value;
+            image.color = gradient.Evaluate(value);
+            _progress = value;
+        }
+        get => _progress;
     }
 
-    void Update()
+    public void UpdatePredictionLine(List<Vector2> points)
     {
-        slider.value = progress;
-        image.color = gradient.Evaluate(progress);
-        twinkleNoise.volume = 1 - Mathf.Pow(4 * progress - 3, 2);
+        predictionLine.DrawLines(points.Select(p => new Vector2(
+            p.x * GetComponent<RectTransform>().rect.width,
+            p.y * GetComponent<RectTransform>().rect.height)).ToList());
     }
 }

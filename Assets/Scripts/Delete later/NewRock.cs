@@ -4,28 +4,20 @@ using System;
 /// <summary>
 /// Runs the physics and scoring of a rock
 /// </summary>
-public class Rock : MonoBehaviour
+public class NewRock : MonoBehaviour
 {
     [Header("Movement")]
     public float intendedTime = 8;
     public float movementThreshold = 1;
-    [Min(10)]
-    public float fallingKillThreshold = 100;
 
     [Header("Sounds")]
     public AudioClip[] collisionSounds;
-    public AudioSource slip;
-    public AudioSource onScore;
-    public AudioSource onLoseScore;
+    public AudioSource slip, onScore, onLoseScore;
 
-    [Space(20)]
-    public bool blue;
+    [HideInInspector]
+    Action OnDoneBrushing;
 
     public Vector3 position => transform.position;
-    public bool IsMoving =>
-        (rb.velocity.magnitude > movementThreshold
-        || movementSpeed > movementThreshold)
-        && rb.position.y > -0.5f;
 
     float brushingTimer;
 
@@ -48,14 +40,13 @@ public class Rock : MonoBehaviour
     bool isBrushing = false;
     bool isFollowingCurve = false;
 
-    bool hasEndedTurn = false;
     bool isScoring = false;
     bool hasSlipped = false;
 
     Rigidbody rb;
     AudioSource sfx;
 
-    Rock hitBy;
+    NewRock hitBy;
 
     public bool IsBrushing
     {
@@ -63,13 +54,6 @@ public class Rock : MonoBehaviour
         {
             return isBrushing;
         }
-    }
-
-    private void Start()
-    {
-        sfx = GetComponent<AudioSource>();
-
-        //transform.GetChild(1).gameObject.SetActive(isScoring);
     }
 
     private void FixedUpdate()
@@ -104,6 +88,7 @@ public class Rock : MonoBehaviour
                 else
                 {
                     RoundManager.OnRockPassResultThreshold();
+                    OnDoneBrushing();
                     //onDoneBrushing.Invoke();
                 }
             }
@@ -114,27 +99,13 @@ public class Rock : MonoBehaviour
                 rotationSpeed = 0;
                 isFollowingCurve = false;
                 hitBy = null;
-
-                if (!hasEndedTurn)
-                {
-                    hasEndedTurn = true;
-                    RoundManager.OnRockStop();
-                }
+                RoundManager.OnRockStop();
             }
 
-            if (rb.position.y < -0.5f && !hasSlipped)
+            if(rb.position.y < -0.5f && !hasSlipped)
             {
                 hasSlipped = true;
-                slip.Play();
-                if (!hasEndedTurn)
-                {
-                    RoundManager.OnRockStop();
-                    hasEndedTurn = true;
-                }
             }
-
-            if (rb.position.y < -fallingKillThreshold)
-                Destroy(gameObject);
         }
     }
 
@@ -182,26 +153,26 @@ public class Rock : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         GameObject target = collision.gameObject;
-        if (target.GetComponent<Rock>() != null)
+        if (target.GetComponent<NewRock>() != null)
         {
-            if (target.GetComponent<Rock>() == hitBy) return;
+            if (target.GetComponent<NewRock>() == hitBy) return;
             Vector3 toTarget = (target.transform.position - transform.position).normalized;
             isFollowingCurve = false;
             Vector3 oldVelocity = velocity;
             velocity -= Vector3.Project(velocity, toTarget);
             movementSpeed = velocity.magnitude;
-            target.GetComponent<Rock>().AddRockCollision(this, Vector3.Project(oldVelocity, toTarget), decay);
+            target.GetComponent<NewRock>().AddRockCollision(this, Vector3.Project(oldVelocity, toTarget), decay);
 
             if (sfx && !sfx.isPlaying)
             {
-                sfx.volume = Mathf.Clamp01(movementSpeed * 3);
+                sfx.volume = Mathf.Clamp01(movementSpeed * 2);
                 sfx.clip = collisionSounds[UnityEngine.Random.Range(0, collisionSounds.Length)];
                 sfx.Play();
             }
         }
     }
 
-    public void AddRockCollision(Rock gotHitBy, Vector3 velocity, float decay)
+    public void AddRockCollision(NewRock gotHitBy, Vector3 velocity, float decay)
     {
         isThrown = true;
         isFollowingCurve = false;

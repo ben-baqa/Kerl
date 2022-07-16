@@ -7,7 +7,7 @@ public class SelectionToken
 {
     public Vector3 target;
     public Sprite Sprite { set { image.sprite = value; } }
-    public 
+    public Color Colour { set { image.color = value; } }
 
     RectTransform rect;
     Image image;
@@ -26,6 +26,7 @@ public class SelectionToken
     public void Enable(Vector3 position)
     {
         image.enabled = true;
+        target = position;
         rect.anchoredPosition = position;
     }
 
@@ -40,6 +41,8 @@ public class SelectionTokenSettings
 {
     public Vector2 neutralPosition;
     public Vector2 selectedPosition;
+    public Vector2 neutralSpacing;
+    public Vector2 selectedSpacing;
     public float spacing;
     public float size;
 

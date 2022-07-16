@@ -24,6 +24,9 @@ public class ExitOptions : MonoBehaviour
     public AnimationCurve transitionCurve;
     public float transitionDuration;
 
+    [Header("references")]
+    public GameObject readyPopup;
+
     RectTransform rect;
     ProgressBar progressBar;
     SelectionToken[] inputTokens;
@@ -40,6 +43,8 @@ public class ExitOptions : MonoBehaviour
     {
         rect = transform as RectTransform;
         rect.anchoredPosition = Vector3.up * startingY;
+
+        readyPopup.SetActive(false);
     }
 
     void FixedUpdate()
@@ -100,6 +105,8 @@ public class ExitOptions : MonoBehaviour
     public void Activate()
     {
         state = State.AwaitingInput;
+
+        readyPopup.SetActive(true);
 
         rect.anchoredPosition = Vector3.up * startingY;
         transitionTimer = 0;

@@ -13,8 +13,8 @@ public class Character : MonoBehaviour
     public Placement brushingWaitPlacement;
     public Placement brushingPlacement;
     public Placement resultPlacement;
+    public Placement introPlacement;
     public Placement podiumPlacement;
-    public Placement previewPlacement;
 
     [Header("Team Colour reference")]
     public SkinnedMeshRenderer teamColourMesh;
@@ -134,6 +134,17 @@ public class Placement
     public Vector3 position;
     public float rotation;
 
+    public Placement()
+    {
+        position = Vector3.zero;
+        rotation = 0;
+    }
+    public Placement(Placement p)
+    {
+        position = p.position;
+        rotation = p.rotation;
+    }
+
     public void Apply(Transform t)
     {
         t.localPosition = position;
@@ -149,12 +160,20 @@ public class Placement
         t.localEulerAngles = Vector3.up * Mathf.Lerp(LoopAngle(t.localEulerAngles.y), rotation, rotLerp);
     }
 
-    private float LoopAngle(float angle, float centre = 0)
+    private static float LoopAngle(float angle, float centre = 0)
     {
         if (angle > centre + 180)
             return LoopAngle(angle - 360, centre);
         else if (angle < centre - 180)
             return LoopAngle(angle + 360, centre);
         return angle;
+    }
+
+    public static Placement operator +(Placement lhs, Placement rhs)
+    {
+        Placement result = new Placement(lhs);
+        result.position += (Vector3)(Matrix4x4.Rotate(Quaternion.Euler(0, result.rotation, 0)) * rhs.position);
+        result.rotation = lhs.rotation + rhs.rotation;
+        return result;
     }
 }

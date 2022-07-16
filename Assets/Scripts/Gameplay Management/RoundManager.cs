@@ -25,11 +25,13 @@ public class RoundManager : MonoBehaviour
 
     TurnManager turnManager;
     CharacterManager characterManager;
-    FakeSkipper skipper;
-    FakeSweeper sweeper;
+    Thrower thrower;
+    Sweeper sweeper;
+    AIScript ai;
     RockSelector rockSelector;
     RockPile rockPile;
 
+    Scorekeeper scorekeeper;
     ScoreHUD scoreHUD;
     InputIconHUDManager inputIconHUDManager;
     ExitOptions exitOptions;
@@ -49,12 +51,14 @@ public class RoundManager : MonoBehaviour
 
         turnManager = FindObjectOfType<TurnManager>();
         characterManager = FindObjectOfType<CharacterManager>();
-        skipper = FindObjectOfType<FakeSkipper>();
-        sweeper = FindObjectOfType<FakeSweeper>();
+        thrower = FindObjectOfType<Thrower>();
+        sweeper = FindObjectOfType<Sweeper>();
+        ai = FindObjectOfType<AIScript>();
         rockSelector = FindObjectOfType<RockSelector>();
         rockPile = FindObjectOfType<RockPile>();
         rockPile.PlaceRocks(rocks);
 
+        scorekeeper = FindObjectOfType<Scorekeeper>();
         scoreHUD = FindObjectOfType<ScoreHUD>();
         inputIconHUDManager = FindObjectOfType<InputIconHUDManager>();
         exitOptions = FindObjectOfType<ExitOptions>();
@@ -96,7 +100,8 @@ public class RoundManager : MonoBehaviour
         if(throwCount >= rocks * 2)
         {
             if (NetworkMessageHandler.isHost)
-                StartCoroutine(EnableEndLoader());
+                scorekeeper.GetFinalResult();
+                //StartCoroutine(EnableEndLoader());
 
             return;
         }
@@ -115,8 +120,10 @@ public class RoundManager : MonoBehaviour
     {
         rockPile.RemoveRock(blueTurn);
         inputIconHUDManager.OnRockSelected();
-        skipper.StartTargetSelection(rock);
+        thrower.StartTargetSelection(rock);
         sweeper.SetRock(rock);
+        ai.StartTimer();
+        scorekeeper.OnRockSelected(rock);
         brushCam.SetRock(rock);
         audioEffects.OnRockSelection();
 
@@ -125,6 +132,7 @@ public class RoundManager : MonoBehaviour
 
     public void OnTargetSelect()
     {
+        ai.StartTimer();
         inputIconHUDManager.OnTargetSelected();
         audioEffects.OnTargetSelection();
         GameState = GameState.Throwing;
@@ -136,7 +144,7 @@ public class RoundManager : MonoBehaviour
         turnManager.OnThrow();
         inputIconHUDManager.OnThrow();
         characterManager.OnThrow();
-        sweeper.OnThrow();
+        //sweeper.OnThrow();
         audioEffects.OnThrow();
         throwCount++;
         GameState = GameState.Brushing;
@@ -158,6 +166,7 @@ public class RoundManager : MonoBehaviour
         instance.StartTurn();
     }
 
+    public void ShowFinalResult() => StartCoroutine(EnableEndLoader());
 
     // wait a few seconds at the podium view before the player can load back to the menu
     IEnumerator EnableEndLoader()

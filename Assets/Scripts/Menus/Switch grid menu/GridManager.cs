@@ -18,13 +18,16 @@ public class GridManager : MonoBehaviour
 
     public UnityEvent<int, NodeElement> OnNodeSelected;
     public UnityEvent OnConfirmationStarted;
-    public UnityEvent OnReject;
-    public UnityEvent<NodeElement[]> onConfirm;
+    public UnityEvent<int> OnReject;
+    public UnityEvent<int> OnConfirm;
+    public UnityEvent<NodeElement[]> OnComplete;
 
     SelectorDrawer selectorDrawer;
     List<Node> nodes;
 
     GridCursor cursor;
+
+    bool[] locked;
 
     int columns;
     int rows;
@@ -54,13 +57,32 @@ public class GridManager : MonoBehaviour
         columns = placement.columns;
         rows = placement.rows = (int)Mathf.Ceil((float)nodeInfo.Count / placement.columns);
 
-        bool[] locked = new bool[nodeInfo.Count];
+        locked = new bool[nodeInfo.Count];
         for (int i = 0; i < locked.Length; i++)
             locked[i] = nodeInfo[i].locked;
 
+        ConstructGrid();
+    }
+
+    private void OnEnable()
+    {
+        if (locked == null)
+            return;
+
+        Destroy(cursor);
+        Destroy(selectorDrawer.gameObject);
+        foreach (Node n in nodes)
+            Destroy(n.gameObject);
+        Destroy(GetComponentInChildren<GridConfirmationCursor>(true).gameObject);
+
+        ConstructGrid();
+    }
+
+    private void ConstructGrid()
+    {
         cursor = gameObject.AddComponent<GridCursor>();
-        cursor.Init(columns, rows, locked, selectionPeriod, UpdateCursor,UpdateSelection,
-            OnConfirmationStarted.Invoke, OnReject.Invoke, OnConfirm);
+        cursor.Init(columns, rows, locked, selectionPeriod, UpdateCursor, UpdateSelection,
+            OnConfirmationStarted.Invoke, OnReject.Invoke, OnConfirm.Invoke, Complete);
 
         GameObject selectorDrawerObject = new GameObject("Selector Drawer", typeof(RectTransform));
         selectorDrawer = selectorDrawerObject.AddComponent<SelectorDrawer>();
@@ -166,13 +188,13 @@ public class GridManager : MonoBehaviour
         return nodeInfo[selected].PrefabPayload;
     }
 
-    void OnConfirm(int[] selectedIndexes)
+    void Complete(int[] selectedIndexes)
     {
         int playerCount = InputProxy.playerCount;
         NodeElement[] selections = new NodeElement[playerCount];
         for (int i = 0; i < playerCount; i++)
             selections[i] = nodeInfo[selectedIndexes[i]].node;
-        onConfirm.Invoke(selections);
+        OnComplete.Invoke(selections);
     }
 }
 [System.Serializable]

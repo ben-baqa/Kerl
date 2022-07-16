@@ -14,6 +14,9 @@ public class Scorekeeper : MonoBehaviour
     public float minDistance = 6.75f;
 
     ScoreHUD display;
+    List<Rock> rocks;
+
+    bool awaitingFinalScore;
 
     private void OnDrawGizmos()
     {
@@ -24,31 +27,39 @@ public class Scorekeeper : MonoBehaviour
     void Start()
     {
         display = FindObjectOfType<ScoreHUD>();
+        rocks = new List<Rock>();
     }
 
     void Update()
     {
         UpdateScore();
         display.UpdateScore(score);
+
+        if (awaitingFinalScore)
+            WaitForFinalScore();
+    }
+
+    public void OnRockSelected(Rock newRock)
+    {
+        rocks.Add(newRock);
     }
 
     public void UpdateScore()
     {
-        Rock[] rocks = FindObjectsOfType<Rock>();
-        if (rocks.Length < 1)
+        //Rock[] rocks = FindObjectsOfType<Rock>();
+        if (rocks.Count < 1)
             return;
 
-        rocks = rocks.OrderBy(x => (x.transform.position -
-            transform.position).magnitude).ToArray();
+        rocks.RemoveAll(rock => rock == null);
+        rocks = rocks.OrderBy(x => (x.position - transform.position).magnitude).ToList();
 
         score = 0;
         bool blue = rocks[0].blue;
-        if (Vector3.Distance(rocks[0].transform.position,
-                transform.position) < minDistance)
+        if ((rocks[0].position - transform.position).magnitude < minDistance)
         {
             blue = rocks[0].blue;
             score = 1;
-            for (int i = 1; i < rocks.Length; i++)
+            for (int i = 1; i < rocks.Count; i++)
             {
                 if (rocks[i].blue != blue || Vector3.Distance(
                     rocks[i].transform.position, transform.position) > minDistance)
@@ -57,10 +68,25 @@ public class Scorekeeper : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < rocks.Length; i++)
+        for (int i = 0; i < rocks.Count; i++)
             rocks[i].Score(score > i);
 
         if (!blue)
             score *= -1;
+    }
+
+    public void GetFinalResult()
+    {
+        awaitingFinalScore = true;
+    }
+
+    public void WaitForFinalScore()
+    {
+        foreach (Rock rock in rocks)
+            if (rock.IsMoving)
+                return;
+
+        awaitingFinalScore = false;
+        RoundManager.instance.ShowFinalResult();
     }
 }

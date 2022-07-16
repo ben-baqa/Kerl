@@ -14,34 +14,41 @@ public class CharacterPreviewManager : MonoBehaviour
     public Vector3 basePosition;
     public Vector3 offset;
 
-    [Header("settings")]
+    [Header("preview settings")]
     public float backgroundSaturation;
     public int maxPreviews = 4;
+    public int previewTextureSize = 600;
+    public float previewRotationSpeed;
+
+    [Header("confirmation preview settings")]
     public float confirmationBorderSize = 150;
     public Sprite confirmationBorderSprite;
     public float confirmationSize = 150;
-    public int previewTextureSize = 600;
 
-    public float previewRotationSpeed;
+    [Header("confirmation indicator settings")]
+    public Sprite indicatorSprite;
+    public Vector2 indicatorOffset;
+    public float indicatorSize;
+
 
     CharacterPreview[] characterPreviews;
     GameObject[] confirmationPreviews;
+    Image[] confirmationIndicators;
 
     Transform previewParent;
 
 
-    void Start()
-    {
-    }
-
     void OnEnable()
     {
         if (previewParent)
-            Destroy(previewParent);
+            Destroy(previewParent.gameObject);
 
         previewParent = new GameObject("character previews").transform;
         previewParent.SetParent(transform, false);
         previewParent.transform.position = basePosition;
+
+        foreach (Transform child in confirmationParent)
+            Destroy(child.gameObject);
 
         characterPreviews = new CharacterPreview[maxPreviews];
 
@@ -60,6 +67,7 @@ public class CharacterPreviewManager : MonoBehaviour
         }
 
         confirmationPreviews = new GameObject[InputProxy.playerCount];
+        confirmationIndicators = new Image[InputProxy.playerCount];
         for(int i = 0; i < InputProxy.playerCount; i++)
         {
             selectingPreviews[i].GetComponentInChildren<RawImage>(true)
@@ -78,9 +86,19 @@ public class CharacterPreviewManager : MonoBehaviour
             im.texture = characterPreviews[i].Texture;
 
             confirmationPreviews[i] = confirmationBorder;
+
+            GameObject indicatorInstance = new GameObject("indicator");
+            indicatorInstance.transform.SetParent(confirmationBorder.transform, false);
+            indicatorInstance.transform.localPosition = indicatorOffset;
+            Image ind = indicatorInstance.AddComponent<Image>();
+            ind.sprite = indicatorSprite;
+            ind.rectTransform.sizeDelta = Vector2.one * indicatorSize;
+            ind.enabled = false;
+
+            confirmationIndicators[i] = ind;
         }
         OnConfirmationStart();
-        OnReject();
+        OnReject(-1);
     }
 
     public void OnCharacterSelected(int playerIndex, NodeElement selectedNode)
@@ -90,7 +108,7 @@ public class CharacterPreviewManager : MonoBehaviour
 
     public void OnConfirmationStart()
     {
-        transform.SetAsLastSibling();
+        //transform.SetAsLastSibling();
 
         foreach (GameObject o in selectingPreviews)
             o.SetActive(false);
@@ -98,11 +116,22 @@ public class CharacterPreviewManager : MonoBehaviour
             o.SetActive(true);
     }
 
-    public void OnReject()
+    public void OnReject(int playerIndex)
     {
         for (int i = 0; i < InputProxy.playerCount; i++)
             selectingPreviews[i].SetActive(true);
         foreach (GameObject o in confirmationPreviews)
             o.SetActive(false);
+
+        if (playerIndex >= 0)
+            characterPreviews[playerIndex].SetCharacter(null);
+
+        foreach (Image i in confirmationIndicators)
+            i.enabled = false;
+    }
+
+    public void OnConfirm(int playerIndex)
+    {
+        confirmationIndicators[playerIndex].enabled = true;
     }
 }

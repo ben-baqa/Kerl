@@ -42,13 +42,13 @@ public class CharacterPreview : MonoBehaviour
         if (currentCharacterPrefab == characterPrefab)
             return;
 
+
+        currentCharacterPrefab = characterPrefab;
         if (characterInstance)
             Destroy(characterInstance);
 
         if (characterPrefab == null)
             return;
-
-        currentCharacterPrefab = characterPrefab;
         characterInstance = Instantiate(characterPrefab);
         characterInstance.transform.SetParent(transform, false);
         characterInstance.transform.localPosition = Vector3.zero;

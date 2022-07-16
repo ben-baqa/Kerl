@@ -21,7 +21,7 @@ public class NetworkMessageHandler : MonoBehaviour
 
     // references needed to drive functionality
     private JoinMenu joinMenu;
-    private Skipper skipper;
+    private Thrower thrower;
     private Sweeper sweeper;
 
     // TODO: add subscribable network input event
@@ -36,7 +36,7 @@ public class NetworkMessageHandler : MonoBehaviour
         }
         else
         {
-            skipper = FindObjectOfType<Skipper>();
+            thrower = FindObjectOfType<Thrower>();
             sweeper = FindObjectOfType<Sweeper>();
         }
     }
@@ -84,11 +84,11 @@ public class NetworkMessageHandler : MonoBehaviour
         switch (ar[0])
         {
             case "throw":
-                //skipper.Throw(float.Parse(ar[1]));
+                //thrower.Throw(float.Parse(ar[1]));
                 break;
 
             case "sweep":
-                sweeper.Sweep();
+                //sweeper.Sweep();
                 break;
 
             case "menu":
