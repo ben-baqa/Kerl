@@ -1797,7 +1797,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42b93745eb28dab43971d73a76979c60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  intendedTime: 8
+  intendedTime: 6
   movementThreshold: 0.05
   fallingKillThreshold: 100
   collisionSounds:

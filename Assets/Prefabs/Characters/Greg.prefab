@@ -64,7 +64,7 @@ MonoBehaviour:
     position: {x: 0, y: 0, z: -0.5}
     rotation: 0
   teamColourMesh: {fileID: 1617791758112217892}
-  teamMaterialIndex: 0
+  teamMaterialIndex: 1
   broomHeadBone: {fileID: 4228811832488025962}
   broomstickBone: {fileID: 3576014580403976363}
   hideBroomOnThrow: 1
