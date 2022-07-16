@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Worm node
   m_EditorClassIdentifier: 
   ItemName: Jeffrey
-  Image: {fileID: 3286163911610860551, guid: c2604cdf65120b745bfd01adab5b271a, type: 3}
+  Image: {fileID: 3286163911610860551, guid: d86205d658fa43f47b2e7db2e4fafb62, type: 3}
   Type: 0
   PrefabPayload: {fileID: 1357345569099269632, guid: 7ba3156930d740140b6e701729644eb5, type: 3}
   StringPayload: 

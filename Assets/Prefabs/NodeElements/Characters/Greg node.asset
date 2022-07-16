@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Greg node
   m_EditorClassIdentifier: 
   ItemName: Greg
-  Image: {fileID: 3286163911610860551, guid: ce2e2ca10c24f7442b4108a455f39caa, type: 3}
+  Image: {fileID: 3286163911610860551, guid: 6b123b5afcefa5e4ab7a1bb8880075ea, type: 3}
   Type: 0
   PrefabPayload: {fileID: 6464361532977092875, guid: 04a9048e27197e243bb57bb3263d8a6c, type: 3}
   StringPayload: 

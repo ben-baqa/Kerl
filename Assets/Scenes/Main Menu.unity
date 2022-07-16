@@ -2005,7 +2005,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &446056638
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2043,7 +2043,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c33500d53b1458c4b862d7248e0dfa18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nodePrefab: {fileID: 1059762652321952034, guid: 83bae1c5b04f2704b9112f97750ef49e, type: 3}
+  nodePrefab: {fileID: 8963539887387001437, guid: cf79e8028da3213498067ef497968275, type: 3}
   nodeParent: {fileID: 2054133045}
   preview: {fileID: 2138889088}
   timerText: {fileID: 319598932}
@@ -2911,7 +2911,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &611761892
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8430,7 +8430,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -133}
-  m_SizeDelta: {x: 20, y: 20}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1786875372
 MonoBehaviour:
@@ -9854,23 +9854,15 @@ MonoBehaviour:
     locked: 0
   - node: {fileID: 11400000, guid: cee131e59be4ea342bbdbc99e99a91ef, type: 2}
     locked: 0
-  - node: {fileID: 11400000, guid: cee131e59be4ea342bbdbc99e99a91ef, type: 2}
-    locked: 0
-  - node: {fileID: 11400000, guid: cee131e59be4ea342bbdbc99e99a91ef, type: 2}
-    locked: 0
-  - node: {fileID: 11400000, guid: cee131e59be4ea342bbdbc99e99a91ef, type: 2}
-    locked: 0
-  - node: {fileID: 11400000, guid: cee131e59be4ea342bbdbc99e99a91ef, type: 2}
-    locked: 0
   borderSprite: {fileID: 3286163911610860551, guid: 9e891d685f5a2c446bf54e78c95aedcc, type: 3}
   placement:
-    columns: 3
+    columns: 2
     rows: 2
-    size: 110
-    selectedImageSize: 80
+    size: 150
+    selectedImageSize: 120
     highlightedSizeRatio: 1.25
-    selectorSize: 150
-    spacing: 150
+    selectorSize: 200
+    spacing: 200
   confirmationCursorSettings:
     borderSprite: {fileID: 3286163911610860551, guid: 9e891d685f5a2c446bf54e78c95aedcc, type: 3}
     confirmSprite: {fileID: 3286163911610860551, guid: f20adaa93c566954aa6cfbca7d4bb9e5, type: 3}
