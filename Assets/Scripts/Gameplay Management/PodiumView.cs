@@ -52,13 +52,13 @@ public class PodiumView : MonoBehaviour
         {
             Character target = characterManager.GetCharacter(winningTeam[i % winningTeam.Length]);
             target.OnWin();
-            winningPlacements[i].Apply(target.transform);
+            (winningPlacements[i] + target.podiumPlacement).Apply(target.transform);
         }
         for(int i = 0; i < losingPlacements.Length; i++)
         {
             Character target = characterManager.GetCharacter(losingTeam[i % losingTeam.Length]);
             target.OnLose();
-            losingPlacements[i].Apply(target.transform);
+            (losingPlacements[i] + target.podiumPlacement).Apply(target.transform);
         }
     }
 }

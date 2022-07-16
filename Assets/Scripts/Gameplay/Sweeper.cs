@@ -11,6 +11,8 @@ public class Sweeper : MonoBehaviour
     enum Follow { rock, result, start }
     Follow followState = Follow.start;
 
+    public float RockTravelTime => rock.intendedTime;
+
     [Header("Sweeping Physics")]
     public float frictionMultipler = 1;
     //public float decay = .01f, sweepValue = .1f;

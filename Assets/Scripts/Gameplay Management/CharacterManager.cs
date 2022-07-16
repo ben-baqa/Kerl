@@ -9,6 +9,7 @@ public class CharacterManager : MonoBehaviour
 
     public Material blueTeam, redTeam;
 
+    public float throwSpeedMultiplier = 2;
 
     [Header("Broom Defaults")]
     public Mesh broomHeadDefaultMesh;
@@ -70,7 +71,7 @@ public class CharacterManager : MonoBehaviour
 
     public void OnThrow()
     {
-        throwerCharacter.OnThrow();
+        throwerCharacter.OnThrow(throwSpeedMultiplier / sweeper.RockTravelTime);
         sweeperCharacter.OnThrow();
     }
 

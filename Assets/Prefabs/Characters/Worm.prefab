@@ -61,8 +61,8 @@ MonoBehaviour:
     position: {x: 0, y: 0, z: 0}
     rotation: -50
   podiumPlacement:
-    position: {x: 0, y: 0, z: 10}
-    rotation: 30
+    position: {x: 0, y: 0, z: 0}
+    rotation: 0
   teamColourMesh: {fileID: 2976805218386379267}
   teamMaterialIndex: 0
   broomHeadBone: {fileID: 901557123290227793}

@@ -7793,7 +7793,7 @@ MonoBehaviour:
     - {r: 1, g: 0.6265514, b: 0, a: 1}
     - {r: 0.044025064, g: 0.90290654, b: 1, a: 1}
     - {r: 0.7294118, g: 0, b: 0.251497, a: 1}
-  defaultCharacterPrefab: {fileID: 6464361532977092875, guid: 04a9048e27197e243bb57bb3263d8a6c, type: 3}
+  aiCharacterPrefab: {fileID: 0}
   gameMode: party
 --- !u!4 &1703263124
 Transform:

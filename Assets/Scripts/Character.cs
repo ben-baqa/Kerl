@@ -89,9 +89,17 @@ public class Character : MonoBehaviour
             HideBroom();
     }
 
-    public void OnTeamIntro() => animator.SetTrigger("team intro");
+    public void OnTeamIntro()
+    {
+        animator.SetTrigger("team intro");
+        ApplyRandomOffsetToAnimator();
+    }
 
-    public void OnThrow() => animator.SetTrigger("throw");
+    public void OnThrow(float speed = 1)
+    {
+        animator.SetTrigger("throw");
+        animator.SetFloat("throw speed", speed);
+    }
     public void OnResult() => animator.SetTrigger("brushing");
     public void OnWin() => OnResult("win");
     public void OnLose() => OnResult("lose");
@@ -110,7 +118,7 @@ public class Character : MonoBehaviour
     public void Hide() => gameObject.SetActive(false);
     public void Show() => gameObject.SetActive(true);
 
-    public void ApplyRandomOffsetToAnimator() => animator.Update(Random.Range(0, 10f));
+    public void ApplyRandomOffsetToAnimator() => animator.Update(Random.Range(0, 1f));
 
     public void HideBroom()
     {
