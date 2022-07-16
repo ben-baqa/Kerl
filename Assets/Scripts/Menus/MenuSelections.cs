@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct PlayerSelections
-{
-    public int team;
-    public GameObject character;
-    public List<NodeElement> rocks;
-}
+//public struct PlayerSelections
+//{
+//    public int team;
+//    public GameObject character;
+//    public List<NodeElement> rocks;
+//}
 
 /// <summary>
 /// Stores the selections made on the main menu for use in game
@@ -26,7 +26,7 @@ public class MenuSelections : MonoBehaviour
 
     public TypedInputSprites inputSprites;
     public PlayerColours playerColours;
-    public GameObject defaultCharacterPrefab;
+    public GameObject aiCharacterPrefab;
 
     // TODO replace with an enum when relevant to do so
     public string gameMode = "party";
@@ -71,7 +71,7 @@ public class MenuSelections : MonoBehaviour
 
         foreach (List<int> team in teams)
             if (team.Count == 0)
-                characterSelections.Add(instance.defaultCharacterPrefab);
+                characterSelections.Add(instance.aiCharacterPrefab);
     }
 
     public static void SetRockSelections(NodeElement[] selections)

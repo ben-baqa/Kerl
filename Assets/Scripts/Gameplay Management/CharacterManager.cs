@@ -52,6 +52,7 @@ public class CharacterManager : MonoBehaviour
             (characterPlacements[i] + characters[i].introPlacement).Apply(characters[i].transform);
             if (characters[i].hideBroomOnIntro)
                 characters[i].HideBroom();
+            characters[i].OnTeamIntro();
         }
     }
 

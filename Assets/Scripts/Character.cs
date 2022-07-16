@@ -26,8 +26,8 @@ public class Character : MonoBehaviour
 
     [Header("Misc settings")]
     public bool hideBroomOnThrow = true;
-    public bool hideBroomOnIntro;
-    public bool hideBroomOnPodium;
+    public bool hideBroomOnIntro = true;
+    public bool hideBroomOnPodium = true;
 
     private Animator animator;
     public float BrushSpeed { set { animator.SetFloat("brush speed", value); } }
@@ -88,6 +88,8 @@ public class Character : MonoBehaviour
         if (hideBroomOnThrow)
             HideBroom();
     }
+
+    public void OnTeamIntro() => animator.SetTrigger("team intro");
 
     public void OnThrow() => animator.SetTrigger("throw");
     public void OnResult() => animator.SetTrigger("brushing");
