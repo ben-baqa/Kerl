@@ -2,37 +2,52 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 /// <summary>
 /// Runs the pause menu logic
 /// </summary>
 public class PauseMenu : MonoBehaviour
 {
-    public GameObject check;
+    //public GameObject check;
+    public string menuScene = "Main Menu";
+    public float aimSpeedMultiplier = 1;
+    public float rockSpeedMultiplier = 2;
 
-    private Canvas menu;
-    private Thrower thrower;
+    Canvas canvas;
+    Thrower thrower;
+    Sweeper sweeper;
 
     // Start is called before the first frame update
     void Start()
     {
-        menu = GetComponentInChildren<Canvas>();
-        menu.enabled = false;
+        canvas = GetComponentInChildren<Canvas>();
+        canvas.enabled = false;
+
         thrower = FindObjectOfType<Thrower>();
+        sweeper = FindObjectOfType<Sweeper>();
+
+        Slider[] sliders = GetComponentsInChildren<Slider>();
+        sliders[0].value = AudioListener.volume;
+        sliders[1].value = thrower.aimMovingSpeed * aimSpeedMultiplier;
+        sliders[2].value = rockSpeedMultiplier / sweeper.rockTravelTime;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Keyboard.current.escapeKey.wasPressedThisFrame ||
-            Keyboard.current.pKey.wasPressedThisFrame)
-        {
-            menu.enabled = !menu.enabled;
-            if (menu.enabled)
-                Time.timeScale = 0;
-            else
-                Time.timeScale = 1;
-        }
+        if (Keyboard.current.escapeKey.wasPressedThisFrame)
+            TogglePause();
+    }
+
+    public void TogglePause()
+    {
+        canvas.enabled = !canvas.enabled;
+        if (canvas.enabled)
+            Time.timeScale = 0;
+        else
+            Time.timeScale = 1;
     }
 
     public void AdjustVolume(float v)
@@ -42,13 +57,17 @@ public class PauseMenu : MonoBehaviour
 
     public void AdjustCurveSpeed(float v)
     {
-        //thrower.period = 1 / v;
+        thrower.aimMovingSpeed = v * aimSpeedMultiplier;
     }
 
-    public void OnClickAimAssist()
+    public void AdjustRockSpeed(float v)
     {
-        //thrower.weightedCurve = !thrower.weightedCurve;
-        //check.SetActive(thrower.weightedCurve);
+        sweeper.rockTravelTime = rockSpeedMultiplier / v;
+    }
+
+    public void ReturnToMenu()
+    {
+        SceneManager.LoadScene(menuScene);
     }
 
     public void Quit()

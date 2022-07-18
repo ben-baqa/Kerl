@@ -46,11 +46,10 @@ public class Scorekeeper : MonoBehaviour
 
     public void UpdateScore()
     {
-        //Rock[] rocks = FindObjectsOfType<Rock>();
+        rocks.RemoveAll(rock => rock == null);
         if (rocks.Count < 1)
             return;
 
-        rocks.RemoveAll(rock => rock == null);
         rocks = rocks.OrderBy(x => (x.position - transform.position).magnitude).ToList();
 
         score = 0;

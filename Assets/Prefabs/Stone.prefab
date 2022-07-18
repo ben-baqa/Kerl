@@ -1798,7 +1798,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   intendedTime: 6
-  movementThreshold: 0.05
+  movementThreshold: 0.1
   fallingKillThreshold: 100
   collisionSounds:
   - {fileID: 8300000, guid: de4fc6fa07ac1c5439829def9b91b757, type: 3}

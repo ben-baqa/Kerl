@@ -79,6 +79,7 @@ public class Rock : MonoBehaviour
             if (isFollowingCurve)
             {
                 velocity = GetDirection(simulatedRotation) * movementSpeed;
+                simulatedRotation += rotationSpeed * Time.deltaTime;
             }
             else
             {
@@ -88,7 +89,7 @@ public class Rock : MonoBehaviour
             if (!rb)
                 rb = GetComponent<Rigidbody>();
             rb.MovePosition(transform.position + velocity * Time.deltaTime);
-            simulatedRotation += rotationSpeed * Time.deltaTime;
+
 
             if (!isBrushing)
             {
@@ -138,16 +139,20 @@ public class Rock : MonoBehaviour
         }
     }
 
-    public void Throw(Vector3 p0, Vector3 p1, Vector3 p2, float radius)
+    public void Throw(Vector3 p0, Vector3 p1, Vector3 p2, float notBrushingRatio)
     {
         startPoint = p0;
         midPoint = p1;
         endPoint = p2;
 
-        notBrushingRatio = 3 * radius / Vector3.Distance(p0, p2);
+        this.notBrushingRatio = notBrushingRatio;
+        //notBrushingRatio = 3 * radius / Vector3.Distance(p0, p2);
+        //print("not brushing ratio: " + notBrushingRatio);
 
         rotationSpeed = (1 - notBrushingRatio) / intendedTime;
         movementSpeed = rotationSpeed * MakeShiftBezierArcLength(100);
+        //movementSpeed = MakeShiftBezierArcLength(100) / intendedTime;
+        //print("Bezier length: " + MakeShiftBezierArcLength(100));
         brushingTimer = intendedTime;
         simulatedRotation = 0;
 
@@ -184,9 +189,11 @@ public class Rock : MonoBehaviour
         GameObject target = collision.gameObject;
         if (target.GetComponent<Rock>() != null)
         {
-            if (target.GetComponent<Rock>() == hitBy) return;
-            Vector3 toTarget = (target.transform.position - transform.position).normalized;
+            if (target.GetComponent<Rock>() == hitBy)
+                return;
+
             isFollowingCurve = false;
+            Vector3 toTarget = (target.transform.position - transform.position).normalized;
             Vector3 oldVelocity = velocity;
             velocity -= Vector3.Project(velocity, toTarget);
             movementSpeed = velocity.magnitude;

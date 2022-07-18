@@ -11,17 +11,15 @@ public class Sweeper : MonoBehaviour
     enum Follow { rock, result, start }
     Follow followState = Follow.start;
 
-    public float RockTravelTime => rock.intendedTime;
 
     [Header("Sweeping Physics")]
-    public float frictionMultipler = 1;
-    //public float decay = .01f, sweepValue = .1f;
+    public float rockTravelTime = 6;
     public float progressUpRate = 0.1f;
     public float progressDownRate = 0.05f;
 
     [Header("body movement")]
-    public float followLerp;
     public float lerpLerp, normalLerp;
+    float followLerp;
 
 
     Character character;
@@ -58,12 +56,12 @@ public class Sweeper : MonoBehaviour
                 {
                     if (turnManager.GetInput())
                     {
-                        brushingProgress += progressUpRate * Time.deltaTime;
+                        brushingProgress += progressUpRate * 0.02f / rockTravelTime;
                         character.BrushSpeed = 1;
                     }
                     else
                     {
-                        brushingProgress -= progressDownRate * Time.deltaTime;
+                        brushingProgress -= progressDownRate * 0.02f / rockTravelTime;
                         character.BrushSpeed = 0;
                     }
                 }
@@ -81,10 +79,13 @@ public class Sweeper : MonoBehaviour
     {
         followState = Follow.rock;
         followLerp = 0;
-        frictionMultipler = 1;
     }
 
-    public void SetRock(Rock r) => rock = r;
+    public void SetRock(Rock r)
+    {
+        rock = r;
+        rock.intendedTime = rockTravelTime;
+    }
 
     public void OnTurnStart()
     {
@@ -101,7 +102,6 @@ public class Sweeper : MonoBehaviour
         curlingBar.gameObject.SetActive(true);
         followState = Follow.rock;
         followLerp = 0;
-        frictionMultipler = 1;
 
         this.startPoint = startPoint;
         this.notBrushingRatio = notBrushingRatio;

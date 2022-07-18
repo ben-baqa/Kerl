@@ -87,8 +87,11 @@ public class Thrower : MonoBehaviour
                 curve.enabled = false;
                 currentState = State.Inactive;
 
-                rock.Throw(transform.position, transform.position + GetMidPoint(), transform.position + GetEndPoint(), targetRadius);
-                sweeper.OnThrow(transform.position, throwingDirection, targetRadius, 3 * targetRadius / Vector3.Distance(Vector3.zero, GetEndPoint()));
+                float notBrushingRatio = 3 * targetRadius / Vector3.Distance(Vector3.zero, GetEndPoint());
+
+                rock.Throw(transform.position, transform.position + GetMidPoint(),
+                    transform.position + GetEndPoint(), notBrushingRatio);
+                sweeper.OnThrow(transform.position, throwingDirection, targetRadius, notBrushingRatio);
             }
         }
     }
