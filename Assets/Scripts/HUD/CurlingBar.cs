@@ -21,7 +21,7 @@ public class CurlingBar : MonoBehaviour
     {
         slider = gameObject.GetComponent<Slider>();
         image = fill.GetComponent<Image>();
-        predictionLine = GetComponentInChildren<UIPredictionLine>();
+        predictionLine = GetComponentInChildren<UIPredictionLine>(true);
     }
 
     public float Progress

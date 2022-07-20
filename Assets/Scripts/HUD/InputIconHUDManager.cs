@@ -17,6 +17,8 @@ public class InputIconHUDManager : MonoBehaviour
     public float positionLerp = .05f;
     public float sizeDelta = 0.2f, sizeFreq = 1;
 
+    public Sprite aiSprite;
+
     InputIcon inputIcon;
 
     Vector3 targetPosition;
@@ -50,4 +52,11 @@ public class InputIconHUDManager : MonoBehaviour
     public void OnTargetSelected() => targetPosition = throwPosition;
     public void OnThrow() => targetPosition = brushPosition;
     public void OnResult() => inputIcon.Deactivate();
+
+    public void SetAI()
+    {
+        inputIcon.image.sprite = aiSprite;
+        inputIcon.image.color = Color.gray;
+        inputIcon.text.text = "AI";
+    }
 }

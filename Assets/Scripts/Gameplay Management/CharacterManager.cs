@@ -26,10 +26,14 @@ public class CharacterManager : MonoBehaviour
 
     void Start()
     {
-        List<GameObject> selectedCharacters = MenuSelections.characterSelections;
-        if(selectedCharacters == null)
-            selectedCharacters = new List<GameObject> { fallbackCharacter,
-                fallbackCharacter, fallbackCharacter};
+        Dictionary<int, GameObject> selectedCharacters = MenuSelections.characterSelections;
+        if (selectedCharacters == null)
+        {
+            selectedCharacters = new Dictionary<int, GameObject>();
+            selectedCharacters.Add(0, fallbackCharacter);
+            selectedCharacters.Add(1, fallbackCharacter);
+            selectedCharacters.Add(2, fallbackCharacter);
+        }
 
         List<List<int>> teams = MenuSelections.teams;
         if (teams == null)
@@ -82,16 +86,23 @@ public class CharacterManager : MonoBehaviour
         List<IndexedCharacter> characters;
         int lastFetched;
 
-        public CharacterSet(List<GameObject> selectedCharacters, List<List<int>> teams)
+        public CharacterSet(Dictionary<int, GameObject> selectedCharacters, List<List<int>> teams)
         {
             characters = new List<IndexedCharacter>();
 
-            for(int i = 0; i < selectedCharacters.Count; i++)
+            foreach(var kvp in selectedCharacters)
             {
-                characters.Add(InstantiateCharacter(selectedCharacters[i], i));
-                if (IsPlayerOnSoloTeam(i, teams) || IsAITeam(i, teams))
-                    characters.Add(InstantiateCharacter(selectedCharacters[i], i));
+                characters.Add(InstantiateCharacter(kvp.Value, kvp.Key));
+                if(IsPlayerOnSoloTeam(kvp.Key, teams))
+                    characters.Add(InstantiateCharacter(kvp.Value, kvp.Key));
             }
+
+            //for(int i = 0; i < selectedCharacters.Count; i++)
+            //{
+            //    characters.Add(InstantiateCharacter(selectedCharacters[i], i));
+            //    if (IsPlayerOnSoloTeam(i, teams) || IsAITeam(i, teams))
+            //        characters.Add(InstantiateCharacter(selectedCharacters[i], i));
+            //}
         }
 
         IndexedCharacter InstantiateCharacter(GameObject target, int index)
@@ -106,27 +117,27 @@ public class CharacterManager : MonoBehaviour
 
         private bool IsPlayerOnSoloTeam(int playerIndex, List<List<int>> teams)
         {
+            if (playerIndex < 0)
+                return true;
+
             foreach (List<int> team in teams)
                 if (team.Count == 1 && team[0] == playerIndex)
                     return true;
             return false;
         }
 
-        private bool IsAITeam(int playerIndex, List<List<int>> teams)
-        {
-            foreach (List<int> team in teams)
-                if (team.Contains(playerIndex))
-                    return false;
-            return true;
-        }
+        //private bool IsAITeam(int playerIndex, List<List<int>> teams)
+        //{
+        //    foreach (List<int> team in teams)
+        //        if (team.Contains(playerIndex))
+        //            return false;
+        //    return true;
+        //}
 
         public Character this[int index]
         {
             get
             {
-                if (index < 0)
-                    index = characters.Count - index;
-
                 // search for an indexed character that was not fetched last time
                 // this allows for one player index to use multiple characters
                 for (int i = 0; i < characters.Count; i++)
@@ -182,6 +193,14 @@ public class CharacterManager : MonoBehaviour
                 if (teams[1].Contains(ic.playerIndex))
                     ic.character.SetTeamMaterial(team2Mat);
             }
+
+            Material aiMat = team1Mat;
+            if (teams[1].Count == 0)
+                aiMat = team2Mat;
+
+            foreach (IndexedCharacter ic in characters)
+                if (ic.playerIndex == -1)
+                    ic.character.SetTeamMaterial(aiMat);
         }
 
         struct IndexedCharacter

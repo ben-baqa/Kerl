@@ -16,7 +16,7 @@ public class MenuSelections : MonoBehaviour
 {
     public static MenuSelections instance;
     public static List<List<int>> teams;
-    public static List<GameObject> characterSelections;
+    public static Dictionary<int, GameObject> characterSelections;
     public static List<List<NodeElement>> rockSelections;
 
 
@@ -65,13 +65,13 @@ public class MenuSelections : MonoBehaviour
             res += $" {e.ItemName},";
         print(res);
 
-        characterSelections = new List<GameObject>();
-        foreach (NodeElement e in selections)
-            characterSelections.Add(e.PrefabPayload);
+        characterSelections = new Dictionary<int, GameObject>();
+        for(int i = 0; i < selections.Length; i++)
+            characterSelections.Add(i, selections[i].PrefabPayload);
 
         foreach (List<int> team in teams)
             if (team.Count == 0)
-                characterSelections.Add(instance.aiCharacterPrefab);
+                characterSelections.Add(-1, instance.aiCharacterPrefab);
     }
 
     public static void SetRockSelections(NodeElement[] selections)

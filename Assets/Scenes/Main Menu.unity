@@ -2055,7 +2055,7 @@ MonoBehaviour:
   - node: {fileID: 11400000, guid: 35675cc307abc994e86f74acd069695d, type: 2}
     locked: 1
   unSelectedSizeRatio: 0.5
-  selectionPeriod: 2
+  selectionPeriod: 4
   confirmationTime: 8
   tokenParent: {fileID: 2051850667}
   tokenSettings:
@@ -4974,7 +4974,7 @@ MonoBehaviour:
   timerText: {fileID: 458253456}
   activeColor: {r: 1, g: 1, b: 1, a: 1}
   inactiveColor: {r: 0.7830189, g: 0.7830189, b: 0.7830189, a: 0.5882353}
-  interval: 1
+  interval: 5
   itemLerp: 0.3
   gridOffset: 115
 --- !u!1 &1149577184
@@ -5761,7 +5761,7 @@ MonoBehaviour:
   - {fileID: 1229863015}
   timerText: {fileID: 570697742}
   maxPlayerCount: 4
-  maxTimer: 1
+  maxTimer: 5
 --- !u!82 &1232265330
 AudioSource:
   m_ObjectHideFlags: 0
@@ -7793,7 +7793,7 @@ MonoBehaviour:
     - {r: 1, g: 0.6265514, b: 0, a: 1}
     - {r: 0.044025064, g: 0.90290654, b: 1, a: 1}
     - {r: 0.7294118, g: 0, b: 0.251497, a: 1}
-  aiCharacterPrefab: {fileID: 0}
+  aiCharacterPrefab: {fileID: 6464361532977092875, guid: 04a9048e27197e243bb57bb3263d8a6c, type: 3}
   gameMode: party
 --- !u!4 &1703263124
 Transform:
@@ -9848,7 +9848,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae67d4ac5b2f8df4c8f7094cc08f55af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectionPeriod: 1
+  selectionPeriod: 4
   nodeInfo:
   - node: {fileID: 11400000, guid: d63d47516f37cea4dbef92c0b47d95de, type: 2}
     locked: 0

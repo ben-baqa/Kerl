@@ -111,6 +111,7 @@ public class RoundManager : MonoBehaviour
         scoreHUD.OnTurnStart();
         inputIconHUDManager.OnTurnStart(blueTurn);
         sweeper.OnTurnStart();
+        ai.OnTurnStart();
         rockSelector.StartSelecting(blueTurn);
 
         GameState = GameState.RockSelection;
@@ -145,6 +146,7 @@ public class RoundManager : MonoBehaviour
         inputIconHUDManager.OnThrow();
         characterManager.OnThrow();
         //sweeper.OnThrow();
+        ai.OnThrow();
         audioEffects.OnThrow();
         throwCount++;
         GameState = GameState.Brushing;
@@ -156,6 +158,7 @@ public class RoundManager : MonoBehaviour
         brushCam.followRock = false;
         inputIconHUDManager.OnResult();
         scoreHUD.OnResult();
+        ai.OnResult();
         sweeper.OnResult();
         GameState = GameState.Result;
     }

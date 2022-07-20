@@ -50,13 +50,23 @@ public class PodiumView : MonoBehaviour
 
         for(int i = 0; i < winningPlacements.Length; i++)
         {
-            Character target = characterManager.GetCharacter(winningTeam[i % winningTeam.Length]);
+            Character target;
+            if (winningTeam.Length > 0)
+                target = characterManager.GetCharacter(winningTeam[i % winningTeam.Length]);
+            else
+                target = characterManager.GetCharacter(-1);
+
             target.OnWin();
             (winningPlacements[i] + target.podiumPlacement).Apply(target.transform);
         }
         for(int i = 0; i < losingPlacements.Length; i++)
         {
-            Character target = characterManager.GetCharacter(losingTeam[i % losingTeam.Length]);
+            Character target;
+            if (losingTeam.Length > 0)
+                target = characterManager.GetCharacter(losingTeam[i % losingTeam.Length]);
+            else
+                target = characterManager.GetCharacter(-1);
+
             target.OnLose();
             (losingPlacements[i] + target.podiumPlacement).Apply(target.transform);
         }

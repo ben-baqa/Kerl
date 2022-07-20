@@ -36,6 +36,8 @@ public class Sweeper : MonoBehaviour
     Vector3 upLeft;
     Vector3 downRight;
 
+    float curveZDistance;
+    float targetRadius;
     float brushingRatio;
     float brushingProgress;
 
@@ -108,6 +110,8 @@ public class Sweeper : MonoBehaviour
         followLerp = 0;
 
         this.startPoint = startPoint;
+        this.targetRadius = targetRadius;
+        curveZDistance = throwingDirection.z - startPoint.z;
         this.brushingRatio = brushingRatio;
         brushingProgress = .75f;
 
@@ -157,6 +161,9 @@ public class Sweeper : MonoBehaviour
 
     public Vector3[] GetPredictionPoints()
     {
-        return rock.GetPredictionPoints(100, brushingRatio, 4 * (1 - brushingRatio) * brushingProgress / 3);
+        //return rock.GetPredictionPoints(20, brushingRatio, 4 * (1 - brushingRatio) * brushingProgress / 3);
+
+        return rock.GetPredictionPoints(20, brushingRatio, 1 + (targetRadius * (brushingProgress * 4 - 3)) / curveZDistance);
+        
     }
 }

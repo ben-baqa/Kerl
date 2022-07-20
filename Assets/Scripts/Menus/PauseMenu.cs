@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// Runs the pause menu logic
@@ -28,7 +29,7 @@ public class PauseMenu : MonoBehaviour
         thrower = FindObjectOfType<Thrower>();
         sweeper = FindObjectOfType<Sweeper>();
 
-        Slider[] sliders = GetComponentsInChildren<Slider>();
+        Slider[] sliders = GetComponentsInChildren<Slider>(true);
         sliders[0].value = AudioListener.volume;
         sliders[1].value = thrower.aimFrequency * aimSpeedMultiplier;
         sliders[2].value = rockSpeedMultiplier / sweeper.brushingTime;
@@ -45,9 +46,15 @@ public class PauseMenu : MonoBehaviour
     {
         canvas.enabled = !canvas.enabled;
         if (canvas.enabled)
+        {
+            EventSystem.current.SetSelectedGameObject(GetComponentInChildren<Slider>(true).gameObject);
             Time.timeScale = 0;
+        }
         else
+        {
+            EventSystem.current.SetSelectedGameObject(null);
             Time.timeScale = 1;
+        }
     }
 
     public void AdjustVolume(float v)

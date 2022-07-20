@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class AIScript : MonoBehaviour
 {
-    enum State { Inactive, Timed, Brushing }
+    enum State { Inactive, Timed, Brushing, Constant }
 
     public bool input;
 
@@ -26,7 +26,8 @@ public class AIScript : MonoBehaviour
 
     public void StartTimer() {
         state = State.Timed;
-        timer = Random.Range(0.0f, thrower.aimFrequency);
+        timer = Random.Range(0.0f, thrower.Period);
+        input = false;
     }
 
     void Update()
@@ -45,6 +46,18 @@ public class AIScript : MonoBehaviour
         {
             input = bar.Progress < 0.75f;
         }
+        else if (state == State.Constant)
+            input = true;
+    }
+
+    public void OnTurnStart()
+    {
+        state = State.Constant;
+    }
+
+    public void OnThrow()
+    {
+        state = State.Brushing;
     }
 
     public void OnResult()

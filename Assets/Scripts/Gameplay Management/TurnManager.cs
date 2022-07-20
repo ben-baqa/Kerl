@@ -57,7 +57,10 @@ public class TurnManager : MonoBehaviour
         else
             redTeam.Next(2);
 
-        inputIconHUDManager.Index = CurrentPlayer;
+        if (CurrentPlayer >= 0)
+            inputIconHUDManager.Index = CurrentPlayer;
+        else
+            inputIconHUDManager.SetAI();
 
         characterManager.OnTurnStart(CurrentPlayer, NextPlayer);
     }
@@ -68,7 +71,12 @@ public class TurnManager : MonoBehaviour
             blueTeam.Next();
         else
             redTeam.Next();
-        inputIconHUDManager.Index = ((blueTurn ? blueTeam : redTeam).CurrentPlayer);
+
+        int currentplayer = (blueTurn ? blueTeam : redTeam).CurrentPlayer;
+        if (currentplayer >= 0)
+            inputIconHUDManager.Index = currentplayer;
+        else
+            inputIconHUDManager.SetAI();
     }
 
     public bool GetInput()
