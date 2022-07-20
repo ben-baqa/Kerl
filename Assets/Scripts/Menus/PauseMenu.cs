@@ -30,8 +30,8 @@ public class PauseMenu : MonoBehaviour
 
         Slider[] sliders = GetComponentsInChildren<Slider>();
         sliders[0].value = AudioListener.volume;
-        sliders[1].value = thrower.aimMovingSpeed * aimSpeedMultiplier;
-        sliders[2].value = rockSpeedMultiplier / sweeper.rockTravelTime;
+        sliders[1].value = thrower.aimFrequency * aimSpeedMultiplier;
+        sliders[2].value = rockSpeedMultiplier / sweeper.brushingTime;
     }
 
     // Update is called once per frame
@@ -57,12 +57,12 @@ public class PauseMenu : MonoBehaviour
 
     public void AdjustCurveSpeed(float v)
     {
-        thrower.aimMovingSpeed = v * aimSpeedMultiplier;
+        thrower.aimFrequency = v * aimSpeedMultiplier;
     }
 
     public void AdjustRockSpeed(float v)
     {
-        sweeper.rockTravelTime = rockSpeedMultiplier / v;
+        sweeper.brushingTime = rockSpeedMultiplier / v;
     }
 
     public void ReturnToMenu()

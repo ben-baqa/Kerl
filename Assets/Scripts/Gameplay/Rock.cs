@@ -6,9 +6,10 @@ using System;
 /// </summary>
 public class Rock : MonoBehaviour
 {
+
     [Header("Movement")]
-    public float intendedTime = 8;
     public float movementThreshold = 1;
+    public float slipThreshold = 0.1f;
     [Min(10)]
     public float fallingKillThreshold = 100;
 
@@ -24,19 +25,19 @@ public class Rock : MonoBehaviour
     public Vector3 position => transform.position;
     public bool IsMoving =>
         (rb.velocity.magnitude > movementThreshold
-        || movementSpeed > movementThreshold)
-        && rb.position.y > -0.5f;
+        || isFollowingCurve) && !hasSlipped;
 
-    float brushingTimer;
+    AnimationCurve brushingMovementCurve;
+    float brushingTime = 8;
+    float brushTimer;
+    float brushingRatio;
 
-    float movementSpeed;
-    float rotationSpeed;
+    float resultThresholdToTarget;
+    float targetRadius;
 
+    float progress;
+    float progressSpeed;
     float decay;
-
-    float simulatedRotation;
-
-    float notBrushingRatio;
 
     Vector3 velocity;
 
@@ -57,19 +58,16 @@ public class Rock : MonoBehaviour
 
     Rock hitBy;
 
-    public bool IsBrushing
-    {
-        get
-        {
-            return isBrushing;
-        }
-    }
-
     private void Start()
     {
         sfx = GetComponent<AudioSource>();
+        rb = GetComponent<Rigidbody>();
+    }
 
-        //transform.GetChild(1).gameObject.SetActive(isScoring);
+    public void Init(float travelTime, AnimationCurve movementCurve)
+    {
+        brushingTime = travelTime;
+        brushingMovementCurve = movementCurve;
     }
 
     private void FixedUpdate()
@@ -78,130 +76,150 @@ public class Rock : MonoBehaviour
         {
             if (isFollowingCurve)
             {
-                velocity = GetDirection(simulatedRotation) * movementSpeed;
-                simulatedRotation += rotationSpeed * Time.deltaTime;
-            }
-            else
-            {
-                velocity = velocity.normalized * movementSpeed;
-            }
-
-            if (!rb)
-                rb = GetComponent<Rigidbody>();
-            rb.MovePosition(transform.position + velocity * Time.deltaTime);
-
-
-            if (!isBrushing)
-            {
-                movementSpeed *= Mathf.Pow(decay, Time.deltaTime);
-                rotationSpeed *= Mathf.Pow(decay, Time.deltaTime);
-            }
-            else
-            {
-                if (brushingTimer > 0)
+                if (isBrushing)
                 {
-                    brushingTimer -= Time.deltaTime;
+                    float brushingProgress = brushTimer / brushingTime;
+                    brushingProgress = brushingMovementCurve.Evaluate(brushingProgress);
+
+                    Vector3 newPosition = GetUnclampedBezierPoint(brushingRatio * brushingProgress);
+                    velocity = (newPosition - position) / Time.deltaTime;
+
+                    rb.MovePosition(newPosition);
+
+                    brushTimer += Time.deltaTime;
+                    if (brushTimer >= brushingTime)
+                    {
+                        RoundManager.OnRockPassResultThreshold();
+                        return;
+                    }
                 }
                 else
                 {
-                    RoundManager.OnRockPassResultThreshold();
-                    //onDoneBrushing.Invoke();
+                    Vector3 newPosition = GetUnclampedBezierPoint(progress);
+                    velocity = (newPosition - position) / Time.deltaTime;
+
+                    rb.MovePosition(newPosition);
+                    progress += progressSpeed * Time.deltaTime;
+
+                    float scaledDecay = Mathf.Pow(decay, Time.deltaTime);
+                    progressSpeed *= scaledDecay;
                 }
             }
-
-            if (movementSpeed <= movementThreshold)
+            else
             {
-                movementSpeed = 0;
-                rotationSpeed = 0;
-                isFollowingCurve = false;
-                hitBy = null;
+                rb.velocity *= Mathf.Pow(decay, Time.deltaTime);
+                velocity = rb.velocity;
+            }
 
-                if (!hasEndedTurn)
+            if (!isBrushing)
+            {
+                if (velocity.magnitude <= movementThreshold)
                 {
-                    hasEndedTurn = true;
-                    RoundManager.OnRockStop();
+                    rb.velocity = Vector3.zero;
+                    velocity = Vector3.zero;
+                    isFollowingCurve = false;
+                    hitBy = null;
+
+                    if (!hasEndedTurn)
+                    {
+                        hasEndedTurn = true;
+                        RoundManager.OnRockStop();
+                    }
                 }
             }
 
-            if (rb.position.y < -0.5f && !hasSlipped)
+            
+
+            if (position.y < -slipThreshold && !hasSlipped)
             {
                 hasSlipped = true;
+                isFollowingCurve = false;
                 slip.Play();
                 if (!hasEndedTurn)
                 {
-                    RoundManager.OnRockStop();
                     hasEndedTurn = true;
+                    RoundManager.OnRockStop();
                 }
             }
 
-            if (rb.position.y < -fallingKillThreshold)
+            if (position.y < -fallingKillThreshold)
                 Destroy(gameObject);
         }
     }
 
-    public void Throw(Vector3 p0, Vector3 p1, Vector3 p2, float notBrushingRatio)
+    public void Throw(Vector3 start, Vector3 mid, Vector3 end, float brushingRatio, float targetRadius)
     {
-        startPoint = p0;
-        midPoint = p1;
-        endPoint = p2;
-
-        this.notBrushingRatio = notBrushingRatio;
-        //notBrushingRatio = 3 * radius / Vector3.Distance(p0, p2);
-        //print("not brushing ratio: " + notBrushingRatio);
-
-        rotationSpeed = (1 - notBrushingRatio) / intendedTime;
-        movementSpeed = rotationSpeed * MakeShiftBezierArcLength(100);
-        //movementSpeed = MakeShiftBezierArcLength(100) / intendedTime;
-        //print("Bezier length: " + MakeShiftBezierArcLength(100));
-        brushingTimer = intendedTime;
-        simulatedRotation = 0;
+        startPoint = start;
+        midPoint = mid;
+        endPoint = end;
 
         isThrown = true;
         isBrushing = true;
         isFollowingCurve = true;
+
+        brushTimer = 0;
+        this.brushingRatio = brushingRatio;
+        this.targetRadius = targetRadius;
+
+        resultThresholdToTarget = (1 - brushingRatio) * (end.z - start.z);
     }
 
     public void Score(bool scoring)
     {
-        transform.GetChild(1).gameObject.SetActive(scoring);
         if (scoring && !isScoring)
-        {
             onScore.Play();
-        }
         else if (isScoring && !scoring)
-        {
             onLoseScore.Play();
-        }
+
+        transform.GetChild(1).gameObject.SetActive(scoring);
         isScoring = scoring;
     }
 
-    public void StopBrushing(float brushingProgress)
+    /// <summary>
+    /// exit the brushing input state to glide into final position determined by the brushing progress
+    /// </summary>
+    /// <param name="brushingProgress">0.75 is on target, 1 is target + radius</param>
+    public void StopBrushing(float brushingProgress, float initialSpeed)
     {
-        float remainingDistance = 4 * brushingProgress * notBrushingRatio * MakeShiftBezierArcLength(100) / 3;
-
-        decay = Mathf.Exp((movementSpeed / remainingDistance) * (movementThreshold / movementSpeed - 1));
-
         isBrushing = false;
+        // result movement is done with simple exponential decay,
+        // aiming to land at the exact point determined by brushingProgress
+        // using only z distance / speed as a proxy
+        // v(t) = vi * (decay)^t
+        // d(t) = di + v(t) / ln(decay)
+        velocity = Vector3.forward * initialSpeed;
+
+        float extraDistance = targetRadius * (brushingProgress * 4 - 3);
+        float remainingDistance = resultThresholdToTarget + extraDistance;
+
+        // convert initial physical speed to curve interpolation space
+        progressSpeed = initialSpeed / (endPoint.z - startPoint.z);
+        progress = brushingRatio + progressSpeed * Time.deltaTime;
+
+        // solving for decay using distance when v(t) == movementThreshold
+        decay = Mathf.Exp((movementThreshold - initialSpeed) / remainingDistance);
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        GameObject target = collision.gameObject;
-        if (target.GetComponent<Rock>() != null)
+        GameObject collisionObject = collision.gameObject;
+        Rock collisionRock = collisionObject.GetComponent<Rock>();
+        if (collisionRock != null && collisionRock != hitBy)
         {
-            if (target.GetComponent<Rock>() == hitBy)
-                return;
-
+            isBrushing = false;
             isFollowingCurve = false;
-            Vector3 toTarget = (target.transform.position - transform.position).normalized;
+            collisionRock.isFollowingCurve = false;
+
+            Vector3 toTarget = (collisionRock.position - position).normalized;
             Vector3 oldVelocity = velocity;
             velocity -= Vector3.Project(velocity, toTarget);
-            movementSpeed = velocity.magnitude;
-            target.GetComponent<Rock>().AddRockCollision(this, Vector3.Project(oldVelocity, toTarget), decay);
+            rb.velocity = velocity;
+
+            collisionRock.AddRockCollision(this, Vector3.Project(oldVelocity, toTarget), decay);
 
             if (sfx && !sfx.isPlaying)
             {
-                sfx.volume = Mathf.Clamp01(movementSpeed * 3);
+                sfx.volume = Mathf.Clamp01(rb.velocity.magnitude * 3);
                 sfx.clip = collisionSounds[UnityEngine.Random.Range(0, collisionSounds.Length)];
                 sfx.Play();
             }
@@ -213,40 +231,17 @@ public class Rock : MonoBehaviour
         isThrown = true;
         isFollowingCurve = false;
         this.velocity = velocity;
-        movementSpeed = velocity.magnitude;
         this.decay = decay;
-        this.hitBy = gotHitBy;
+        hitBy = gotHitBy;
+        rb.velocity = velocity;
     }
 
-    private Vector3 GetDirection(float rotation)
+    private Vector3 GetUnclampedBezierPoint(float t)
     {
-        return (Vector3.Lerp(midPoint, endPoint, rotation) - Vector3.Lerp(startPoint, midPoint, rotation)).normalized;
+        return GetUnclampedBezierPoint(startPoint, midPoint, endPoint, t);
     }
 
-    public Vector3[] GetPredictionPoints(int points, float beginning, float amount)
-    {
-        Vector3[] result = new Vector3[points];
-        for (int i = 0; i < points; i++)
-        {
-            result[i] = GetUnclampedBezierPoint(startPoint, midPoint, endPoint, beginning + (float)i / (float)(points - 1) * amount);
-        }
-        return result;
-    }
-
-    private float MakeShiftBezierArcLength(int steps)
-    {
-        Vector3 lastPoint = startPoint;
-        float result = 0;
-        for (int i = 1; i <= steps; i++)
-        {
-            Vector3 temp = GetUnclampedBezierPoint(startPoint, midPoint, endPoint, (float)i / (float)steps);
-            result += (temp - lastPoint).magnitude;
-            lastPoint = temp;
-        }
-        return result;
-    }
-
-    public static Vector3 GetUnclampedBezierPoint(Vector3 p0, Vector3 p1, Vector3 p2, float t)
+    private Vector3 GetUnclampedBezierPoint(Vector3 p0, Vector3 p1, Vector3 p2, float t)
     {
         t = Mathf.Max(0, t);
         float oneMinusT = 1 - t;
@@ -255,4 +250,45 @@ public class Rock : MonoBehaviour
             2 * oneMinusT * t * p1 +
             t * t * p2;
     }
+
+    public Vector3[] GetPredictionPoints(int steps, float start, float distance)
+    {
+        Vector3[] result = new Vector3[steps];
+        for (int i = 0; i < steps; i++)
+        {
+            result[i] = GetUnclampedBezierPoint(start + (float)i / (float)(steps - 1) * distance);
+        }
+        return result;
+    }
+
+    //private Vector3 GetDirection(float t)
+    //{
+    //    return (Vector3.Lerp(midPoint, endPoint, t) - Vector3.Lerp(startPoint, midPoint, t)).normalized;
+    //}
+
+    //private float MakeShiftBezierArcLength(int steps)
+    //{
+    //    Vector3 lastPoint = startPoint;
+    //    float result = 0;
+    //    for (int i = 1; i <= steps; i++)
+    //    {
+    //        Vector3 temp = GetUnclampedBezierPoint((float)i / (float)steps);
+    //        result += (temp - lastPoint).magnitude;
+    //        lastPoint = temp;
+    //    }
+    //    return result;
+    //}
+
+    //private float GetExtendedBezierLength(int steps, float extension)
+    //{
+    //    Vector3 lastPoint = startPoint;
+    //    float result = 0;
+    //    for (int i = 1; i <= steps; i++)
+    //    {
+    //        Vector3 temp = GetUnclampedBezierPoint(i * extension / steps);
+    //        result += (temp - lastPoint).magnitude;
+    //        lastPoint = temp;
+    //    }
+    //    return result;
+    //}
 }

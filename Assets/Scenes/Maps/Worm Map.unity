@@ -496,7 +496,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe130d997c7cebb4eaa9fb505670e8b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rocks: 1
+  rocks: 5
   finishDelay: 3
   endLoaderDelay: 3
 --- !u!114 &89246009
@@ -552,7 +552,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea984645065044d429a7e79b9809a45c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  duration: 8
+  duration: 1
   lookAtTrack: 0
   uniformSpeed: 1
   startOnAwake: 0
@@ -2713,7 +2713,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea984645065044d429a7e79b9809a45c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  duration: 8
+  duration: 1
   lookAtTrack: 0
   uniformSpeed: 1
   startOnAwake: 1
@@ -7166,11 +7166,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 472bca852c3b78a4ca26c3d5927e9c80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  aimMovingSpeed: 0.5
+  aimFrequency: 0.5
   throwingDirection: {x: 0, y: 0, z: 21}
   targetRadius: 1.5
+  sheetWidth: 5
   curveSteps: 100
   curveWidth: 0.5
+  brushingRatio: 0.8
 --- !u!1 &1827022766
 GameObject:
   m_ObjectHideFlags: 0
@@ -8901,8 +8903,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6cada6acc621ba43a0b34f6b1e50b1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rockTravelTime: 6
   progressUpRate: 0.5
-  progressDownRate: 0.3
+  progressDownRate: 0.25
+  brushingTime: 6
+  brushingMovementCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 1.5059949
+      outSlope: 1.5059949
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.040823445
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0.5979272
+      outSlope: 0.5979272
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.04640627
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  resultSpeed: 2
   lerpLerp: 0.01
   normalLerp: 0.05

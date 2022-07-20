@@ -26,7 +26,7 @@ public class AIScript : MonoBehaviour
 
     public void StartTimer() {
         state = State.Timed;
-        timer = Random.Range(0.0f, thrower.aimMovingSpeed);
+        timer = Random.Range(0.0f, thrower.aimFrequency);
     }
 
     void Update()

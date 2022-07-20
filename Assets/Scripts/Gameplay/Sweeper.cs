@@ -13,14 +13,17 @@ public class Sweeper : MonoBehaviour
 
 
     [Header("Sweeping Physics")]
-    public float rockTravelTime = 6;
     public float progressUpRate = 0.1f;
     public float progressDownRate = 0.05f;
+
+    [Header("Rock Movement Settings")]
+    public float brushingTime = 6;
+    public AnimationCurve brushingMovementCurve;
+    public float resultSpeed = 5;
 
     [Header("body movement")]
     public float lerpLerp, normalLerp;
     float followLerp;
-
 
     Character character;
 
@@ -33,7 +36,7 @@ public class Sweeper : MonoBehaviour
     Vector3 upLeft;
     Vector3 downRight;
 
-    float notBrushingRatio;
+    float brushingRatio;
     float brushingProgress;
 
     void Awake()
@@ -56,12 +59,12 @@ public class Sweeper : MonoBehaviour
                 {
                     if (turnManager.GetInput())
                     {
-                        brushingProgress += progressUpRate * 0.02f / rockTravelTime;
+                        brushingProgress += progressUpRate * 0.02f / brushingTime;
                         character.BrushSpeed = 1;
                     }
                     else
                     {
-                        brushingProgress -= progressDownRate * 0.02f / rockTravelTime;
+                        brushingProgress -= progressDownRate * 0.02f / brushingTime;
                         character.BrushSpeed = 0;
                     }
                 }
@@ -84,7 +87,8 @@ public class Sweeper : MonoBehaviour
     public void SetRock(Rock r)
     {
         rock = r;
-        rock.intendedTime = rockTravelTime;
+        rock.Init(brushingTime, brushingMovementCurve);
+        //rock.brushingTime = rockTravelTime;
     }
 
     public void OnTurnStart()
@@ -97,14 +101,14 @@ public class Sweeper : MonoBehaviour
         character = c;
     }
 
-    public void OnThrow(Vector3 startPoint, Vector3 throwingDirection, float targetRadius, float notBrushingRatio)
+    public void OnThrow(Vector3 startPoint, Vector3 throwingDirection, float targetRadius, float brushingRatio)
     {
         curlingBar.gameObject.SetActive(true);
         followState = Follow.rock;
         followLerp = 0;
 
         this.startPoint = startPoint;
-        this.notBrushingRatio = notBrushingRatio;
+        this.brushingRatio = brushingRatio;
         brushingProgress = .75f;
 
         anchor = throwingDirection - ((Quaternion.Euler(0, 90, 0) * throwingDirection).normalized + throwingDirection.normalized * 3) * targetRadius;
@@ -118,7 +122,7 @@ public class Sweeper : MonoBehaviour
         followLerp = normalLerp;
         character.OnResult();
 
-        rock.StopBrushing(brushingProgress);
+        rock.StopBrushing(brushingProgress, resultSpeed);
         curlingBar.gameObject.SetActive(false);
     }
 
@@ -153,6 +157,6 @@ public class Sweeper : MonoBehaviour
 
     public Vector3[] GetPredictionPoints()
     {
-        return rock.GetPredictionPoints(100, 1 - notBrushingRatio, 4 * notBrushingRatio * brushingProgress / 3);
+        return rock.GetPredictionPoints(100, brushingRatio, 4 * (1 - brushingRatio) * brushingProgress / 3);
     }
 }

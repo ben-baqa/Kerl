@@ -14,16 +14,21 @@ public class Thrower : MonoBehaviour
         ChoosingMidPoint
     }
 
-    public float aimMovingSpeed = 0.5f;
-    public float Period => 1 / aimMovingSpeed;
+    public float aimFrequency = 0.5f;
+    public float Period => 1 / aimFrequency;
 
-    [Header("Target settings")]
+    [Header("Throwing settings")]
     public Vector3 throwingDirection;
-    public float targetRadius;
+    public float targetRadius = 1.5f;
+    public float sheetWidth = 4;
 
     [Header("Prediction Curve Settings")]
     public int curveSteps = 100;
     public float curveWidth = 1;
+
+    [Header("Rock Movement Settings")]
+    [Tooltip("Ratio of normal rock curve spent brushing")]
+    public float brushingRatio = 0.85f;
 
     Rock rock;
     Sweeper sweeper;
@@ -46,7 +51,6 @@ public class Thrower : MonoBehaviour
         curve.widthMultiplier = curveWidth;
         curve.enabled = false;
 
-
         currentState = State.Inactive;
 
         preSnapAim = 0;
@@ -59,7 +63,7 @@ public class Thrower : MonoBehaviour
         if (currentState == State.Inactive)
             return;
 
-        preSnapAim += Mathf.Clamp01(aimMovingSpeed * Time.deltaTime);
+        preSnapAim += Mathf.Clamp01(aimFrequency * Time.deltaTime);
         if (preSnapAim >= 1)
             preSnapAim -= 1;
 
@@ -67,6 +71,7 @@ public class Thrower : MonoBehaviour
         {
             endPointAim = AimWithSnapping(preSnapAim, 1, 1);
             CurveUpdate(false);
+
             if (turnManager.GetToggledInput())
             {
                 RoundManager.instance.OnTargetSelect();
@@ -80,6 +85,7 @@ public class Thrower : MonoBehaviour
             float leftValue = Mathf.Lerp(.5f, 2, (endPointAim + 1) / 2);
             midPointAim = AimWithSnapping(preSnapAim, leftValue, 2.5f - leftValue);
             CurveUpdate(true);
+
             if (turnManager.GetToggledInput())
             {
                 RoundManager.instance.OnThrow();
@@ -87,11 +93,12 @@ public class Thrower : MonoBehaviour
                 curve.enabled = false;
                 currentState = State.Inactive;
 
-                float notBrushingRatio = 3 * targetRadius / Vector3.Distance(Vector3.zero, GetEndPoint());
+                //float notBrushingRatio = 3 * targetRadius / Vector3.Distance(Vector3.zero, GetEndPoint());
 
                 rock.Throw(transform.position, transform.position + GetMidPoint(),
-                    transform.position + GetEndPoint(), notBrushingRatio);
-                sweeper.OnThrow(transform.position, throwingDirection, targetRadius, notBrushingRatio);
+                    transform.position + GetEndPoint(), brushingRatio, targetRadius);
+
+                sweeper.OnThrow(transform.position, throwingDirection, targetRadius, 1 - brushingRatio);
             }
         }
     }
@@ -107,17 +114,13 @@ public class Thrower : MonoBehaviour
         {
             int steps = curveSteps;
             for (int i = 0; i <= steps; i++)
-            {
                 curve.SetPosition(i, transform.position + Bezier.GetPoint(Vector3.zero, GetMidPoint(), GetEndPoint(), (float)i / (float)steps));
-            }
         }
         else
         {
             int steps = curveSteps;
             for (int i = 0; i <= steps; i++)
-            {
                 curve.SetPosition(i, transform.position + Vector3.Lerp(Vector3.zero, GetEndPoint(), (float)i / (float)steps));
-            }
         }
     }
 
@@ -128,7 +131,7 @@ public class Thrower : MonoBehaviour
 
     public Vector3 GetMidPoint()
     {
-        return GetEndPoint() * 0.5f + (Quaternion.Euler(0, 90, 0) * GetEndPoint()).normalized * targetRadius * midPointAim;
+        return GetEndPoint() * 0.5f + (Quaternion.Euler(0, 90, 0) * GetEndPoint()).normalized * sheetWidth * midPointAim / 2;
     }
 
     public void StartTargetSelection(Rock selectedRock)

@@ -135,7 +135,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.15686275, g: 0.15686275, b: 0.15686275, a: 0.627451}
+  m_Color: {r: 0.15686275, g: 0.15686275, b: 0.15686275, a: 0.2509804}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -242,7 +242,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 1
+  m_Value: 0.75
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -262,8 +262,8 @@ MonoBehaviour:
   gradient:
     serializedVersion: 2
     key0: {r: 1, g: 0, b: 0, a: 1}
-    key1: {r: 0, g: 1, b: 0.15721321, a: 0.627451}
-    key2: {r: 0.0023498535, g: 0, b: 1, a: 0}
+    key1: {r: 0, g: 1, b: 0.15721321, a: 0.39215687}
+    key2: {r: 0.0023498535, g: 0, b: 1, a: 0.627451}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
     key5: {r: 0, g: 0, b: 0, a: 0}
@@ -278,8 +278,8 @@ MonoBehaviour:
     ctime6: 0
     ctime7: 0
     atime0: 0
-    atime1: 65535
-    atime2: 0
+    atime1: 49151
+    atime2: 65535
     atime3: 0
     atime4: 0
     atime5: 0
@@ -287,7 +287,7 @@ MonoBehaviour:
     atime7: 0
     m_Mode: 0
     m_NumColorKeys: 3
-    m_NumAlphaKeys: 2
+    m_NumAlphaKeys: 3
 --- !u!82 &1753354680162015807
 AudioSource:
   m_ObjectHideFlags: 0
@@ -450,7 +450,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 12635ceff2908964bbb6886a8c9c9c25, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4f004e9cf20a3a7449e354a0226a940f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
