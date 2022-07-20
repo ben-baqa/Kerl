@@ -69,16 +69,19 @@ public class ProfileMenu : MonoBehaviour
     {
         Cortex.profiles.CreateProfile(profileName);
         Cortex.profiles.ProfileCreated += LoadProfile;
-
-        //trainingMenu.Init(true);
     }
 
     public void LoadProfile(string profileName)
     {
         Cortex.profiles.LoadProfile(profileName, headsetID);
-        //trainingMenu.Init(true);
 
         profile = profileName;
+    }
+
+    public void LoadGuestProfile()
+    {
+        Cortex.profiles.LoadGuestProfile(headsetID);
+        profile = "Guest Profile";
     }
 
     public void UnloadProfile()

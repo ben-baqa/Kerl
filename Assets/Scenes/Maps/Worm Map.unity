@@ -8920,7 +8920,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   progressUpRate: 1
   progressDownRate: 0.5
-  brushingTime: 6
+  defaultBrushingTime: 6
   brushingMovementCurve:
     serializedVersion: 2
     m_Curve:
@@ -8945,6 +8945,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  resultSpeed: 2
+  resultSpeed: 2.5
   lerpLerp: 0.01
   normalLerp: 0.05

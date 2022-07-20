@@ -60,10 +60,10 @@ public class MenuSelections : MonoBehaviour
 
     public static void SetCharacterSelections(NodeElement[] selections)
     {
-        string res = "Character Selections made";
-        foreach (NodeElement e in selections)
-            res += $" {e.ItemName},";
-        print(res);
+        //string res = "Character Selections made";
+        //foreach (NodeElement e in selections)
+        //    res += $" {e.ItemName},";
+        //print(res);
 
         characterSelections = new Dictionary<int, GameObject>();
         for(int i = 0; i < selections.Length; i++)

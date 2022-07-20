@@ -32,6 +32,7 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
     string headsetID, profileName;
     bool validating = false;
     bool saveProfile = true;
+    bool guest = false;
 
     public void Init()
     {
@@ -80,12 +81,14 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
 
     public void Init(TrainedActions trainedActions)
     {
+        guest = false;
+
+        training.roundsTrained = trainedActions.trainingRoundsCompleted;
         //print($"training menu intiated!" +
         //    $"total times trained: {trainedActions.totalTimesTraining}," +
         //    $"current training count: {trainedActions.trainingCount}," +
         //    $"training rounds completed: {trainedActions.trainingRoundsCompleted}");
 
-        training.roundsTrained = trainedActions.trainingRoundsCompleted;
         if (trainedActions.trainingRoundsCompleted < minTrainingRounds)
         {
             trainingExplanation.SetActive(true);
@@ -94,6 +97,14 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
         {
             returningView.SetActive(true);
         }
+        feedback.gameObject.SetActive(true);
+    }
+
+    public void GuestInit()
+    {
+        guest = true;
+        training.roundsTrained = minTrainingRounds;
+        returningView.SetActive(true);
         feedback.gameObject.SetActive(true);
     }
 
@@ -135,7 +146,7 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
     public void FinishTraining()
     {
         // save profile if training was not skipped by debug
-        if (saveProfile)
+        if (saveProfile && !guest)
             Cortex.training.SaveProfile(profileName, headsetID);
         // add new bci input to input handler
         InputProxy.AddInput(new BCIInput(new EmotivHeadsetProxy(headsetID, profileName)));
@@ -188,6 +199,7 @@ public class TrainingMenu : MonoBehaviour, IRequiresInit
     // called by UI
     public void SaveProgress()
     {
-        Cortex.training.SaveProfile(profileName, headsetID);
+        if (!guest)
+            Cortex.training.SaveProfile(profileName, headsetID);
     }
 }

@@ -18,6 +18,11 @@ namespace EmotivUnityPlugin
         }
 
         public void AddBuffer(EventBufferBase newBuffer) => buffers.Add(newBuffer);
+        public void AddBuffers(IEnumerable<EventBufferBase> buffers)
+        {
+            foreach (EventBufferBase buffer in buffers)
+                AddBuffer(buffer);
+        }
     }
 
     public abstract class EventBufferBase

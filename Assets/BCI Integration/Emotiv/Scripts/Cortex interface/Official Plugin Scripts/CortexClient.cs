@@ -93,6 +93,7 @@ namespace EmotivUnityPlugin
         public event EventHandler<JObject> GetCurrentProfileDone;
         public event EventHandler<string> CreateProfileOK;
         public event EventHandler<string> LoadProfileOK;
+        public event EventHandler<string> LoadGuestProfileOK;
         public event EventHandler<string> SaveProfileOK;
         public event EventHandler<bool> UnloadProfileDone;
         public event EventHandler<string> DeleteProfileOK;
@@ -559,6 +560,12 @@ namespace EmotivUnityPlugin
             {
                 MentalCommandTrainingThresholdOK(this, new TrainingThreshold((JObject)data));
             }
+            else if (method == "loadGuestProfile")
+            {
+                // will always be: "Guest Profile"
+                string profileName = (string)data["name"];
+                LoadGuestProfileOK(this, profileName);
+            }
         }
 
 
@@ -1019,6 +1026,15 @@ namespace EmotivUnityPlugin
                 param.Add("newProfileName", newProfileName);
             }
             SendTextMessage(param, "setupProfile", true);
+        }
+        // loadGuestProfile
+        // Required params: cortexToken, headset
+        public void LoadGuestProfile(string cortexToken, string headsetId)
+        {
+            JObject param = new JObject();
+            param.Add("cortexToken", cortexToken);
+            param.Add("headset", headsetId);
+            SendTextMessage(param, "loadGuestProfile", true);
         }
         // queryProfile
         // Required params: cortexToken

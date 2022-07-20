@@ -50,12 +50,14 @@ public class EmotivSetupMenu : MonoBehaviour
         Cortex.ConnectionStateChanged += OnConnectionStateChanged;
         Cortex.DataStreamStarted += OnDataStreamStarted;
         Cortex.profiles.ProfileLoaded += OnProfileLoaded;
+        Cortex.profiles.GuestProfileLoaded += OnGuestProfileLoaded;
     }
     void OnDisable()
     {
         Cortex.ConnectionStateChanged -= OnConnectionStateChanged;
         Cortex.DataStreamStarted -= OnDataStreamStarted;
         Cortex.profiles.ProfileLoaded -= OnProfileLoaded;
+        Cortex.profiles.GuestProfileLoaded -= OnGuestProfileLoaded;
     }
 
     public void Continue()
@@ -122,6 +124,12 @@ public class EmotivSetupMenu : MonoBehaviour
     {
         Cortex.profiles.GetTrainedActions(profileName);
         Continue();
+    }
+
+    void OnGuestProfileLoaded(string profileName)
+    {
+        Continue();
+        trainingMenu.GuestInit();
     }
 
     public void ActivateFrom(GameObject menu)

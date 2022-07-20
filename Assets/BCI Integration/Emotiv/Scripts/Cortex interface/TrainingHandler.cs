@@ -16,6 +16,7 @@ namespace EmotivUnityPlugin
         public EventBuffer<string> GetCurrentProfileResult;
         public EventBuffer<string> ProfileCreated;
         public EventBuffer<string> ProfileLoaded;
+        public EventBuffer<string> GuestProfileLoaded;
         public EventBuffer<bool> ProfileUnloaded;
         public EventBuffer<string> ProfileSaved;
 
@@ -49,6 +50,8 @@ namespace EmotivUnityPlugin
         public void UnloadProfile(string profileName, string headsetID) => ctxClient.SetupProfile(token, profileName, "unload", headsetID);
         public void SaveProfile(string profileName, string headsetID) => ctxClient.SetupProfile(token, profileName, "save", headsetID);
 
+        public void LoadGuestProfile(string headsetID) => ctxClient.LoadGuestProfile(token, headsetID);
+
         // training management
         public void StartTraining(string action) => Training("start", action);
         public void AcceptTraining(string action) => Training("accept", action);
@@ -73,39 +76,33 @@ namespace EmotivUnityPlugin
         {
             GetDetectionInfoResult = new EventBuffer<DetectionInfo>();
             ctxClient.GetDetectionInfoDone += ParseDetectionInfo;
-            //host.AddComponent<EventBufferInstance>().buffer = GetDetectionInfoResult;
 
             ProfileQueryResult = new EventBuffer<List<string>>();
             ctxClient.QueryProfileOK += ParseProfileList;
-            //host.AddComponent<EventBufferInstance>().buffer = ProfileQueryResult;
 
             GetCurrentProfileResult = new EventBuffer<string>();
             ctxClient.GetCurrentProfileDone += OnGetCurrentProfileOK;
-            //host.AddComponent<EventBufferInstance>().buffer = GetDetectionInfoResult;
 
             ProfileCreated = new EventBuffer<string>();
             ctxClient.CreateProfileOK += ProfileCreated.OnParentEvent;
-            //host.AddComponent<EventBufferInstance>().buffer = ProfileCreated;
 
             ProfileLoaded = new EventBuffer<string>();
             ctxClient.LoadProfileOK += ProfileLoaded.OnParentEvent;
-            //host.AddComponent<EventBufferInstance>().buffer = ProfileLoaded;
+
+            GuestProfileLoaded = new EventBuffer<string>();
+            ctxClient.LoadGuestProfileOK += GuestProfileLoaded.OnParentEvent;
 
             ProfileUnloaded = new EventBuffer<bool>();
             ctxClient.UnloadProfileDone += ProfileUnloaded.OnParentEvent;
-            //host.AddComponent<EventBufferInstance>().buffer = ProfileUnloaded;
 
             ProfileSaved = new EventBuffer<string>();
             ctxClient.SaveProfileOK += ProfileSaved.OnParentEvent;
-            //host.AddComponent<EventBufferInstance>().buffer = ProfileSaved;
 
             TrainingRequestResult = new EventBuffer<JObject>();
             ctxClient.TrainingOK += OnTrainingOK;
-            //host.AddComponent<EventBufferInstance>().buffer = TrainingCompleted;
 
             TrainingTimeResult = new EventBuffer<double>();
             ctxClient.GetTrainingTimeDone += TrainingTimeResult.OnParentEvent;
-            //host.AddComponent<EventBufferInstance>().buffer = TrainingTimeResult;
 
             GetTrainedActionsResult = new EventBuffer<TrainedActions>();
             ctxClient.GetTrainedSignatureActionsOK += GetTrainedActionsResult.OnParentEvent;
@@ -120,6 +117,7 @@ namespace EmotivUnityPlugin
                 GetCurrentProfileResult,
                 ProfileCreated,
                 ProfileLoaded,
+                GuestProfileLoaded,
                 ProfileUnloaded,
                 ProfileSaved,
                 TrainingRequestResult,
@@ -127,7 +125,7 @@ namespace EmotivUnityPlugin
                 GetTrainedActionsResult,
                 TrainingThresholdResult
             };
-            foreach (EventBufferBase b in buffers) host.AddBuffer(b);
+            host.AddBuffers(buffers);
         }
 
         /// <summary>

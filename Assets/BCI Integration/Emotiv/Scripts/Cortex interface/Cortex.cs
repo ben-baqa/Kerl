@@ -58,32 +58,37 @@ namespace EmotivUnityPlugin
             // add buffer for headset query completion
             HeadsetQueryResult = new EventBuffer<List<Headset>>();
             headsetFinder.QueryHeadsetOK += HeadsetQueryResult.OnParentEvent;
-            eventBufferInstance.AddBuffer(HeadsetQueryResult);
 
             // add buffer for successful start of data stream (initating session with headset)
             DataStreamStarted = new EventBuffer<string>();
             dataStreamManager.DataStreamStarted += DataStreamStarted.OnParentEvent;
-            eventBufferInstance.AddBuffer(DataStreamStarted);
 
             // add buffer for headset connection (pairing with computer)
             HeadsetConnected = new EventBuffer<HeadsetConnectEventArgs>();
             ctxClient.HeadsetConnectNotify += HeadsetConnected.OnParentEvent;
-            eventBufferInstance.AddBuffer(HeadsetConnected);
 
             // add buffer for when a headset is unexpectedly disconnected (sends session ID)
             HeadsetDisconnected = new EventBuffer<string>();
             dataStreamManager.HeadsetDisconnected += HeadsetDisconnected.OnParentEvent;
-            eventBufferInstance.AddBuffer(HeadsetDisconnected);
 
             // add buffer for connection state changing
             ConnectionStateChanged = new EventBuffer<ConnectToCortexStates>();
             authorizer.ConnectServiceStateChanged += ConnectionStateChanged.OnParentEvent;
-            eventBufferInstance.AddBuffer(ConnectionStateChanged);
 
             // add buffer for error recieved
             ErrorRecieved = new EventBuffer<ErrorMsgEventArgs>();
             ctxClient.ErrorMsgReceived += ErrorRecieved.OnParentEvent;
-            eventBufferInstance.AddBuffer(ErrorRecieved);
+
+            EventBufferBase[] buffers = new EventBufferBase[]
+            {
+                HeadsetQueryResult,
+                DataStreamStarted,
+                HeadsetConnected,
+                HeadsetDisconnected,
+                ConnectionStateChanged,
+                ErrorRecieved
+            };
+            eventBufferInstance.AddBuffers(buffers);
 
             // initialize Training handler
             training = new TrainingHandler();

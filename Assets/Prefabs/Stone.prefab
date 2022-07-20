@@ -1798,6 +1798,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementThreshold: 0.1
+  spinMultiplier: 60
+  slipThreshold: 0.1
   fallingKillThreshold: 100
   collisionSounds:
   - {fileID: 8300000, guid: de4fc6fa07ac1c5439829def9b91b757, type: 3}
@@ -1808,6 +1810,13 @@ MonoBehaviour:
   onScore: {fileID: 7924153555184330059}
   onLoseScore: {fileID: 4157911331219675691}
   blue: 1
+  brushingMovementCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  brushingTime: 8
 --- !u!82 &-5325276363379078249
 AudioSource:
   m_ObjectHideFlags: 0

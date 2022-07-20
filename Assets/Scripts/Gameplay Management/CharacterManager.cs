@@ -75,7 +75,7 @@ public class CharacterManager : MonoBehaviour
 
     public void OnThrow()
     {
-        throwerCharacter.OnThrow(throwSpeedMultiplier / sweeper.brushingTime);
+        throwerCharacter.OnThrow(throwSpeedMultiplier / sweeper.BrushingTime);
         sweeperCharacter.OnThrow();
     }
 

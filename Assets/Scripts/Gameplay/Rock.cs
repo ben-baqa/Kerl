@@ -9,6 +9,7 @@ public class Rock : MonoBehaviour
 
     [Header("Movement")]
     public float movementThreshold = 1;
+    public float spinMultiplier = 1;
     public float slipThreshold = 0.1f;
     [Min(10)]
     public float fallingKillThreshold = 100;
@@ -27,8 +28,10 @@ public class Rock : MonoBehaviour
         (rb.velocity.magnitude > movementThreshold
         || isFollowingCurve) && !hasSlipped;
 
-    AnimationCurve brushingMovementCurve;
-    float brushingTime = 8;
+    [HideInInspector]
+    public AnimationCurve brushingMovementCurve;
+    [HideInInspector]
+    public float brushingTime = 8;
     float brushTimer;
     float brushingRatio;
 
@@ -64,18 +67,20 @@ public class Rock : MonoBehaviour
         rb = GetComponent<Rigidbody>();
     }
 
-    public void Init(float travelTime, AnimationCurve movementCurve)
-    {
-        brushingTime = travelTime;
-        brushingMovementCurve = movementCurve;
-    }
+    //public void Init(float travelTime, AnimationCurve movementCurve)
+    //{
+    //    brushingTime = travelTime;
+    //    brushingMovementCurve = movementCurve;
+    //}
 
-    private void FixedUpdate()
+    private void Update()
     {
         if (isThrown)
         {
             if (isFollowingCurve)
             {
+                float previousXVelocity = velocity.x;
+                Vector3 previousVelocity = velocity;
                 if (isBrushing)
                 {
                     float brushingProgress = brushTimer / brushingTime;
@@ -104,6 +109,10 @@ public class Rock : MonoBehaviour
                     float scaledDecay = Mathf.Pow(decay, Time.deltaTime);
                     progressSpeed *= scaledDecay;
                 }
+
+                float curve = Vector3.Dot(velocity, Quaternion.Euler(90 * Vector3.up) * previousVelocity);
+                rb.MoveRotation(Quaternion.Euler((rb.rotation.eulerAngles.y + spinMultiplier * curve) * Vector3.up));
+                //rb.rotation = Quaternion.Euler(0, rb.rotation.eulerAngles.y + spinMultiplier * (velocity.x - previousXVelocity), 0);
             }
             else
             {

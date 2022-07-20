@@ -17,7 +17,19 @@ public class Sweeper : MonoBehaviour
     public float progressDownRate = 0.05f;
 
     [Header("Rock Movement Settings")]
-    public float brushingTime = 6;
+    public float defaultBrushingTime = 6;
+    public float BrushingTime
+    {
+        get => _brushingTime;
+        set
+        {
+            _brushingTime = value;
+            if (rock)
+                rock.brushingTime = value;
+        }
+    }
+    float _brushingTime;
+
     public AnimationCurve brushingMovementCurve;
     public float resultSpeed = 5;
 
@@ -47,6 +59,8 @@ public class Sweeper : MonoBehaviour
 
         curlingBar = FindObjectOfType<CurlingBar>();
         curlingBar.gameObject.SetActive(false);
+
+        BrushingTime = defaultBrushingTime;
     }
 
     private void FixedUpdate()
@@ -61,12 +75,12 @@ public class Sweeper : MonoBehaviour
                 {
                     if (turnManager.GetInput())
                     {
-                        brushingProgress += progressUpRate * 0.02f / brushingTime;
+                        brushingProgress += progressUpRate * 0.02f / BrushingTime;
                         character.BrushSpeed = 1;
                     }
                     else
                     {
-                        brushingProgress -= progressDownRate * 0.02f / brushingTime;
+                        brushingProgress -= progressDownRate * 0.02f / BrushingTime;
                         character.BrushSpeed = 0;
                     }
                 }
@@ -89,8 +103,9 @@ public class Sweeper : MonoBehaviour
     public void SetRock(Rock r)
     {
         rock = r;
-        rock.Init(brushingTime, brushingMovementCurve);
-        //rock.brushingTime = rockTravelTime;
+        //rock.Init(BrushingTime, brushingMovementCurve);
+        rock.brushingTime = BrushingTime;
+        rock.brushingMovementCurve = brushingMovementCurve;
     }
 
     public void OnTurnStart()
