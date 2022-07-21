@@ -79,8 +79,7 @@ public class Rock : MonoBehaviour
         {
             if (isFollowingCurve)
             {
-                float previousXVelocity = velocity.x;
-                Vector3 previousVelocity = velocity;
+                Vector3 previosDirection = velocity.normalized;
                 if (isBrushing)
                 {
                     float brushingProgress = brushTimer / brushingTime;
@@ -110,9 +109,9 @@ public class Rock : MonoBehaviour
                     progressSpeed *= scaledDecay;
                 }
 
-                float curve = Vector3.Dot(velocity, Quaternion.Euler(90 * Vector3.up) * previousVelocity);
-                rb.MoveRotation(Quaternion.Euler((rb.rotation.eulerAngles.y + spinMultiplier * curve) * Vector3.up));
-                //rb.rotation = Quaternion.Euler(0, rb.rotation.eulerAngles.y + spinMultiplier * (velocity.x - previousXVelocity), 0);
+                float curve = Vector3.Dot(velocity.normalized, Quaternion.Euler(90 * Vector3.up) * previosDirection);
+                curve = rb.rotation.eulerAngles.y + spinMultiplier * curve * 1000;
+                rb.MoveRotation(Quaternion.Euler(curve * Vector3.up));
             }
             else
             {

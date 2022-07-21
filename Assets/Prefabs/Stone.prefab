@@ -1798,7 +1798,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementThreshold: 0.1
-  spinMultiplier: 60
+  spinMultiplier: 1.5
   slipThreshold: 0.1
   fallingKillThreshold: 100
   collisionSounds:

@@ -14,6 +14,7 @@ public class TeamMenu : MonoBehaviour
     public Transform tokenParent;
     public GameObject tokenPrefab;
     public TextMeshProUGUI timerText;
+
     [Header("Settings")]
     public Color activeColor;
     public Color inactiveColor;
@@ -62,13 +63,13 @@ public class TeamMenu : MonoBehaviour
 
             if (readyTimer <= 0)
             {
-                FindObjectOfType<MainMenu>().Continue();
-
                 List<List<int>> teams = new List<List<int>>();
                 foreach (PlacementGrid grid in selectionGrids)
                     teams.Add(grid.GetPlayers());
 
                 MenuSelections.teams = teams;
+
+                FindObjectOfType<MainMenu>().Continue();
             }
         }
         else if (readyTimer < interval * (int) teamCount)

@@ -53,4 +53,11 @@ public class CharacterPreview : MonoBehaviour
         characterInstance.transform.SetParent(transform, false);
         characterInstance.transform.localPosition = Vector3.zero;
     }
+
+    public void SetTeamMaterial(Material teamMaterial)
+    {
+        if (!characterInstance)
+            return;
+        characterInstance.GetComponentInChildren<Character>().SetTeamMaterial(teamMaterial);
+    }
 }

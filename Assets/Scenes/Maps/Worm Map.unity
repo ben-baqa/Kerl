@@ -499,6 +499,7 @@ MonoBehaviour:
   rocks: 5
   finishDelay: 3
   endLoaderDelay: 3
+  skipIntro: 1
 --- !u!114 &89246009
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8918,8 +8919,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6cada6acc621ba43a0b34f6b1e50b1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  progressUpRate: 1
-  progressDownRate: 0.5
+  progressUpRate: 1.5
+  progressDownRate: 0.75
+  progressRateLerp: 3
   defaultBrushingTime: 6
   brushingMovementCurve:
     serializedVersion: 2

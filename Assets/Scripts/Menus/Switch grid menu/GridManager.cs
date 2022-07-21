@@ -40,7 +40,7 @@ public class GridManager : MonoBehaviour
             return;
 
         Gizmos.color = new Color(0, 1, 0, 0.5f);
-        Gizmos.DrawCube(placement.GetNodePositionDebug(1, nodeInfo.Count),
+        Gizmos.DrawCube(Vector2.up * placement.GetNodePositionDebug(1, nodeInfo.Count),
             new Vector2(placement.selectorSize + placement.spacing * (placement.columns - 1), placement.selectorSize));
 
         Gizmos.color = new Color(1, 1, 1, 0.5f);
@@ -134,7 +134,8 @@ public class GridManager : MonoBehaviour
             {
                 currentNode = i * columns + current - rows;
             }
-            nodes[currentNode].SetSelected(true);
+            if (!nodeInfo[currentNode].locked)
+                nodes[currentNode].SetSelected(true);
         }
     }
 

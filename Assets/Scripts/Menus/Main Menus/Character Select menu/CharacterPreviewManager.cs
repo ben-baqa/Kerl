@@ -20,6 +20,9 @@ public class CharacterPreviewManager : MonoBehaviour
     public int previewTextureSize = 600;
     public float previewRotationSpeed;
 
+    [Header("Team Materials")]
+    public Material[] teamMaterials;
+
     [Header("confirmation preview settings")]
     public float confirmationBorderSize = 150;
     public Sprite confirmationBorderSprite;
@@ -37,9 +40,16 @@ public class CharacterPreviewManager : MonoBehaviour
 
     Transform previewParent;
 
+    int[] playerTeams;
 
     void OnEnable()
     {
+        playerTeams = new int[InputProxy.playerCount];
+        for(int i = 0; i < playerTeams.Length; i++)
+            for (int j = 0; j < MenuSelections.teams.Count; j++)
+                if (MenuSelections.teams[j].Contains(i))
+                    playerTeams[i] = j;
+
         if (previewParent)
             Destroy(previewParent.gameObject);
 
@@ -104,6 +114,7 @@ public class CharacterPreviewManager : MonoBehaviour
     public void OnCharacterSelected(int playerIndex, NodeElement selectedNode)
     {
         characterPreviews[playerIndex].SetCharacter(selectedNode.PrefabPayload);
+        characterPreviews[playerIndex].SetTeamMaterial(teamMaterials[playerTeams[playerIndex]]);
     }
 
     public void OnConfirmationStart()

@@ -15,6 +15,7 @@ public class Sweeper : MonoBehaviour
     [Header("Sweeping Physics")]
     public float progressUpRate = 0.1f;
     public float progressDownRate = 0.05f;
+    public float progressRateLerp = 0.05f;
 
     [Header("Rock Movement Settings")]
     public float defaultBrushingTime = 6;
@@ -52,6 +53,7 @@ public class Sweeper : MonoBehaviour
     float targetRadius;
     float brushingRatio;
     float brushingProgress;
+    float progressRate;
 
     void Awake()
     {
@@ -75,15 +77,24 @@ public class Sweeper : MonoBehaviour
                 {
                     if (turnManager.GetInput())
                     {
-                        brushingProgress += progressUpRate * 0.02f / BrushingTime;
-                        character.BrushSpeed = 1;
+                        if (progressRate < 0)
+                            progressRate = 0;
+
+                        progressRate = Mathf.Lerp(progressRate, progressUpRate, progressRateLerp * Time.deltaTime);
+                        //brushingProgress += progressUpRate ;
+                        character.BrushSpeed = progressRate / progressUpRate;
                     }
                     else
                     {
-                        brushingProgress -= progressDownRate * 0.02f / BrushingTime;
+                        if (progressRate > 0)
+                            progressRate = 0;
+
+                        progressRate = Mathf.Lerp(progressRate, -progressDownRate, progressRateLerp * Time.deltaTime);
+                        //brushingProgress -= progressDownRate * 0.02f / BrushingTime;
                         character.BrushSpeed = 0;
                     }
                 }
+                brushingProgress += progressRate * 0.02f / BrushingTime;
                 brushingProgress = Mathf.Clamp(brushingProgress, .25f, 1);
 
                 UpdateCurlingbar();
@@ -98,6 +109,7 @@ public class Sweeper : MonoBehaviour
     {
         followState = Follow.rock;
         followLerp = 0;
+        progressRate = 0;
     }
 
     public void SetRock(Rock r)

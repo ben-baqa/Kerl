@@ -8,6 +8,7 @@ public class RoundManager : MonoBehaviour
     public static RoundManager instance;
     public static bool blueTurn = true;
 
+
     public GameState GameState
     {
         get => _gameState;
@@ -22,6 +23,9 @@ public class RoundManager : MonoBehaviour
     public int rocks = 5;
     public float finishDelay = 5;
     public float endLoaderDelay = 3;
+
+    [Header("Debug")]
+    public bool skipIntro = false;
 
     TurnManager turnManager;
     CharacterManager characterManager;
@@ -63,17 +67,24 @@ public class RoundManager : MonoBehaviour
         inputIconHUDManager = FindObjectOfType<InputIconHUDManager>();
         exitOptions = FindObjectOfType<ExitOptions>();
 
-        cameraManager = FindObjectOfType<CameraAngleManager>();
-        cameraManager.TransitionComplete += OnCameraTransitionComplete;
-        cameraManager.ApplyGameState(GameState.Establishing);
-
         brushCam = FindObjectOfType<BrushingCamera>();
         teamIntro = FindObjectOfType<TeamIntro>();
         teamIntro.Complete = StartTurn;
         podiumView = FindObjectOfType<PodiumView>();
 
         audioEffects = FindObjectOfType<AudioEffects>();
+
+        cameraManager = FindObjectOfType<CameraAngleManager>();
+        cameraManager.TransitionComplete += OnCameraTransitionComplete;
+
+        skipIntro &= Application.isEditor;
+        if (!skipIntro)
+            cameraManager.ApplyGameState(GameState.Establishing);
+        else
+            cameraManager.ApplyGameState(GameState.TeamIntro);
     }
+
+    private void Update() { if (skipIntro) { skipIntro = false; StartTurn(); } }
 
     void ApplyState()
     {

@@ -27,6 +27,9 @@ public class LoopAlternateTrack : MonoBehaviour
         if(timer >= clipLength)
         {
             source.clip = subsequentLoops;
+            source.loop = true;
+            if (!source.isPlaying)
+                source.Play();
             Destroy(this);
         }
     }

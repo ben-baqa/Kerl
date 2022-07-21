@@ -2068,7 +2068,7 @@ MonoBehaviour:
     locked: 1
   unSelectedSizeRatio: 0.5
   selectionPeriod: 4
-  confirmationTime: 8
+  confirmationTime: 2
   tokenParent: {fileID: 2051850667}
   tokenSettings:
     neutralPosition: {x: -150, y: 200}
@@ -4986,7 +4986,7 @@ MonoBehaviour:
   timerText: {fileID: 458253456}
   activeColor: {r: 1, g: 1, b: 1, a: 1}
   inactiveColor: {r: 0.7830189, g: 0.7830189, b: 0.7830189, a: 0.5882353}
-  interval: 5
+  interval: 1
   itemLerp: 0.3
   gridOffset: 115
 --- !u!1 &1149577184
@@ -5394,6 +5394,9 @@ MonoBehaviour:
   maxPreviews: 4
   previewTextureSize: 600
   previewRotationSpeed: 2
+  teamMaterials:
+  - {fileID: 2100000, guid: db5f61e9fbf7f6244a1cc371235e4d6b, type: 2}
+  - {fileID: 2100000, guid: dd5da518df2e1c745bf1e2d550d6c56e, type: 2}
   confirmationBorderSize: 150
   confirmationBorderSprite: {fileID: 3286163911610860551, guid: 9e891d685f5a2c446bf54e78c95aedcc, type: 3}
   confirmationSize: 120
@@ -5773,7 +5776,7 @@ MonoBehaviour:
   - {fileID: 1229863015}
   timerText: {fileID: 570697742}
   maxPlayerCount: 4
-  maxTimer: 5
+  maxTimer: 1
 --- !u!82 &1232265330
 AudioSource:
   m_ObjectHideFlags: 0
@@ -9860,7 +9863,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae67d4ac5b2f8df4c8f7094cc08f55af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectionPeriod: 4
+  selectionPeriod: 1
   nodeInfo:
   - node: {fileID: 11400000, guid: d63d47516f37cea4dbef92c0b47d95de, type: 2}
     locked: 0
