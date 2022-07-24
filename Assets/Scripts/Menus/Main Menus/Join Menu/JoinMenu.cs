@@ -57,11 +57,12 @@ public class JoinMenu : MonoBehaviour
             if (timer <= 0)
                 // continue to next menu
                 FindObjectOfType<MainMenu>().Continue();
-            else if (timer <= 3.9f && !sfx.isPlaying)
+            else if (timer <= 2.9f && !sfx.isPlaying)
                 sfx.Play();
         }
         else if (timer != maxTimer)
         {
+            sfx.Stop();
             timer = maxTimer;
             timerText.text = "";
         }
@@ -76,6 +77,7 @@ public class JoinMenu : MonoBehaviour
             player_buttons[i].Join(i);
 
         timer = 0;
+        sfx?.Stop();
 
         // fill active inputs with extant controls
         activeKeyInputs = new List<InputControl>();

@@ -75,22 +75,26 @@ public class Character : MonoBehaviour
     public void SetUpBrushing()
     {
         Show();
+        HideBroom(false);
+
         brushingWaitPlacement.Apply(transform);
         animator.SetTrigger("brushing");
-        ShowBroom();
     }
 
     public void SetUpThrowing()
     {
         Show();
+        HideBroom(hideBroomOnThrow);
+
         throwingPlacement.Apply(transform);
         animator.SetTrigger("throwing");
-        if (hideBroomOnThrow)
-            HideBroom();
     }
 
     public void OnTeamIntro()
     {
+        Show();
+        HideBroom(hideBroomOnIntro);
+
         animator.SetTrigger("team intro");
         ApplyRandomOffsetToAnimator();
     }
@@ -106,10 +110,7 @@ public class Character : MonoBehaviour
     void OnResult(string trigger)
     {
         Show();
-        if (hideBroomOnPodium)
-            HideBroom();
-        else
-            ShowBroom();
+        HideBroom(hideBroomOnPodium);
 
         animator.SetTrigger(trigger);
         ApplyRandomOffsetToAnimator();
@@ -120,16 +121,12 @@ public class Character : MonoBehaviour
 
     public void ApplyRandomOffsetToAnimator() => animator.Update(Random.Range(0, 1f));
 
-    public void HideBroom()
+    public void HideBroom(bool hide)
     {
-        broomHead.enabled = false;
-        broomstick.enabled = false;
+        broomHead.enabled = !hide;
+        broomstick.enabled = !hide;
     }
-    public void ShowBroom()
-    {
-        broomHead.enabled = true;
-        broomstick.enabled = true;
-    }
+    public void HideBroom() => HideBroom(true);
 
     public void MoveToRock(Vector3 rockPosition, float lerp)
     {

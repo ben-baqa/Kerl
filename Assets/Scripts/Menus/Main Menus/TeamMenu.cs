@@ -155,6 +155,7 @@ public class TeamMenu : MonoBehaviour
             // reset timer if selection has changed
             readyTimer = interval * (int)teamCount;
             timerText.text = "";
+
         }
         
     }

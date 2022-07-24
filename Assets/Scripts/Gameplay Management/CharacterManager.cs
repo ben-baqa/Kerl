@@ -51,13 +51,29 @@ public class CharacterManager : MonoBehaviour
 
     public void ApplyIntroPlacements(Placement[] characterPlacements)
     {
-        Character[] characters = characterSet.GetCharacters();
-        for(int i = 0; i < characters.Length; i++)
+        TurnManager turnManager = GetComponent<TurnManager>();
+
+        int[] team1 = turnManager.GetBlueTeam();
+        int[] team2 = turnManager.GetRedTeam();
+
+        int halfLength = characterPlacements.Length / 2;
+        for(int i = 0; i < characterPlacements.Length; i++)
         {
-            (characterPlacements[i] + characters[i].introPlacement).Apply(characters[i].transform);
-            if (characters[i].hideBroomOnIntro)
-                characters[i].HideBroom();
-            characters[i].OnTeamIntro();
+            int playerIndex = -1;
+            if(i < halfLength)
+            {
+                if (team1.Length > 0)
+                    playerIndex = team1[i % team1.Length];
+            }
+            else
+            {
+                if (team2.Length > 0)
+                    playerIndex = team2[(i - halfLength) % team2.Length];
+            }
+
+            Character character = characterSet[playerIndex];
+            (characterPlacements[i] + character.introPlacement).Apply(character.transform);
+            character.OnTeamIntro();
         }
     }
 
@@ -96,13 +112,6 @@ public class CharacterManager : MonoBehaviour
                 if(IsPlayerOnSoloTeam(kvp.Key, teams))
                     characters.Add(InstantiateCharacter(kvp.Value, kvp.Key));
             }
-
-            //for(int i = 0; i < selectedCharacters.Count; i++)
-            //{
-            //    characters.Add(InstantiateCharacter(selectedCharacters[i], i));
-            //    if (IsPlayerOnSoloTeam(i, teams) || IsAITeam(i, teams))
-            //        characters.Add(InstantiateCharacter(selectedCharacters[i], i));
-            //}
         }
 
         IndexedCharacter InstantiateCharacter(GameObject target, int index)
@@ -125,14 +134,6 @@ public class CharacterManager : MonoBehaviour
                     return true;
             return false;
         }
-
-        //private bool IsAITeam(int playerIndex, List<List<int>> teams)
-        //{
-        //    foreach (List<int> team in teams)
-        //        if (team.Contains(playerIndex))
-        //            return false;
-        //    return true;
-        //}
 
         public Character this[int index]
         {

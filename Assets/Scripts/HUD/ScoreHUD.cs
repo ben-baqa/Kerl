@@ -15,10 +15,14 @@ public class ScoreHUD : MonoBehaviour
 
     public Vector3 endScorePos;
 
-    public AudioSource blueWinNoise, redWinNoise, tieNoise, appluase, mainMusic;
+    public AudioSource blueWinNoise;
+    public AudioSource redWinNoise;
+    public AudioSource tieNoise;
+    public AudioSource appluase;
 
+    public LoopAlternateTrack mainMusic;
 
-    private bool ended = false;
+    bool ended = false;
 
     void Start()
     {

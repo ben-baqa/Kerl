@@ -96,9 +96,9 @@ public class Thrower : MonoBehaviour
                 //float notBrushingRatio = 3 * targetRadius / Vector3.Distance(Vector3.zero, GetEndPoint());
 
                 rock.Throw(transform.position, transform.position + GetMidPoint(),
-                    transform.position + GetEndPoint(), brushingRatio, targetRadius);
+                    transform.position + GetEndPoint(), brushingRatio, midPointAim, targetRadius);
 
-                sweeper.OnThrow(transform.position, throwingDirection, targetRadius, 1 - brushingRatio);
+                sweeper.OnThrow(transform.position, throwingDirection, targetRadius, brushingRatio);
             }
         }
     }
@@ -140,5 +140,9 @@ public class Thrower : MonoBehaviour
         currentState = State.ChoosingEndPoint;
         rock = selectedRock;
         curve.enabled = true;
+
+        preSnapAim = 0;
+        endPointAim = 0;
+        midPointAim = 0;
     }
 }

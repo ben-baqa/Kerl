@@ -67,35 +67,15 @@ public class Rock : MonoBehaviour
         rb = GetComponent<Rigidbody>();
     }
 
-    //public void Init(float travelTime, AnimationCurve movementCurve)
-    //{
-    //    brushingTime = travelTime;
-    //    brushingMovementCurve = movementCurve;
-    //}
-
     private void Update()
     {
         if (isThrown)
         {
             if (isFollowingCurve)
             {
-                Vector3 previosDirection = velocity.normalized;
                 if (isBrushing)
                 {
-                    float brushingProgress = brushTimer / brushingTime;
-                    brushingProgress = brushingMovementCurve.Evaluate(brushingProgress);
-
-                    Vector3 newPosition = GetUnclampedBezierPoint(brushingRatio * brushingProgress);
-                    velocity = (newPosition - position) / Time.deltaTime;
-
-                    rb.MovePosition(newPosition);
-
-                    brushTimer += Time.deltaTime;
-                    if (brushTimer >= brushingTime)
-                    {
-                        RoundManager.OnRockPassResultThreshold();
-                        return;
-                    }
+                    RunBrushingMovement();
                 }
                 else
                 {
@@ -109,9 +89,6 @@ public class Rock : MonoBehaviour
                     progressSpeed *= scaledDecay;
                 }
 
-                float curve = Vector3.Dot(velocity.normalized, Quaternion.Euler(90 * Vector3.up) * previosDirection);
-                curve = rb.rotation.eulerAngles.y + spinMultiplier * curve * 1000;
-                rb.MoveRotation(Quaternion.Euler(curve * Vector3.up));
             }
             else
             {
@@ -119,43 +96,12 @@ public class Rock : MonoBehaviour
                 velocity = rb.velocity;
             }
 
-            if (!isBrushing)
-            {
-                if (velocity.magnitude <= movementThreshold)
-                {
-                    rb.velocity = Vector3.zero;
-                    velocity = Vector3.zero;
-                    isFollowingCurve = false;
-                    hitBy = null;
-
-                    if (!hasEndedTurn)
-                    {
-                        hasEndedTurn = true;
-                        RoundManager.OnRockStop();
-                    }
-                }
-            }
-
-            
-
-            if (position.y < -slipThreshold && !hasSlipped)
-            {
-                hasSlipped = true;
-                isFollowingCurve = false;
-                slip.Play();
-                if (!hasEndedTurn)
-                {
-                    hasEndedTurn = true;
-                    RoundManager.OnRockStop();
-                }
-            }
-
-            if (position.y < -fallingKillThreshold)
-                Destroy(gameObject);
+            CheckForStop();
+            CheckForSlip();
         }
     }
 
-    public void Throw(Vector3 start, Vector3 mid, Vector3 end, float brushingRatio, float targetRadius)
+    public void Throw(Vector3 start, Vector3 mid, Vector3 end, float brushingRatio, float curl, float targetRadius)
     {
         startPoint = start;
         midPoint = mid;
@@ -170,6 +116,9 @@ public class Rock : MonoBehaviour
         this.targetRadius = targetRadius;
 
         resultThresholdToTarget = (1 - brushingRatio) * (end.z - start.z);
+
+        // add initial spin in target direction
+        rb.AddTorque(-curl * 1000 * Vector3.up, ForceMode.Impulse);
     }
 
     public void Score(bool scoring)
@@ -181,6 +130,68 @@ public class Rock : MonoBehaviour
 
         transform.GetChild(1).gameObject.SetActive(scoring);
         isScoring = scoring;
+    }
+
+    void RunBrushingMovement()
+    {
+        Vector3 previousDirection = velocity.normalized;
+
+        float brushingProgress = brushTimer / brushingTime;
+        brushingProgress = brushingMovementCurve.Evaluate(brushingProgress);
+
+        Vector3 newPosition = GetUnclampedBezierPoint(brushingRatio * brushingProgress);
+        velocity = (newPosition - position) / Time.deltaTime;
+
+        rb.MovePosition(newPosition);
+
+        brushTimer += Time.deltaTime;
+        if (brushTimer >= brushingTime)
+        {
+            RoundManager.OnRockPassResultThreshold();
+            return;
+        }
+
+        float curve = Vector3.Dot(velocity.normalized, Quaternion.Euler(0, 90, 0) * previousDirection);
+        curve *= spinMultiplier * 100;
+        rb.AddTorque(curve * Vector3.up);
+    }
+
+    void CheckForSlip()
+    {
+        if (position.y < -slipThreshold && !hasSlipped)
+        {
+            hasSlipped = true;
+            isFollowingCurve = false;
+            slip.Play();
+            if (!hasEndedTurn)
+            {
+                hasEndedTurn = true;
+                RoundManager.OnRockStop();
+            }
+        }
+
+        if (position.y < -fallingKillThreshold)
+            Destroy(gameObject);
+    }
+
+    void CheckForStop()
+    {
+        if (isBrushing)
+            return;
+
+        if (velocity.magnitude <= movementThreshold)
+        {
+            rb.velocity = Vector3.zero;
+            velocity = Vector3.zero;
+            isFollowingCurve = false;
+            hitBy = null;
+
+            if (!hasEndedTurn)
+            {
+                hasEndedTurn = true;
+                RoundManager.OnRockStop();
+            }
+        }
     }
 
     /// <summary>

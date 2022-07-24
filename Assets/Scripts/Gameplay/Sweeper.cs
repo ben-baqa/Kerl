@@ -141,6 +141,7 @@ public class Sweeper : MonoBehaviour
         curveZDistance = throwingDirection.z - startPoint.z;
         this.brushingRatio = brushingRatio;
         brushingProgress = .75f;
+        progressRate = 0;
 
         anchor = throwingDirection - ((Quaternion.Euler(0, 90, 0) * throwingDirection).normalized + throwingDirection.normalized * 3) * targetRadius;
         upLeft = throwingDirection.normalized * targetRadius * 4;
@@ -189,8 +190,8 @@ public class Sweeper : MonoBehaviour
     public Vector3[] GetPredictionPoints()
     {
         //return rock.GetPredictionPoints(20, brushingRatio, 4 * (1 - brushingRatio) * brushingProgress / 3);
-
-        return rock.GetPredictionPoints(20, brushingRatio, 1 + (targetRadius * (brushingProgress * 4 - 3)) / curveZDistance);
+        float extraDistance = targetRadius * (brushingProgress * 4 - 3);
+        return rock.GetPredictionPoints(50, brushingRatio, 1 - brushingRatio + extraDistance / curveZDistance);
         
     }
 }

@@ -112,7 +112,6 @@ public class RoundManager : MonoBehaviour
         {
             if (NetworkMessageHandler.isHost)
                 scorekeeper.GetFinalResult();
-                //StartCoroutine(EnableEndLoader());
 
             return;
         }
@@ -195,11 +194,6 @@ public class RoundManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(endLoaderDelay);
         exitOptions.Activate();
     }
-
-    //public void Reset()
-    //{
-    //    print("Attempting to reset game, but method is not implemented");
-    //}
 }
 
 public enum GameState

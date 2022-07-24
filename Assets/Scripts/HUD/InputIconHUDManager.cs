@@ -29,6 +29,7 @@ public class InputIconHUDManager : MonoBehaviour
         inputIcon = GetComponentInChildren<InputIcon>();
         targetPosition = rockSelectPosition;
         transform.localPosition = targetPosition;
+        inputIcon.Init();
         inputIcon.Deactivate();
     }
 

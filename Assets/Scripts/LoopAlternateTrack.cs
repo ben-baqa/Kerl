@@ -2,35 +2,35 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(AudioSource))]
 public class LoopAlternateTrack : MonoBehaviour
 {
+    public AudioClip firstLoop;
     public AudioClip subsequentLoops;
+    public float volume = 0.6f;
 
-    AudioSource source;
-    float clipLength;
-    float timer;
+    AudioSource firstSource;
+    AudioSource secondSource;
 
-    // Start is called before the first frame update
     void Start()
     {
-        source = GetComponent<AudioSource>();
-        source.loop = true;
-        clipLength = source.clip.length;
-        timer = 0;
+        firstSource = gameObject.AddComponent<AudioSource>();
+        firstSource.playOnAwake = false;
+        firstSource.clip = firstLoop;
+        firstSource.volume = volume;
+        firstSource.loop = false;
+        firstSource.Play();
+
+        secondSource = gameObject.AddComponent<AudioSource>();
+        secondSource.playOnAwake = false;
+        secondSource.clip = subsequentLoops;
+        secondSource.volume = volume;
+        secondSource.loop = true;
+        secondSource.PlayScheduled(AudioSettings.dspTime + firstLoop.length);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Stop()
     {
-        timer += Time.deltaTime;
-        if(timer >= clipLength)
-        {
-            source.clip = subsequentLoops;
-            source.loop = true;
-            if (!source.isPlaying)
-                source.Play();
-            Destroy(this);
-        }
+        firstSource.Stop();
+        secondSource.Stop();
     }
 }
